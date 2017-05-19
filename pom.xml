@@ -8,14 +8,16 @@
         <version>4.0.0-SNAPSHOT</version>
     </parent>
     <groupId>org.mule.modules</groupId>
-    <artifactId>mule-module-scripting-plugin</artifactId>
+    <artifactId>mule-scripting-module</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
     <name>Mule Scripting Extension</name>
     <packaging>mule-plugin</packaging>
     <description>Support for embedding scripts inside Mule artifacts</description>
 
     <properties>
-        <formatterConfigPath>../../formatter.xml</formatterConfigPath>
+        <formatterConfigPath>formatter.xml</formatterConfigPath>
         <jffi.version>1.2.10</jffi.version>
+        <mule.runtime.version>4.0.0-SNAPSHOT</mule.runtime.version>
     </properties>
 
     <dependencies>
@@ -23,7 +25,7 @@
         <dependency>
             <groupId>org.mule.runtime</groupId>
             <artifactId>mule-core</artifactId>
-            <version>${project.version}</version>
+            <version>${mule.runtime.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -35,7 +37,7 @@
         <dependency>
             <groupId>org.mule.runtime</groupId>
             <artifactId>mule-module-spring-config</artifactId>
-            <version>${project.version}</version>
+            <version>${mule.runtime.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -52,7 +54,7 @@
         <dependency>
             <groupId>org.mule.runtime</groupId>
             <artifactId>mule-module-builders</artifactId>
-            <version>${project.version}</version>
+            <version>${mule.runtime.version}</version>
             <scope>provided</scope>
         </dependency>
 
@@ -244,7 +246,7 @@
         <dependency>
             <groupId>org.mule.tests</groupId>
             <artifactId>mule-tests-functional</artifactId>
-            <version>${project.version}</version>
+            <version>${mule.runtime.version}</version>
             <scope>test</scope>
             <exclusions>
                 <exclusion>
@@ -257,7 +259,7 @@
         <dependency>
             <groupId>org.mule.runtime</groupId>
             <artifactId>mule-module-service</artifactId>
-            <version>${project.version}</version>
+            <version>${mule.runtime.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -269,7 +271,7 @@
         <dependency>
             <groupId>org.mule.runtime</groupId>
             <artifactId>mule-service-http-api</artifactId>
-            <version>${project.version}</version>
+            <version>${mule.runtime.version}</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>
