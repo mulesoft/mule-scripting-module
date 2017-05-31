@@ -11,6 +11,7 @@ import static org.mule.runtime.api.i18n.I18nMessageFactory.createStaticMessage;
 import static org.mule.runtime.core.config.i18n.CoreMessages.cannotLoadFromClasspath;
 import static org.mule.runtime.core.config.i18n.CoreMessages.propertiesNotSet;
 import static org.mule.runtime.core.util.IOUtils.getResourceAsStream;
+import static org.mule.runtime.core.util.StringUtils.isBlank;
 import org.mule.runtime.api.lifecycle.Initialisable;
 import org.mule.runtime.api.lifecycle.InitialisationException;
 import org.mule.runtime.api.message.Message;
@@ -23,7 +24,6 @@ import org.mule.runtime.core.api.context.MuleContextAware;
 import org.mule.runtime.core.el.context.FlowVariableMapContext;
 import org.mule.runtime.core.el.context.SessionVariableMapContext;
 import org.mule.runtime.core.util.CollectionUtils;
-import org.mule.runtime.core.util.StringUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -138,7 +138,7 @@ public class Scriptable implements Initialisable, MuleContextAware, FlowConstruc
     Reader script = null;
     try {
       // Load script from variable
-      if (StringUtils.isNotBlank(scriptText)) {
+      if (!isBlank(scriptText)) {
         script = new StringReader(scriptText);
       }
       // Load script from file
