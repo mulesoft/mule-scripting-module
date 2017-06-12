@@ -8,10 +8,11 @@ package org.mule.plugin.scripting.component;
 
 import static java.util.stream.Collectors.toMap;
 import static org.mule.runtime.api.i18n.I18nMessageFactory.createStaticMessage;
-import static org.mule.runtime.core.config.i18n.CoreMessages.cannotLoadFromClasspath;
-import static org.mule.runtime.core.config.i18n.CoreMessages.propertiesNotSet;
 import static org.mule.runtime.core.api.util.IOUtils.getResourceAsStream;
 import static org.mule.runtime.core.api.util.StringUtils.isBlank;
+import static org.mule.runtime.core.config.i18n.CoreMessages.cannotLoadFromClasspath;
+import static org.mule.runtime.core.config.i18n.CoreMessages.propertiesNotSet;
+
 import org.mule.runtime.api.lifecycle.Initialisable;
 import org.mule.runtime.api.lifecycle.InitialisationException;
 import org.mule.runtime.api.message.Message;
@@ -19,11 +20,10 @@ import org.mule.runtime.core.DefaultMuleEventContext;
 import org.mule.runtime.core.api.Event;
 import org.mule.runtime.core.api.MuleContext;
 import org.mule.runtime.core.api.construct.FlowConstruct;
-import org.mule.runtime.core.api.construct.FlowConstructAware;
 import org.mule.runtime.core.api.context.MuleContextAware;
+import org.mule.runtime.core.api.util.CollectionUtils;
 import org.mule.runtime.core.el.context.FlowVariableMapContext;
 import org.mule.runtime.core.el.context.SessionVariableMapContext;
-import org.mule.runtime.core.api.util.CollectionUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -46,7 +46,7 @@ import org.slf4j.LoggerFactory;
  * A JSR 223 Script service. Allows any JSR 223 compliant script engines such as JavaScript, Groovy or Rhino to be embedded as
  * Mule components.
  */
-public class Scriptable implements Initialisable, MuleContextAware, FlowConstructAware {
+public class Scriptable implements Initialisable, MuleContextAware {
 
   private static final String BINDING_LOG = "log";
   private static final String BINDING_RESULT = "result";
@@ -85,7 +85,6 @@ public class Scriptable implements Initialisable, MuleContextAware, FlowConstruc
   private ScriptEngineManager scriptEngineManager;
 
   private MuleContext muleContext;
-  private FlowConstruct flow;
 
   protected transient Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -100,11 +99,6 @@ public class Scriptable implements Initialisable, MuleContextAware, FlowConstruc
   @Override
   public void setMuleContext(MuleContext context) {
     this.muleContext = context;
-  }
-
-  @Override
-  public void setFlowConstruct(FlowConstruct flowConstruct) {
-    this.flow = flowConstruct;
   }
 
   @Override
@@ -182,12 +176,12 @@ public class Scriptable implements Initialisable, MuleContextAware, FlowConstruc
     }
   }
 
-  protected void populatePropertyBindings(Bindings bindings, Event event) {
+  protected void populatePropertyBindings(Bindings bindings, Event event, FlowConstruct flowConstruct) {
     if (properties != null) {
       for (ScriptingProperty property : properties) {
         String value = (String) property.getValue();
         if (muleContext.getExpressionManager().isExpression(value)) {
-          bindings.put(property.getKey(), muleContext.getExpressionManager().parse(value, event, flow));
+          bindings.put(property.getKey(), muleContext.getExpressionManager().parse(value, event, flowConstruct));
         } else {
           bindings.put(property.getKey(), value);
         }
@@ -204,13 +198,13 @@ public class Scriptable implements Initialisable, MuleContextAware, FlowConstruc
     bindings.put(BINDING_REGISTRY, muleContext.getRegistry());
   }
 
-  public void populateBindings(Bindings bindings, Event event, Event.Builder eventBuilder) {
-    populatePropertyBindings(bindings, event);
+  public void populateBindings(Bindings bindings, FlowConstruct flowConstruct, Event event, Event.Builder eventBuilder) {
+    populatePropertyBindings(bindings, event, flowConstruct);
     populateDefaultBindings(bindings);
     populateMessageBindings(bindings, event, eventBuilder);
 
-    bindings.put(BINDING_EVENT_CONTEXT, new DefaultMuleEventContext(flow, event));
-    bindings.put(BINDING_FLOW_CONSTRUCT, flow);
+    bindings.put(BINDING_EVENT_CONTEXT, new DefaultMuleEventContext(flowConstruct, event));
+    bindings.put(BINDING_FLOW_CONSTRUCT, flowConstruct);
   }
 
   protected void populateMessageBindings(Bindings bindings, Event event, Event.Builder eventBuilder) {
@@ -223,7 +217,7 @@ public class Scriptable implements Initialisable, MuleContextAware, FlowConstruc
     // This will get overwritten if populateBindings(Bindings bindings, MuleEvent event) is called
     // and not this method directly.
     bindings.put(BINDING_PAYLOAD, message.getPayload().getValue());
-    // For backward compatibility 
+    // For backward compatibility
     bindings.put(BINDING_SRC, message.getPayload().getValue());
 
     populateHeadersVariablesAndException(bindings, event, eventBuilder);
