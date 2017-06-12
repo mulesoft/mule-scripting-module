@@ -10,6 +10,7 @@ import static org.mule.plugin.scripting.component.Scriptable.BINDING_MESSAGE;
 import static org.mule.runtime.core.DefaultEventContext.create;
 import static org.mule.runtime.core.api.construct.Flow.builder;
 import static org.mule.runtime.dsl.api.component.config.DefaultComponentLocation.fromSingleComponent;
+
 import org.mule.plugin.scripting.component.Scriptable;
 import org.mule.runtime.api.lifecycle.Disposable;
 import org.mule.runtime.api.lifecycle.Initialisable;
@@ -48,7 +49,7 @@ public class ScriptFilter extends AbstractFilteringMessageProcessor implements F
   public boolean accept(Event event, Event.Builder builder) {
     Bindings bindings = script.getScriptEngine().createBindings();
 
-    script.populateBindings(bindings, event, builder);
+    script.populateBindings(bindings, flowConstruct, event, builder);
     try {
       return (Boolean) script.runScript(bindings);
     } catch (Throwable e) {
@@ -67,7 +68,7 @@ public class ScriptFilter extends AbstractFilteringMessageProcessor implements F
     Flow flow = builder("ScriptFilterFlow", muleContext).build();
     Event event =
         Event.builder(create(flow, fromSingleComponent("ScriptFilter"))).message(message).flow(flow).build();
-    script.populateBindings(bindings, event, builder);
+    script.populateBindings(bindings, flowConstruct, event, builder);
     try {
       return (Boolean) script.runScript(bindings);
     } catch (Throwable e) {

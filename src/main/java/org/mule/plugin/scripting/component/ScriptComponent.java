@@ -7,6 +7,7 @@
 package org.mule.plugin.scripting.component;
 
 import static org.mule.plugin.scripting.component.Scriptable.BINDING_MESSAGE;
+
 import org.mule.runtime.api.lifecycle.InitialisationException;
 import org.mule.runtime.api.message.Message;
 import org.mule.runtime.core.api.Event;
@@ -43,7 +44,7 @@ public class ScriptComponent extends AbstractComponent {
     // Set up initial script variables.
     Bindings bindings = script.getScriptEngine().createBindings();
     putBindings(bindings);
-    script.populateBindings(bindings, event, eventBuilder);
+    script.populateBindings(bindings, flowConstruct, event, eventBuilder);
     try {
       return script.runScript(bindings);
     } catch (Exception e) {
