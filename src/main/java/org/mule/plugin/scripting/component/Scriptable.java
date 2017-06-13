@@ -54,7 +54,7 @@ public class Scriptable implements Initialisable, MuleContextAware {
   private static final String BINDING_REGISTRY = "registry";
   private static final String BINDING_PAYLOAD = "payload";
   private static final String BINDING_SRC = "src";
-  private static final String BINDING_EVENT_CONTEXT = "eventContext";
+  private static final String BINDING_EVENT = "event";
   private static final String BINDING_ID = "id";
   private static final String BINDING_FLOW_CONSTRUCT = "flowConstruct";
   private static final String BINDING_FLOW_VARS = "flowVars";
@@ -203,7 +203,7 @@ public class Scriptable implements Initialisable, MuleContextAware {
     populateDefaultBindings(bindings);
     populateMessageBindings(bindings, event, eventBuilder);
 
-    bindings.put(BINDING_EVENT_CONTEXT, new DefaultMuleEventContext(flowConstruct, event));
+    bindings.put(BINDING_EVENT, event);
     bindings.put(BINDING_FLOW_CONSTRUCT, flowConstruct);
   }
 
