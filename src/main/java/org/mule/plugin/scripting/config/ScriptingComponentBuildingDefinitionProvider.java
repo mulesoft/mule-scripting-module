@@ -14,7 +14,7 @@ import static org.mule.runtime.dsl.api.component.AttributeDefinition.Builder.fro
 import static org.mule.runtime.dsl.api.component.AttributeDefinition.Builder.fromSimpleReferenceParameter;
 import static org.mule.runtime.dsl.api.component.AttributeDefinition.Builder.fromTextContent;
 import static org.mule.runtime.dsl.api.component.TypeDefinition.fromType;
-import org.mule.plugin.scripting.component.GroovyRefreshableBeanBuilder;
+
 import org.mule.plugin.scripting.component.ScriptComponent;
 import org.mule.plugin.scripting.component.Scriptable;
 import org.mule.plugin.scripting.component.ScriptingProperty;
@@ -43,7 +43,6 @@ public class ScriptingComponentBuildingDefinitionProvider implements ComponentBu
   private static final String PROPERTY = "property";
   private static final String TRANSFORMER = "transformer";
   private static final String FILTER = "filter";
-  private static final String GROOVY_REFRESHABLE = "groovy-refreshable";
 
   private static ComponentBuildingDefinition.Builder baseDefinition =
       new ComponentBuildingDefinition.Builder().withNamespace(SCRIPTING_NAMESPACE);
@@ -66,7 +65,7 @@ public class ScriptingComponentBuildingDefinitionProvider implements ComponentBu
         .withSetterParameterDefinition("value", fromSimpleReferenceParameter("value-ref").build())
         .build());
 
-    //TODO: MULE-11960 - scriptFile and scriptText are mutually exclusive
+    // TODO: MULE-11960 - scriptFile and scriptText are mutually exclusive
     componentBuildingDefinitions.add(baseDefinition.copy().withIdentifier(SCRIPT)
         .withTypeDefinition(fromType(Scriptable.class))
         .withIgnoredConfigurationParameter("name")
@@ -102,13 +101,6 @@ public class ScriptingComponentBuildingDefinitionProvider implements ComponentBu
         .withTypeDefinition(fromType(ScriptFilter.class))
         .withIgnoredConfigurationParameter("name")
         .withSetterParameterDefinition(SCRIPT, fromChildConfiguration(Scriptable.class).build())
-        .build());
-
-    componentBuildingDefinitions.add(baseDefinition.copy().withIdentifier(GROOVY_REFRESHABLE)
-        .withTypeDefinition(fromType(GroovyRefreshableBeanBuilder.class))
-        .withIgnoredConfigurationParameter("name")
-        .withSetterParameterDefinition("methodName", fromSimpleParameter("methodName").build())
-        .withSetterParameterDefinition("refreshableBean", fromSimpleReferenceParameter("refreshableBean-ref").build())
         .build());
 
     return componentBuildingDefinitions;

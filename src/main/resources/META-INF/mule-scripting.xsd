@@ -28,7 +28,7 @@
                 ||Name||Description||
                 |log|a logger that can be used to write to Mule's log file.|
                 |muleContext|a reference to the MuleContext object.|
-                |eventContext| A reference to the eventcontext. This allows you to dispatch events progammatically from your script|
+                |event| A reference to the event.
                 |message|the current message.|
                 |payload|the transformed payload of the current message if a transformer is configured on the service. Otherwise this is the same value as _originalPayload_.|
                 |src|same as _payload_, kept for backward compatability.|
@@ -228,38 +228,6 @@
                         </xsd:annotation>
                     </xsd:element>
                 </xsd:sequence>
-            </xsd:extension>
-        </xsd:complexContent>
-    </xsd:complexType>
-
-    <xsd:element name="groovy-refreshable" type="groovyRefreshableType" substitutionGroup="mule:abstract-extension">
-        <xsd:annotation>
-            <xsd:documentation>
-                A wrapper for a component object that allows the underlying object to be reloaded at runtime. This makes it possible to hot-deploy new component logic without restarting.
-            </xsd:documentation>
-        </xsd:annotation>
-    </xsd:element>
-
-    <xsd:complexType name="groovyRefreshableType">
-        <xsd:complexContent>
-            <xsd:extension base="mule:abstractExtensionType">
-                <xsd:attribute name="name" type="xsd:string" use="required">
-                    <xsd:annotation>
-                        <xsd:documentation>The name for this refreshable groovy bean wrapper.</xsd:documentation>
-                    </xsd:annotation>
-                </xsd:attribute>
-                <xsd:attribute name="refreshableBean-ref" type="xsd:string">
-                    <xsd:annotation>
-                        <xsd:documentation>The reference to a {{groovy.lang.Groovy}} object to use for this component.
-                        </xsd:documentation>
-                    </xsd:annotation>
-                </xsd:attribute>
-                <xsd:attribute name="methodName" type="xsd:string">
-                    <xsd:annotation>
-                        <xsd:documentation>The entrypoint method to invoke when a message is received for the object.
-                        </xsd:documentation>
-                    </xsd:annotation>
-                </xsd:attribute>
             </xsd:extension>
         </xsd:complexContent>
     </xsd:complexType>
