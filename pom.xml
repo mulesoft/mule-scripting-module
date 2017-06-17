@@ -3,9 +3,9 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>org.mule.runtime</groupId>
-        <artifactId>mule-modules</artifactId>
-        <version>4.0.0-BETA-SNAPSHOT</version>
+        <groupId>org.mule.extensions</groupId>
+        <artifactId>mule-core-modules-parent</artifactId>
+        <version>1.0.0-BETA-TEST-RELEASE</version>
     </parent>
     <groupId>org.mule.modules</groupId>
     <artifactId>mule-scripting-module</artifactId>
@@ -17,7 +17,13 @@
     <properties>
         <formatterConfigPath>formatter.xml</formatterConfigPath>
         <jffi.version>1.2.10</jffi.version>
-        <mule.runtime.version>4.0.0-BETA-SNAPSHOT</mule.runtime.version>
+        <jython.version>2.7.1b3</jython.version>
+        <rhinoVersion>1.7R4</rhinoVersion>
+        <rhinoJsr223Version>1.1</rhinoJsr223Version>
+        <springVersion>4.1.9.RELEASE</springVersion>
+        <groovyVersion>2.4.4</groovyVersion>
+        <mule.weave.version>2.0.0-BETA-TEST-RELEASE</mule.weave.version>
+        <mule.app.plugins.maven.plugin.version>1.0.0-BETA-TEST-RELEASE</mule.app.plugins.maven.plugin.version>
     </properties>
 
     <dependencies>
@@ -25,36 +31,39 @@
         <dependency>
             <groupId>org.mule.runtime</groupId>
             <artifactId>mule-core</artifactId>
-            <version>${mule.runtime.version}</version>
+            <version>${mule.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-core</artifactId>
+            <version>${springVersion}</version>
             <scope>provided</scope>
         </dependency>
         <!--Test Dependencies-->
         <dependency>
             <groupId>org.mule.runtime</groupId>
             <artifactId>mule-module-spring-config</artifactId>
-            <version>${mule.runtime.version}</version>
+            <version>${mule.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-context</artifactId>
+            <version>${springVersion}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-aop</artifactId>
+            <version>${springVersion}</version>
             <scope>provided</scope>
         </dependency>
         <!-- Used by ScriptConfigurationBuilder -->
         <dependency>
             <groupId>org.mule.runtime</groupId>
             <artifactId>mule-module-builders</artifactId>
-            <version>${mule.runtime.version}</version>
+            <version>${mule.version}</version>
             <scope>provided</scope>
         </dependency>
 
@@ -62,6 +71,7 @@
         <dependency>
             <groupId>org.codehaus.groovy</groupId>
             <artifactId>groovy-all</artifactId>
+            <version>${groovyVersion}</version>
             <classifier>indy</classifier>
         </dependency>
 
@@ -246,7 +256,7 @@
         <dependency>
             <groupId>org.mule.tests</groupId>
             <artifactId>mule-tests-functional</artifactId>
-            <version>${mule.runtime.version}</version>
+            <version>${mule.version}</version>
             <scope>test</scope>
             <exclusions>
                 <exclusion>
@@ -259,19 +269,20 @@
         <dependency>
             <groupId>org.mule.runtime</groupId>
             <artifactId>mule-module-service</artifactId>
-            <version>${mule.runtime.version}</version>
+            <version>${mule.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.mule.services</groupId>
             <artifactId>mule-service-weave</artifactId>
+            <version>${mule.weave.version}</version>
             <classifier>mule-service</classifier>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.mule.runtime</groupId>
             <artifactId>mule-service-http-api</artifactId>
-            <version>${mule.runtime.version}</version>
+            <version>${mule.version}</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>
