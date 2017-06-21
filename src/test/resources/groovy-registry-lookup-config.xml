@@ -15,7 +15,7 @@
                 return hello.sayHello()
             </script:script>
         </script:transformer>
-        <echo-component/>
+        <logger/>
     </flow>
                         
 
