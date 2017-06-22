@@ -17,7 +17,7 @@
 
     <flow name="filterService">
         <filter ref="scriptFilter"/>
-        <echo-component/>
+        <logger/>
         <test:queue name="filterServiceTestOut"/>
     </flow>
     
