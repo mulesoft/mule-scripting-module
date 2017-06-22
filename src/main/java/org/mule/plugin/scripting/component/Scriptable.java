@@ -10,13 +10,12 @@ import static java.util.stream.Collectors.toMap;
 import static org.mule.runtime.api.i18n.I18nMessageFactory.createStaticMessage;
 import static org.mule.runtime.core.api.util.IOUtils.getResourceAsStream;
 import static org.mule.runtime.core.api.util.StringUtils.isBlank;
-import static org.mule.runtime.core.config.i18n.CoreMessages.cannotLoadFromClasspath;
-import static org.mule.runtime.core.config.i18n.CoreMessages.propertiesNotSet;
+import static org.mule.runtime.core.api.config.i18n.CoreMessages.cannotLoadFromClasspath;
+import static org.mule.runtime.core.api.config.i18n.CoreMessages.propertiesNotSet;
 
 import org.mule.runtime.api.lifecycle.Initialisable;
 import org.mule.runtime.api.lifecycle.InitialisationException;
 import org.mule.runtime.api.message.Message;
-import org.mule.runtime.core.DefaultMuleEventContext;
 import org.mule.runtime.core.api.Event;
 import org.mule.runtime.core.api.MuleContext;
 import org.mule.runtime.core.api.construct.FlowConstruct;
