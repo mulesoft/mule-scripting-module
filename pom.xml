@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.mule.extensions</groupId>
         <artifactId>mule-core-modules-parent</artifactId>
-        <version>1.0.0-BETA-TEST-RELEASE</version>
+        <version>1.0.0-BETA</version>
     </parent>
     <groupId>org.mule.modules</groupId>
     <artifactId>mule-scripting-module</artifactId>
@@ -22,8 +22,8 @@
         <rhinoJsr223Version>1.1</rhinoJsr223Version>
         <springVersion>4.1.9.RELEASE</springVersion>
         <groovyVersion>2.4.4</groovyVersion>
-        <mule.weave.version>2.0.0-BETA-TEST-RELEASE</mule.weave.version>
-        <mule.app.plugins.maven.plugin.version>1.0.0-BETA-TEST-RELEASE</mule.app.plugins.maven.plugin.version>
+        <mule.weave.version></mule.weave.version>
+        <mule.app.plugins.maven.plugin.version>1.0.0-BETA</mule.app.plugins.maven.plugin.version>
     </properties>
 
     <dependencies>
