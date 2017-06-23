@@ -9,7 +9,7 @@
     </parent>
     <groupId>org.mule.modules</groupId>
     <artifactId>mule-scripting-module</artifactId>
-    <version>0.8.0-SNAPSHOT</version>
+    <version>0.8.0-BETA</version>
     <name>Scripting Module</name>
     <packaging>mule-plugin</packaging>
     <description>Support for embedding scripts inside Mule artifacts</description>
@@ -22,7 +22,7 @@
         <rhinoJsr223Version>1.1</rhinoJsr223Version>
         <springVersion>4.1.9.RELEASE</springVersion>
         <groovyVersion>2.4.4</groovyVersion>
-        <mule.weave.version></mule.weave.version>
+        <mule.weave.version>2.0.0-BETA</mule.weave.version>
         <mule.app.plugins.maven.plugin.version>1.0.0-BETA</mule.app.plugins.maven.plugin.version>
     </properties>
 
