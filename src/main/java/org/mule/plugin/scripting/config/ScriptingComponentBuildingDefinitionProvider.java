@@ -18,7 +18,6 @@ import static org.mule.runtime.dsl.api.component.TypeDefinition.fromType;
 import org.mule.plugin.scripting.component.ScriptComponent;
 import org.mule.plugin.scripting.component.Scriptable;
 import org.mule.plugin.scripting.component.ScriptingProperty;
-import org.mule.plugin.scripting.filter.ScriptFilter;
 import org.mule.plugin.scripting.transformer.ScriptTransformer;
 import org.mule.runtime.core.api.interceptor.Interceptor;
 import org.mule.runtime.dsl.api.component.ComponentBuildingDefinition;
@@ -42,7 +41,6 @@ public class ScriptingComponentBuildingDefinitionProvider implements ComponentBu
   private static final String COMPONENT = "component";
   private static final String PROPERTY = "property";
   private static final String TRANSFORMER = "transformer";
-  private static final String FILTER = "filter";
 
   private static ComponentBuildingDefinition.Builder baseDefinition =
       new ComponentBuildingDefinition.Builder().withNamespace(SCRIPTING_NAMESPACE);
@@ -96,12 +94,6 @@ public class ScriptingComponentBuildingDefinitionProvider implements ComponentBu
                                                                        .withIdentifier(TRANSFORMER)
                                                                        .withNamespace(SCRIPTING_NAMESPACE)
                                                                        .build());
-
-    componentBuildingDefinitions.add(baseDefinition.copy().withIdentifier(FILTER)
-        .withTypeDefinition(fromType(ScriptFilter.class))
-        .withIgnoredConfigurationParameter("name")
-        .withSetterParameterDefinition(SCRIPT, fromChildConfiguration(Scriptable.class).build())
-        .build());
 
     return componentBuildingDefinitions;
   }
