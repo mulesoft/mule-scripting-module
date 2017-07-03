@@ -15,7 +15,7 @@ import static org.mule.runtime.dsl.api.component.AttributeDefinition.Builder.fro
 import static org.mule.runtime.dsl.api.component.AttributeDefinition.Builder.fromTextContent;
 import static org.mule.runtime.dsl.api.component.TypeDefinition.fromType;
 
-import org.mule.plugin.scripting.component.ScriptComponent;
+import org.mule.plugin.scripting.component.ScriptProcessor;
 import org.mule.plugin.scripting.component.Scriptable;
 import org.mule.plugin.scripting.component.ScriptingProperty;
 import org.mule.plugin.scripting.transformer.ScriptTransformer;
@@ -75,7 +75,7 @@ public class ScriptingComponentBuildingDefinitionProvider implements ComponentBu
         .build());
 
     componentBuildingDefinitions.add(baseDefinition.copy().withIdentifier(COMPONENT)
-        .withTypeDefinition(fromType(ScriptComponent.class))
+        .withTypeDefinition(fromType(ScriptProcessor.class))
         .withSetterParameterDefinition(SCRIPT, fromChildConfiguration(Scriptable.class).build())
         .withSetterParameterDefinition(SCRIPT, fromSimpleReferenceParameter("script-ref").build())
         .withSetterParameterDefinition("interceptors", fromChildCollectionConfiguration(Interceptor.class).build())
