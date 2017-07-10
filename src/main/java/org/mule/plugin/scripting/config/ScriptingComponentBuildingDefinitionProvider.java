@@ -52,11 +52,11 @@ public class ScriptingComponentBuildingDefinitionProvider implements ComponentBu
   public List<ComponentBuildingDefinition> getComponentBuildingDefinitions() {
     List<ComponentBuildingDefinition> componentBuildingDefinitions = new LinkedList<>();
 
-    componentBuildingDefinitions.add(baseDefinition.copy().withIdentifier(TEXT)
+    componentBuildingDefinitions.add(baseDefinition.withIdentifier(TEXT)
         .withTypeDefinition(fromType(String.class))
         .build());
 
-    componentBuildingDefinitions.add(baseDefinition.copy().withIdentifier(PROPERTY)
+    componentBuildingDefinitions.add(baseDefinition.withIdentifier(PROPERTY)
         .withTypeDefinition(fromType(ScriptingProperty.class))
         .withConstructorParameterDefinition(fromSimpleParameter("key").build())
         .withSetterParameterDefinition("value", fromSimpleParameter("value").build())
@@ -64,7 +64,7 @@ public class ScriptingComponentBuildingDefinitionProvider implements ComponentBu
         .build());
 
     // TODO: MULE-11960 - scriptFile and scriptText are mutually exclusive
-    componentBuildingDefinitions.add(baseDefinition.copy().withIdentifier(SCRIPT)
+    componentBuildingDefinitions.add(baseDefinition.withIdentifier(SCRIPT)
         .withTypeDefinition(fromType(Scriptable.class))
         .withIgnoredConfigurationParameter("name")
         .withSetterParameterDefinition("scriptEngineName", fromSimpleParameter("engine").build())
@@ -74,7 +74,7 @@ public class ScriptingComponentBuildingDefinitionProvider implements ComponentBu
         .withSetterParameterDefinition("properties", fromChildCollectionConfiguration(ScriptingProperty.class).build())
         .build());
 
-    componentBuildingDefinitions.add(baseDefinition.copy().withIdentifier(COMPONENT)
+    componentBuildingDefinitions.add(baseDefinition.withIdentifier(COMPONENT)
         .withTypeDefinition(fromType(ScriptProcessor.class))
         .withSetterParameterDefinition(SCRIPT, fromChildConfiguration(Scriptable.class).build())
         .withSetterParameterDefinition(SCRIPT, fromSimpleReferenceParameter("script-ref").build())
