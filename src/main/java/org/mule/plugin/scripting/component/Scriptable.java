@@ -8,20 +8,20 @@ package org.mule.plugin.scripting.component;
 
 import static java.util.stream.Collectors.toMap;
 import static org.mule.runtime.api.i18n.I18nMessageFactory.createStaticMessage;
-import static org.mule.runtime.core.api.util.IOUtils.getResourceAsStream;
-import static org.mule.runtime.core.api.util.StringUtils.isBlank;
 import static org.mule.runtime.core.api.config.i18n.CoreMessages.cannotLoadFromClasspath;
 import static org.mule.runtime.core.api.config.i18n.CoreMessages.propertiesNotSet;
+import static org.mule.runtime.core.api.util.IOUtils.getResourceAsStream;
+import static org.mule.runtime.core.api.util.StringUtils.isBlank;
 
+import org.mule.runtime.api.component.location.ComponentLocation;
 import org.mule.runtime.api.lifecycle.Initialisable;
 import org.mule.runtime.api.lifecycle.InitialisationException;
 import org.mule.runtime.api.message.Message;
 import org.mule.runtime.core.api.Event;
 import org.mule.runtime.core.api.MuleContext;
-import org.mule.runtime.core.api.construct.FlowConstruct;
 import org.mule.runtime.core.api.context.MuleContextAware;
 import org.mule.runtime.core.api.util.CollectionUtils;
-import org.mule.runtime.core.el.context.FlowVariableMapContext;
+import org.mule.runtime.core.el.context.EventVariablesMapContext;
 import org.mule.runtime.core.el.context.SessionVariableMapContext;
 
 import java.io.IOException;
@@ -55,8 +55,8 @@ public class Scriptable implements Initialisable, MuleContextAware {
   private static final String BINDING_SRC = "src";
   private static final String BINDING_EVENT = "event";
   private static final String BINDING_ID = "id";
-  private static final String BINDING_FLOW_CONSTRUCT = "flowConstruct";
-  private static final String BINDING_FLOW_VARS = "flowVars";
+  private static final String BINDING_FLOW = "flow";
+  private static final String BINDING_VARS = "vars";
   private static final String BINDING_SESSION_VARS = "sessionVars";
   private static final String BINDING_EXCEPTION = "exception";
   public static final String BINDING_MESSAGE = "message";
@@ -175,12 +175,12 @@ public class Scriptable implements Initialisable, MuleContextAware {
     }
   }
 
-  protected void populatePropertyBindings(Bindings bindings, Event event, FlowConstruct flowConstruct) {
+  protected void populatePropertyBindings(Bindings bindings, Event event, ComponentLocation location) {
     if (properties != null) {
       for (ScriptingProperty property : properties) {
         String value = (String) property.getValue();
         if (muleContext.getExpressionManager().isExpression(value)) {
-          bindings.put(property.getKey(), muleContext.getExpressionManager().parse(value, event, flowConstruct));
+          bindings.put(property.getKey(), muleContext.getExpressionManager().parse(value, event, location));
         } else {
           bindings.put(property.getKey(), value);
         }
@@ -197,13 +197,13 @@ public class Scriptable implements Initialisable, MuleContextAware {
     bindings.put(BINDING_REGISTRY, muleContext.getRegistry());
   }
 
-  public void populateBindings(Bindings bindings, FlowConstruct flowConstruct, Event event, Event.Builder eventBuilder) {
-    populatePropertyBindings(bindings, event, flowConstruct);
+  public void populateBindings(Bindings bindings, ComponentLocation location, Event event, Event.Builder eventBuilder) {
+    populatePropertyBindings(bindings, event, location);
     populateDefaultBindings(bindings);
     populateMessageBindings(bindings, event, eventBuilder);
 
     bindings.put(BINDING_EVENT, event);
-    bindings.put(BINDING_FLOW_CONSTRUCT, flowConstruct);
+    bindings.put(BINDING_FLOW, location.getParts().get(0).getPartPath());
   }
 
   protected void populateMessageBindings(Bindings bindings, Event event, Event.Builder eventBuilder) {
@@ -223,7 +223,7 @@ public class Scriptable implements Initialisable, MuleContextAware {
   }
 
   private void populateHeadersVariablesAndException(Bindings bindings, Event event, Event.Builder eventBuilder) {
-    bindings.put(BINDING_FLOW_VARS, new FlowVariableMapContext(event, eventBuilder));
+    bindings.put(BINDING_VARS, new EventVariablesMapContext(event, eventBuilder));
     bindings.put(BINDING_SESSION_VARS, new SessionVariableMapContext(event.getSession()));
 
     // Only add exception is present

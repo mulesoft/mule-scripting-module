@@ -45,7 +45,7 @@
     <flow name="inlineScriptMutateVariable">
         <script:component>
             <script:script engine="groovy">
-                flowVars['foo'] = 'bar-mutated'
+                vars['foo'] = 'bar-mutated'
              </script:script>
         </script:component>
         <test:assert expression="#[mel:flowVars.foo == 'bar-mutated']"/>
@@ -54,7 +54,7 @@
     <flow name="inlineScriptAddVariable">
         <script:component>
             <script:script engine="groovy">
-                flowVars['foo'] = 'bar'
+                vars['foo'] = 'bar'
              </script:script>
         </script:component>
         <test:assert expression="#[mel:flowVars.foo == 'bar']"/>
@@ -63,7 +63,7 @@
     <flow name="inlineScriptMutateVariablesMap">
         <script:component>
             <script:script engine="groovy">
-                flowVars = new HashMap()              
+                vars = new HashMap()              
              </script:script>
         </script:component>
         <test:assert expression="#[mel:flowVars.foo == 'bar']"/>

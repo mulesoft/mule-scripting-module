@@ -6,6 +6,10 @@
  */
 package org.mule.plugin.scripting.transformer;
 
+import static java.util.Collections.singletonMap;
+import static org.mule.runtime.api.meta.AbstractAnnotatedObject.LOCATION_KEY;
+import static org.mule.runtime.dsl.api.component.config.DefaultComponentLocation.fromSingleComponent;
+
 import org.mule.plugin.scripting.component.Scriptable;
 import org.mule.runtime.core.api.transformer.Transformer;
 import org.mule.tck.core.transformer.AbstractTransformerTestCase;
@@ -29,6 +33,7 @@ public class GroovyScriptTransformerTestCase extends AbstractTransformerTestCase
 
     ScriptTransformer transformer = new ScriptTransformer();
     transformer.setName("StringToList");
+    transformer.setAnnotations(singletonMap(LOCATION_KEY, fromSingleComponent("flow")));
     transformer.setMuleContext(muleContext);
     transformer.setScript(script);
     transformer.initialise();
@@ -44,6 +49,7 @@ public class GroovyScriptTransformerTestCase extends AbstractTransformerTestCase
 
     ScriptTransformer transformer = new ScriptTransformer();
     transformer.setName("ListToString");
+    transformer.setAnnotations(singletonMap(LOCATION_KEY, fromSingleComponent("flow")));
     transformer.setMuleContext(muleContext);
     transformer.setScript(script);
     transformer.initialise();
