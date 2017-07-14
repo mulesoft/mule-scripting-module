@@ -9,8 +9,6 @@ package org.mule.plugin.scripting.transformer;
 import org.mule.plugin.scripting.component.Scriptable;
 import org.mule.runtime.api.lifecycle.InitialisationException;
 import org.mule.runtime.core.api.Event;
-import org.mule.runtime.core.api.construct.FlowConstruct;
-import org.mule.runtime.core.api.construct.FlowConstructAware;
 import org.mule.runtime.core.api.lifecycle.LifecycleUtils;
 import org.mule.runtime.core.api.transformer.TransformerException;
 import org.mule.runtime.core.transformer.AbstractMessageTransformer;
@@ -26,11 +24,9 @@ import org.slf4j.LoggerFactory;
 /**
  * Runs a script to perform transformation on an object.
  */
-public class ScriptTransformer extends AbstractMessageTransformer implements FlowConstructAware {
+public class ScriptTransformer extends AbstractMessageTransformer {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ScriptTransformer.class);
-
-  private FlowConstruct flowConstruct;
 
   private Scriptable script;
 
@@ -49,7 +45,7 @@ public class ScriptTransformer extends AbstractMessageTransformer implements Flo
   @Override
   public Object transformMessage(Event event, Charset outputEncoding) throws TransformerException {
     Bindings bindings = script.getScriptEngine().createBindings();
-    script.populateBindings(bindings, flowConstruct, event, Event.builder(event));
+    script.populateBindings(bindings, getLocation(), event, Event.builder(event));
     try {
       return script.runScript(bindings);
     } catch (ScriptException e) {
@@ -65,10 +61,5 @@ public class ScriptTransformer extends AbstractMessageTransformer implements Flo
 
   public void setScript(Scriptable script) {
     this.script = script;
-  }
-
-  @Override
-  public void setFlowConstruct(FlowConstruct flowConstruct) {
-    this.flowConstruct = flowConstruct;
   }
 }

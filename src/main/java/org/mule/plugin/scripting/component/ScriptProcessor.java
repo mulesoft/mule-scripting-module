@@ -14,8 +14,6 @@ import org.mule.runtime.api.message.Message;
 import org.mule.runtime.core.api.DefaultMuleException;
 import org.mule.runtime.core.api.Event;
 import org.mule.runtime.core.api.MuleContext;
-import org.mule.runtime.core.api.construct.FlowConstruct;
-import org.mule.runtime.core.api.construct.FlowConstructAware;
 import org.mule.runtime.core.api.context.MuleContextAware;
 import org.mule.runtime.core.api.lifecycle.LifecycleUtils;
 import org.mule.runtime.core.api.processor.AbstractProcessor;
@@ -29,11 +27,10 @@ import org.slf4j.LoggerFactory;
  * A Script service backed by a JSR-223 compliant script engine such as Groovy, JavaScript, or Rhino.
  */
 public class ScriptProcessor extends AbstractProcessor
-    implements Initialisable, Disposable, MuleContextAware, FlowConstructAware {
+    implements Initialisable, Disposable, MuleContextAware {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ScriptProcessor.class);
 
-  private FlowConstruct flowConstruct;
   private MuleContext muleContext;
   private Scriptable script;
 
@@ -54,7 +51,7 @@ public class ScriptProcessor extends AbstractProcessor
     // Set up initial script variables.
     Bindings bindings = script.getScriptEngine().createBindings();
     putBindings(bindings);
-    script.populateBindings(bindings, flowConstruct, event, eventBuilder);
+    script.populateBindings(bindings, getLocation(), event, eventBuilder);
     try {
       final Object result = script.runScript(bindings);
       if (result instanceof Message) {
@@ -87,11 +84,6 @@ public class ScriptProcessor extends AbstractProcessor
   @Override
   public void setMuleContext(MuleContext context) {
     this.muleContext = context;
-  }
-
-  @Override
-  public void setFlowConstruct(FlowConstruct flowConstruct) {
-    this.flowConstruct = flowConstruct;
   }
 
 }
