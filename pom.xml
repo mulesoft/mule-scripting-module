@@ -22,7 +22,7 @@
         <rhinoJsr223Version>1.1</rhinoJsr223Version>
         <springVersion>4.1.9.RELEASE</springVersion>
         <groovyVersion>2.4.4</groovyVersion>
-        <mule.weave.version>2.0.0-BETA.3-SNAPSHOT</mule.weave.version>
+        <mule.weave.version>2.0.0-BETA.4</mule.weave.version>
         <mule.app.plugins.maven.plugin.version>1.0.0-BETA.x-SNAPSHOT</mule.app.plugins.maven.plugin.version>
     </properties>
 
