@@ -12,7 +12,6 @@ import static org.mule.runtime.core.api.config.i18n.CoreMessages.cannotLoadFromC
 import static org.mule.runtime.core.api.config.i18n.CoreMessages.propertiesNotSet;
 import static org.mule.runtime.core.api.util.IOUtils.getResourceAsStream;
 import static org.mule.runtime.core.api.util.StringUtils.isBlank;
-import static org.mule.runtime.dsl.api.component.config.ComponentLocationUtils.getFlowNameFrom;
 
 import org.mule.runtime.api.component.location.ComponentLocation;
 import org.mule.runtime.api.lifecycle.Initialisable;
@@ -204,7 +203,7 @@ public class Scriptable implements Initialisable, MuleContextAware {
     populateMessageBindings(bindings, event, eventBuilder);
 
     bindings.put(BINDING_EVENT, event);
-    bindings.put(BINDING_FLOW, getFlowNameFrom(location));
+    bindings.put(BINDING_FLOW, location.getRootContainerName());
   }
 
   protected void populateMessageBindings(Bindings bindings, Event event, Event.Builder eventBuilder) {
