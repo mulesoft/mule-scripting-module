@@ -8,22 +8,18 @@
     <flow name="greedy">
         <choice>
             <when expression="#[mel:flowVars['currency'] == 'USD']">
-                <processor-chain>
-                    <scripting:component>
-                        <scripting:script file="greedy.groovy">
-                            <scripting:property key="currency" value="USD"/>
-                        </scripting:script>
-                    </scripting:component>
-                </processor-chain>
+                <scripting:component>
+                    <scripting:script file="greedy.groovy">
+                        <scripting:property key="currency" value="USD"/>
+                    </scripting:script>
+                </scripting:component>
              </when>
             <when expression="#[mel:flowVars['currency'] == 'GBP']">
-                <processor-chain>
-                    <scripting:component>
-                        <scripting:script file="greedy.py">
-                            <scripting:property key="currency" value="GBP"/>
-                        </scripting:script>
-                    </scripting:component>
-                </processor-chain>
+                <scripting:component>
+                    <scripting:script file="greedy.py">
+                        <scripting:property key="currency" value="GBP"/>
+                    </scripting:script>
+                </scripting:component>
              </when>
         </choice>
     </flow>
