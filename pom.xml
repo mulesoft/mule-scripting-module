@@ -259,12 +259,6 @@
             <artifactId>mule-tests-functional</artifactId>
             <version>${mule.version}</version>
             <scope>test</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.mule.services</groupId>
-                    <artifactId>mule-service-weave</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
         <!--TODO: MULE-10837-->
         <dependency>
@@ -285,6 +279,12 @@
             <artifactId>mule-service-http-api</artifactId>
             <version>${mule.version}</version>
             <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mule.tests</groupId>
+            <artifactId>mule-tests-unit</artifactId>
+            <version>${mule.version}</version>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.mule.tests.plugin</groupId>

@@ -7,14 +7,14 @@
 
     <flow name="greedy">
         <choice>
-            <when expression="#[mel:flowVars['currency'] == 'USD']">
+            <when expression="#[vars.currency == 'USD']">
                 <scripting:component>
                     <scripting:script file="greedy.groovy">
                         <scripting:property key="currency" value="USD"/>
                     </scripting:script>
                 </scripting:component>
              </when>
-            <when expression="#[mel:flowVars['currency'] == 'GBP']">
+            <when expression="#[vars.currency == 'GBP']">
                 <scripting:component>
                     <scripting:script file="greedy.py">
                         <scripting:property key="currency" value="GBP"/>
