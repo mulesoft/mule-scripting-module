@@ -9,7 +9,7 @@ package org.mule.plugin.scripting.config;
 import org.mule.plugin.scripting.component.Scriptable;
 import org.mule.plugin.scripting.transformer.ScriptTransformer;
 import org.mule.runtime.config.spring.dsl.processor.TransformerConfigurator;
-import org.mule.runtime.core.transformer.AbstractTransformer;
+import org.mule.runtime.core.api.transformer.AbstractTransformer;
 
 import java.util.Map;
 
