@@ -6,17 +6,14 @@
  */
 package org.mule.plugin.scripting.component;
 
-import static java.lang.Thread.currentThread;
 import static java.util.stream.Collectors.toMap;
 import static org.mule.runtime.api.i18n.I18nMessageFactory.createStaticMessage;
 import static org.mule.runtime.core.api.config.i18n.CoreMessages.cannotLoadFromClasspath;
 import static org.mule.runtime.core.api.config.i18n.CoreMessages.propertiesNotSet;
-import static org.mule.runtime.core.api.util.ClassUtils.withContextClassLoader;
 import static org.mule.runtime.core.api.util.IOUtils.getResourceAsStream;
 import static org.mule.runtime.core.api.util.StringUtils.isBlank;
 
 import org.mule.runtime.api.component.location.ComponentLocation;
-import org.mule.runtime.api.exception.MuleRuntimeException;
 import org.mule.runtime.api.lifecycle.Initialisable;
 import org.mule.runtime.api.lifecycle.InitialisationException;
 import org.mule.runtime.api.message.Message;
@@ -105,85 +102,71 @@ public class Scriptable implements Initialisable, MuleContextAware {
 
   @Override
   public void initialise() throws InitialisationException {
-    // We use a composite classloader because the script engine is loaded by the plugin's implementation, but the script may
-    // reference classes or resources from the application, so it needs its classloader as well.
-    final ClassLoader scriptingLoader = this.getClass().getClassLoader();
-    final ClassLoader appLoader = currentThread().getContextClassLoader();
-    final CompositeClassLoader compositeLoader = new CompositeClassLoader(scriptingLoader, appLoader);
+    scriptEngineManager = new ScriptEngineManager(this.getClass().getClassLoader());
 
-    try {
-      withContextClassLoader(compositeLoader, () -> {
-        scriptEngineManager = new ScriptEngineManager(compositeLoader);
-
-        // Create scripting engine
-        if (scriptEngineName != null) {
-          scriptEngine = createScriptEngineByName(scriptEngineName);
-          if (scriptEngine == null) {
-            throw new MuleRuntimeException(createStaticMessage("Scripting engine '" + scriptEngineName
-                + "' not found.  Available engines are: " + listAvailableEngines()));
-          }
+    // Create scripting engine
+    if (scriptEngineName != null) {
+      scriptEngine = createScriptEngineByName(scriptEngineName);
+      if (scriptEngine == null) {
+        throw new InitialisationException(createStaticMessage("Scripting engine '" + scriptEngineName
+            + "' not found.  Available engines are: " + listAvailableEngines()), this);
+      }
+    }
+    // Determine scripting engine to use by file extension
+    else if (scriptFile != null) {
+      int i = scriptFile.lastIndexOf(".");
+      if (i > -1) {
+        logger.info("Script Engine name not set. Guessing by file extension.");
+        String extension = scriptFile.substring(i + 1);
+        scriptEngine = createScriptEngineByExtension(extension);
+        if (scriptEngine == null) {
+          throw new InitialisationException(createStaticMessage("File extension '" + extension
+              + "' does not map to a scripting engine.  Available engines are: " + listAvailableEngines()), this);
+        } else {
+          setScriptEngineName(extension);
         }
-        // Determine scripting engine to use by file extension
-        else if (scriptFile != null) {
-          int i = scriptFile.lastIndexOf(".");
-          if (i > -1) {
-            logger.info("Script Engine name not set. Guessing by file extension.");
-            String extension = scriptFile.substring(i + 1);
-            scriptEngine = createScriptEngineByExtension(extension);
-            if (scriptEngine == null) {
-              throw new MuleRuntimeException(createStaticMessage("File extension '" + extension
-                  + "' does not map to a scripting engine.  Available engines are: " + listAvailableEngines()));
-            } else {
-              setScriptEngineName(extension);
-            }
-          }
-        }
-        Reader script = null;
-        try {
-          // Load script from variable
-          if (!isBlank(scriptText)) {
-            script = new StringReader(scriptText);
-          }
-          // Load script from file
-          else if (scriptFile != null) {
-            InputStream is = appLoader.getResourceAsStream(scriptFile);
-            if (is == null) {
-              try {
-                is = getResourceAsStream(scriptFile, getClass());
-              } catch (IOException e) {
-                throw new MuleRuntimeException(cannotLoadFromClasspath(scriptFile), e);
-              }
-            }
-            if (is == null) {
-              throw new MuleRuntimeException(cannotLoadFromClasspath(scriptFile));
-            }
-            script = new InputStreamReader(is);
-          } else {
-            throw new MuleRuntimeException(propertiesNotSet("scriptText, scriptFile"));
-          }
-
-          // Pre-compile script if scripting engine supports compilation.
-          if (scriptEngine instanceof Compilable) {
-            try {
-              compiledScript = ((Compilable) scriptEngine).compile(script);
-            } catch (ScriptException e) {
-              throw new MuleRuntimeException(e);
-            }
-          }
-        } finally {
-          if (script != null) {
-            try {
-              script.close();
-            } catch (IOException e) {
-              throw new MuleRuntimeException(e);
-            }
-          }
-        }
-      });
-    } catch (MuleRuntimeException e) {
-      throw new InitialisationException(e, this);
+      }
     }
 
+    Reader script = null;
+    try {
+      // Load script from variable
+      if (!isBlank(scriptText)) {
+        script = new StringReader(scriptText);
+      }
+      // Load script from file
+      else if (scriptFile != null) {
+        InputStream is;
+        try {
+          is = getResourceAsStream(scriptFile, getClass());
+        } catch (IOException e) {
+          throw new InitialisationException(cannotLoadFromClasspath(scriptFile), e, this);
+        }
+        if (is == null) {
+          throw new InitialisationException(cannotLoadFromClasspath(scriptFile), this);
+        }
+        script = new InputStreamReader(is);
+      } else {
+        throw new InitialisationException(propertiesNotSet("scriptText, scriptFile"), this);
+      }
+
+      // Pre-compile script if scripting engine supports compilation.
+      if (scriptEngine instanceof Compilable) {
+        try {
+          compiledScript = ((Compilable) scriptEngine).compile(script);
+        } catch (ScriptException e) {
+          throw new InitialisationException(e, this);
+        }
+      }
+    } finally {
+      if (script != null) {
+        try {
+          script.close();
+        } catch (IOException e) {
+          throw new InitialisationException(e, this);
+        }
+      }
+    }
   }
 
   protected void populatePropertyBindings(Bindings bindings) {
