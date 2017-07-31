@@ -6,6 +6,12 @@
  */
 package org.mule.test.plugin.scripting;
 
+import static org.hamcrest.Matchers.instanceOf;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
+
+import org.mule.tck.testmodels.fruit.Apple;
+
 import org.junit.Test;
 
 public class GroovyScriptFlowFunctionalTestCase extends GroovyScriptServiceFunctionalTestCase {
@@ -49,6 +55,15 @@ public class GroovyScriptFlowFunctionalTestCase extends GroovyScriptServiceFunct
   public void scriptExpressionVariables() throws Exception {
     flowRunner("scriptExpressionVariables").withPayload("").withVariable("prop1", "Received")
         .withVariable("prop2", "A-OK").run();
+  }
+
+  @Test
+  public void scriptReferencesAppClass() throws Exception {
+    final Object value = flowRunner("scriptReferencesAppClass").withPayload("").run().getMessage().getPayload().getValue();
+
+    assertThat(value, instanceOf(Apple.class));
+    assertThat(value.getClass().getClassLoader().getClass().getName(),
+               is("org.mule.runtime.deployment.model.internal.application.MuleApplicationClassLoader"));
   }
 
   @Override

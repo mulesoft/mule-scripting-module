@@ -48,7 +48,7 @@
                 vars['foo'] = 'bar-mutated'
              </script:script>
         </script:component>
-        <test:assert expression="#[mel:flowVars.foo == 'bar-mutated']"/>
+        <test:assert expression="#[vars.foo == 'bar-mutated']"/>
     </flow>
     
     <flow name="inlineScriptAddVariable">
@@ -57,7 +57,7 @@
                 vars['foo'] = 'bar'
              </script:script>
         </script:component>
-        <test:assert expression="#[mel:flowVars.foo == 'bar']"/>
+        <test:assert expression="#[vars.foo == 'bar']"/>
     </flow>
 
     <flow name="inlineScriptMutateVariablesMap">
@@ -66,7 +66,7 @@
                 vars = new HashMap()              
              </script:script>
         </script:component>
-        <test:assert expression="#[mel:flowVars.foo == 'bar']"/>
+        <test:assert expression="#[vars.foo == 'bar']"/>
         <test:assert expression="#[mel:payload is HashMap]"/>
     </flow>
 
@@ -76,20 +76,30 @@
                 payload = 'bar-mutated'               
              </script:script>
         </script:component>
-        <test:assert expression="#[mel:payload == 'bar-mutated']"/>
+        <test:assert expression="#[payload == 'bar-mutated']"/>
     </flow>
     
     <flow name="scriptExpressionVariables">
         <script:component>
             <script:script engine="groovy">
-                <script:property key="expr1" value="#[mel:flowVars.prop1]"/>
-                <script:property key="expr2" value="#[mel:flowVars.prop2]"/>
+                <script:property key="expr1" value="#[vars.prop1]"/>
+                <script:property key="expr2" value="#[vars.prop2]"/>
                 <script:text>
                         payload = expr1 + expr2
                 </script:text>
             </script:script>
         </script:component>
-        <test:assert expression="#[mel:payload == 'ReceivedA-OK']"/>
+        <test:assert expression="#[payload == 'ReceivedA-OK']"/>
+    </flow>
+    
+    <flow name="scriptReferencesAppClass">
+        <script:component>
+            <script:script engine="groovy">
+                <script:text>
+                    payload = new org.mule.tck.testmodels.fruit.Apple()
+                </script:text>
+            </script:script>
+        </script:component>
     </flow>
     
 </mule>
