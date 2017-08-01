@@ -57,7 +57,7 @@ public class ScriptProcessor extends AbstractProcessor
       if (result instanceof Message) {
         eventBuilder.message((Message) result);
       } else {
-        eventBuilder.message(Message.builder(event.getMessage()).payload(result).build());
+        eventBuilder.message(Message.builder(event.getMessage()).value(result).build());
       }
     } catch (Exception e) {
       // leave this catch block in place to help debug classloading issues
