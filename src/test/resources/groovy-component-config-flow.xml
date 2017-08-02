@@ -10,6 +10,24 @@
        http://www.mulesoft.org/schema/mule/scripting http://www.mulesoft.org/schema/mule/scripting/current/mule-scripting.xsd
        http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd">
 
+    <script:component name="stringReplace">
+        <script:script engine="groovy">
+            return src.toString().replaceAll("l", "x")
+        </script:script>
+    </script:component>
+
+    <!--// START SNIPPET: transformer-config -->
+    <script:component name="stringReplaceWithParams">
+        <script:script engine="groovy">
+            <script:property key="oldStr" value="l" />
+            <script:property key="newStr" value="x" />
+            <script:text>
+                return payload.toString().replaceAll("$oldStr", "$newStr")
+            </script:text>
+        </script:script>
+    </script:component>
+    <!--// END SNIPPET: transformer-config -->
+
     <flow name="inlineScriptMutateProperty">
         <script:component>
             <script:script engine="groovy"><![CDATA[
@@ -102,5 +120,15 @@
         </script:component>
     </flow>
     
+    <flow name="referencedScriptFlow">
+        <processor ref="stringReplace" />
+        <test:queue name="referencedScriptTestOut"/>
+    </flow>
+
+    <flow name="referencedScriptWithParametersFlow">
+        <processor ref="stringReplaceWithParams" />
+        <test:queue name="referencedScriptWithParametersTestOut"/>
+    </flow>
+
 </mule>
 

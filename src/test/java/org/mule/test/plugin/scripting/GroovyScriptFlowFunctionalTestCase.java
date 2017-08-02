@@ -8,8 +8,12 @@ package org.mule.test.plugin.scripting;
 
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
 
+import org.mule.runtime.api.message.Message;
+import org.mule.runtime.core.api.client.MuleClient;
 import org.mule.tck.testmodels.fruit.Apple;
 
 import org.junit.Test;
@@ -64,6 +68,25 @@ public class GroovyScriptFlowFunctionalTestCase extends GroovyScriptServiceFunct
     assertThat(value, instanceOf(Apple.class));
     assertThat(value.getClass().getClassLoader().getClass().getName(),
                is("org.mule.runtime.deployment.model.internal.application.MuleApplicationClassLoader"));
+  }
+
+  @Test
+  public void testReferencedTransformer() throws Exception {
+    MuleClient client = muleContext.getClient();
+    flowRunner("referencedScriptFlow").withPayload("hello").run();
+    Message response = client.request("test://referencedScriptTestOut", RECEIVE_TIMEOUT).getRight().get();
+    assertThat(response, not(nullValue()));
+    assertThat(response.getPayload().getValue(), is("hexxo"));
+  }
+
+  @Test
+  public void testReferencedScriptWithParameters() throws Exception {
+    MuleClient client = muleContext.getClient();
+    flowRunner("referencedScriptWithParametersFlow").withPayload("hello").run();
+    Message response =
+        client.request("test://referencedScriptWithParametersTestOut", RECEIVE_TIMEOUT).getRight().get();
+    assertThat(response, not(nullValue()));
+    assertThat(response.getPayload().getValue(), is("hexxo"));
   }
 
   @Override
