@@ -39,7 +39,7 @@
         </xsd:appinfo>
     </xsd:annotation>
 
-    <xsd:element name="component" type="scriptComponentType" substitutionGroup="mule:abstract-message-processor">
+    <xsd:element name="component" type="scriptComponentType" substitutionGroup="mule:top-level-processor">
         <xsd:annotation>
             <xsd:documentation>
                 Defines a script component backed by a JSR-223 compliant script engine such as Groovy, JavaScript, or Ruby. Scripting allows you to either directly embed your script inside the XML config or reference a script using Spring's dynamic language support: http://static.springframework.org/spring/docs/2.5.x/reference/dynamic-language.html.
@@ -60,7 +60,7 @@
     </xsd:element>
     <xsd:complexType name="scriptComponentType">
         <xsd:complexContent>
-            <xsd:extension base="mule:abstractMessageProcessorType">
+            <xsd:extension base="mule:topLevelProcessorType">
                 <xsd:sequence>
                     <xsd:element name="script" type="scriptType" minOccurs="0">
                         <xsd:annotation>
@@ -181,32 +181,4 @@
         </xsd:complexContent>
     </xsd:complexType>
 
-    <xsd:element name="transformer" type="scriptTransformerType" substitutionGroup="mule:abstract-transformer">
-        <xsd:annotation>
-            <xsd:documentation>
-                Runs a script to perform transformation on the current message. 
-            </xsd:documentation>
-            <xsd:appinfo>
-                <schemadoc:snippet id="transformer-config"
-                                   sourcePath="modules/scripting/src/test/resources/groovy-transformer-config.xml"
-                                   lang="xml"/>
-            </xsd:appinfo>
-        </xsd:annotation>
-    </xsd:element>
-    <xsd:complexType name="scriptTransformerType">
-        <xsd:complexContent>
-            <xsd:extension base="mule:abstractTransformerType">
-                <xsd:sequence>
-                    <xsd:element name="script" type="scriptType">
-                        <xsd:annotation>
-                            <xsd:documentation>
-                                A script to be executed by a JSR-223 compliant script engine such as Groovy, JavaScript(Rhino), Python, Ruby, or Beanshell.
-                            </xsd:documentation>
-                        </xsd:annotation>
-                    </xsd:element>
-                </xsd:sequence>
-            </xsd:extension>
-        </xsd:complexContent>
-    </xsd:complexType>
-    
 </xsd:schema>

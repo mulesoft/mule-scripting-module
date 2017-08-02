@@ -50,7 +50,6 @@ public class ScriptProcessor extends AbstractProcessor
 
     // Set up initial script variables.
     Bindings bindings = script.getScriptEngine().createBindings();
-    putBindings(bindings);
     script.populateBindings(bindings, getLocation(), event, eventBuilder);
     try {
       final Object result = script.runScript(bindings);
@@ -67,10 +66,6 @@ public class ScriptProcessor extends AbstractProcessor
     }
 
     return eventBuilder.build();
-  }
-
-  protected void putBindings(Bindings bindings) {
-    // template method
   }
 
   public Scriptable getScript() {

@@ -6,7 +6,6 @@
  */
 package org.mule.plugin.scripting.component;
 
-import static java.util.stream.Collectors.toMap;
 import static org.mule.runtime.api.i18n.I18nMessageFactory.createStaticMessage;
 import static org.mule.runtime.core.api.config.i18n.CoreMessages.cannotLoadFromClasspath;
 import static org.mule.runtime.core.api.config.i18n.CoreMessages.propertiesNotSet;
@@ -166,12 +165,6 @@ public class Scriptable implements Initialisable, MuleContextAware {
           throw new InitialisationException(e, this);
         }
       }
-    }
-  }
-
-  protected void populatePropertyBindings(Bindings bindings) {
-    if (properties != null) {
-      bindings.putAll(properties.stream().collect(toMap(ScriptingProperty::getKey, ScriptingProperty::getValue)));
     }
   }
 
