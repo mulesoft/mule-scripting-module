@@ -27,13 +27,9 @@
 
                 ||Name||Description||
                 |log|a logger that can be used to write to Mule's log file.|
-                |muleContext|a reference to the MuleContext object.|
-                |event| A reference to the event.
                 |message|the current message.|
                 |payload|the transformed payload of the current message if a transformer is configured on the service. Otherwise this is the same value as _originalPayload_.|
-                |src|same as _payload_, kept for backward compatability.|
-                |service|a reference to the current service object.|
-                |id|the current event id.|
+                |correlationId|the current event correlation id.|
                 |result|a placeholder object where the result of the script can be written to. Usually it's better to just return a value from the script unless the script method doesn't have a return value.|
             </schemadoc:additional-documentation>
         </xsd:appinfo>
@@ -106,10 +102,6 @@
                         <td>a logger that can be used to write to Mule's log file.</td>
                     </tr>
                     <tr>
-                        <td>muleContext</td>
-                        <td>a reference to the MuleContext object.</td>
-                    </tr>
-                    <tr>
                         <td>message</td>
                         <td>the current message.</td>
                     </tr>
@@ -121,12 +113,8 @@
                         </td>
                     </tr>
                     <tr>
-                        <td>service</td>
-                        <td>a reference to the current service object.</td>
-                    </tr>
-                    <tr>
-                        <td>id</td>
-                        <td>the current event id.</td>
+                        <td>correlationId</td>
+                        <td>the current event correlation id.</td>
                     </tr>
                     <tr>
                         <td>result</td>

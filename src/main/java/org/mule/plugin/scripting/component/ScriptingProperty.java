@@ -9,7 +9,7 @@ package org.mule.plugin.scripting.component;
 /**
  * Representation of a scripting binding.
  *
- * @since 4.0
+ * @since 1.0
  */
 public class ScriptingProperty {
 

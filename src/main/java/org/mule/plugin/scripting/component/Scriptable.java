@@ -6,18 +6,24 @@
  */
 package org.mule.plugin.scripting.component;
 
+import static org.mule.runtime.api.el.BindingContextUtils.FLOW;
+import static org.mule.runtime.api.el.BindingContextUtils.NULL_BINDING_CONTEXT;
+import static org.mule.runtime.api.el.BindingContextUtils.VARS;
+import static org.mule.runtime.api.el.BindingContextUtils.addEventBindings;
 import static org.mule.runtime.api.i18n.I18nMessageFactory.createStaticMessage;
 import static org.mule.runtime.core.api.config.i18n.CoreMessages.cannotLoadFromClasspath;
 import static org.mule.runtime.core.api.config.i18n.CoreMessages.propertiesNotSet;
 import static org.mule.runtime.core.api.util.IOUtils.getResourceAsStream;
 import static org.mule.runtime.core.api.util.StringUtils.isBlank;
+import static org.slf4j.LoggerFactory.getLogger;
+
 import org.mule.runtime.api.component.location.ComponentLocation;
+import org.mule.runtime.api.el.Binding;
 import org.mule.runtime.api.lifecycle.Initialisable;
 import org.mule.runtime.api.lifecycle.InitialisationException;
-import org.mule.runtime.api.message.Message;
 import org.mule.runtime.core.api.InternalEvent;
 import org.mule.runtime.core.api.MuleContext;
-import org.mule.runtime.core.api.context.MuleContextAware;
+import org.mule.runtime.core.api.el.ExtendedExpressionManager;
 import org.mule.runtime.core.api.util.CollectionUtils;
 import org.mule.runtime.core.el.context.EventVariablesMapContext;
 import org.mule.runtime.core.el.context.SessionVariableMapContext;
@@ -29,6 +35,7 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.util.List;
 
+import javax.inject.Inject;
 import javax.script.Bindings;
 import javax.script.Compilable;
 import javax.script.CompiledScript;
@@ -37,27 +44,25 @@ import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * A JSR 223 Script service. Allows any JSR 223 compliant script engines such as JavaScript, Groovy or Rhino to be embedded as
  * Mule components.
+ * 
+ * @since 1.0
  */
-public class Scriptable implements Initialisable, MuleContextAware {
+public class Scriptable implements Initialisable {
+
+  private static final Logger LOGGER = getLogger(Scriptable.class);
 
   private static final String BINDING_LOG = "log";
   private static final String BINDING_RESULT = "result";
-  private static final String BINDING_MULE_CONTEXT = "muleContext";
-  private static final String BINDING_REGISTRY = "registry";
-  private static final String BINDING_PAYLOAD = "payload";
-  private static final String BINDING_SRC = "src";
-  private static final String BINDING_EVENT = "event";
-  private static final String BINDING_ID = "id";
-  private static final String BINDING_FLOW = "flow";
-  private static final String BINDING_VARS = "vars";
   private static final String BINDING_SESSION_VARS = "sessionVars";
-  private static final String BINDING_EXCEPTION = "exception";
-  public static final String BINDING_MESSAGE = "message";
+  private static final String BINDING_MESSAGE = "message";
+
+  // TODO MULE-9690 Remove this binding. An object with this key would be available from the registry when the MuleClient is moved
+  // to compatibility.
+  private static final String BINDING_MULE_CLIENT = "_muleClient";
 
   /** The actual body of the script */
   private String scriptText;
@@ -81,22 +86,11 @@ public class Scriptable implements Initialisable, MuleContextAware {
   private ScriptEngine scriptEngine;
   private ScriptEngineManager scriptEngineManager;
 
+  @Inject
+  private ExtendedExpressionManager expressionManager;
+
+  @Inject
   private MuleContext muleContext;
-
-  protected transient Logger logger = LoggerFactory.getLogger(getClass());
-
-  public Scriptable() {
-    // For Spring
-  }
-
-  public Scriptable(MuleContext muleContext) {
-    this.muleContext = muleContext;
-  }
-
-  @Override
-  public void setMuleContext(MuleContext context) {
-    this.muleContext = context;
-  }
 
   @Override
   public void initialise() throws InitialisationException {
@@ -114,7 +108,7 @@ public class Scriptable implements Initialisable, MuleContextAware {
     else if (scriptFile != null) {
       int i = scriptFile.lastIndexOf(".");
       if (i > -1) {
-        logger.info("Script Engine name not set. Guessing by file extension.");
+        LOGGER.info("Script Engine name not set. Guessing by file extension.");
         String extension = scriptFile.substring(i + 1);
         scriptEngine = createScriptEngineByExtension(extension);
         if (scriptEngine == null) {
@@ -171,8 +165,8 @@ public class Scriptable implements Initialisable, MuleContextAware {
     if (properties != null) {
       for (ScriptingProperty property : properties) {
         String value = (String) property.getValue();
-        if (muleContext.getExpressionManager().isExpression(value)) {
-          bindings.put(property.getKey(), muleContext.getExpressionManager().parse(value, event, location));
+        if (expressionManager.isExpression(value)) {
+          bindings.put(property.getKey(), expressionManager.evaluate(value, event, location).getValue());
         } else {
           bindings.put(property.getKey(), value);
         }
@@ -181,59 +175,29 @@ public class Scriptable implements Initialisable, MuleContextAware {
   }
 
   public void populateDefaultBindings(Bindings bindings) {
-    bindings.put(BINDING_LOG, logger);
+    bindings.put(BINDING_LOG, LOGGER);
     // A place holder for a returned result if the script doesn't return a result.
     // The script can overwrite this binding
     bindings.put(BINDING_RESULT, null);
-    bindings.put(BINDING_MULE_CONTEXT, muleContext);
-    bindings.put(BINDING_REGISTRY, muleContext.getRegistry());
   }
 
   public void populateBindings(Bindings bindings, String rootContainerName, ComponentLocation location, InternalEvent event,
                                InternalEvent.Builder eventBuilder) {
-    populatePropertyBindings(bindings, event, location);
-    populateDefaultBindings(bindings);
-    populateMessageBindings(bindings, event, eventBuilder);
-
-    bindings.put(BINDING_EVENT, event);
-    bindings.put(BINDING_FLOW, rootContainerName);
-  }
-
-  protected void populateMessageBindings(Bindings bindings, InternalEvent event, InternalEvent.Builder eventBuilder) {
-    Message message = event.getMessage();
-
-    populateVariablesInOrder(bindings, event);
-
     // TODO MULE-10121 Provide a MessageBuilder API in scripting components to improve usability
     bindings.put(BINDING_MESSAGE, event.getMessage());
-    // This will get overwritten if populateBindings(Bindings bindings, MuleEvent event) is called
-    // and not this method directly.
-    bindings.put(BINDING_PAYLOAD, message.getPayload().getValue());
-    // For backward compatibility
-    bindings.put(BINDING_SRC, message.getPayload().getValue());
-
-    populateHeadersVariablesAndException(bindings, event, eventBuilder);
-  }
-
-  private void populateHeadersVariablesAndException(Bindings bindings, InternalEvent event, InternalEvent.Builder eventBuilder) {
-    bindings.put(BINDING_VARS, new EventVariablesMapContext(event, eventBuilder));
+    for (Binding binding : addEventBindings(event, NULL_BINDING_CONTEXT).bindings()) {
+      bindings.put(binding.identifier(), binding.value().getValue());
+    }
+    bindings.put(VARS, new EventVariablesMapContext(event, eventBuilder));
     bindings.put(BINDING_SESSION_VARS, new SessionVariableMapContext(event.getSession()));
+    bindings.put(FLOW, location.getRootContainerName());
 
-    // Only add exception is present
-    if (event.getError().isPresent()) {
-      bindings.put(BINDING_EXCEPTION, event.getError().get().getCause());
-    } else {
-      bindings.put(BINDING_EXCEPTION, null);
-    }
-  }
+    populatePropertyBindings(bindings, event, location);
+    populateDefaultBindings(bindings);
 
-  private void populateVariablesInOrder(Bindings bindings, InternalEvent event) {
-    for (String key : event.getSession().getPropertyNamesAsSet()) {
-      bindings.put(key, event.getSession().getProperty(key));
-    }
-    for (String key : event.getVariables().keySet()) {
-      bindings.put(key, event.getVariables().get(key).getValue());
-    }
+    // TODO MULE-9690 Remove this binding. An object with this key would be available from the registry when the MuleClient is
+    // moved to compatibility.
+    bindings.put(BINDING_MULE_CLIENT, muleContext.getClient());
   }
 
   public Object runScript(Bindings bindings) throws ScriptException {
