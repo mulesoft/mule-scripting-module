@@ -50,7 +50,7 @@ public class ScriptProcessor extends AbstractProcessor
 
     // Set up initial script variables.
     Bindings bindings = script.getScriptEngine().createBindings();
-    script.populateBindings(bindings, getLocation(), event, eventBuilder);
+    script.populateBindings(bindings, getRootContainerName(), getLocation(), event, eventBuilder);
     try {
       final Object result = script.runScript(bindings);
       if (result instanceof Message) {

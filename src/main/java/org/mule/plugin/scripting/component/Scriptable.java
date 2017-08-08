@@ -54,7 +54,7 @@ public class Scriptable implements Initialisable, MuleContextAware {
   private static final String BINDING_SRC = "src";
   private static final String BINDING_EVENT = "event";
   private static final String BINDING_ID = "id";
-  private static final String BINDING_FLOW = "flow";
+  private static final String BINDING_ROOT_CONTAINER = "rootContainer";
   private static final String BINDING_VARS = "vars";
   private static final String BINDING_SESSION_VARS = "sessionVars";
   private static final String BINDING_EXCEPTION = "exception";
@@ -190,13 +190,14 @@ public class Scriptable implements Initialisable, MuleContextAware {
     bindings.put(BINDING_REGISTRY, muleContext.getRegistry());
   }
 
-  public void populateBindings(Bindings bindings, ComponentLocation location, Event event, Event.Builder eventBuilder) {
+  public void populateBindings(Bindings bindings, String rootContainerName, ComponentLocation location, Event event,
+                               Event.Builder eventBuilder) {
     populatePropertyBindings(bindings, event, location);
     populateDefaultBindings(bindings);
     populateMessageBindings(bindings, event, eventBuilder);
 
     bindings.put(BINDING_EVENT, event);
-    bindings.put(BINDING_FLOW, location.getRootContainerName());
+    bindings.put(BINDING_ROOT_CONTAINER, rootContainerName);
   }
 
   protected void populateMessageBindings(Bindings bindings, Event event, Event.Builder eventBuilder) {
@@ -231,8 +232,8 @@ public class Scriptable implements Initialisable, MuleContextAware {
     for (String key : event.getSession().getPropertyNamesAsSet()) {
       bindings.put(key, event.getSession().getProperty(key));
     }
-    for (String key : event.getVariableNames()) {
-      bindings.put(key, event.getVariable(key).getValue());
+    for (String key : event.getVariables().keySet()) {
+      bindings.put(key, event.getVariables().get(key).getValue());
     }
   }
 
