@@ -58,7 +58,6 @@ public class Scriptable implements Initialisable {
   private static final String BINDING_LOG = "log";
   private static final String BINDING_RESULT = "result";
   private static final String BINDING_SESSION_VARS = "sessionVars";
-  private static final String BINDING_MESSAGE = "message";
 
   // TODO MULE-9690 Remove this binding. An object with this key would be available from the registry when the MuleClient is moved
   // to compatibility.
@@ -184,7 +183,6 @@ public class Scriptable implements Initialisable {
   public void populateBindings(Bindings bindings, String rootContainerName, ComponentLocation location, InternalEvent event,
                                InternalEvent.Builder eventBuilder) {
     // TODO MULE-10121 Provide a MessageBuilder API in scripting components to improve usability
-    bindings.put(BINDING_MESSAGE, event.getMessage());
     for (Binding binding : addEventBindings(event, NULL_BINDING_CONTEXT).bindings()) {
       bindings.put(binding.identifier(), binding.value().getValue());
     }
