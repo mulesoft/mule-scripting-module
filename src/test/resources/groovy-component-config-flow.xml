@@ -12,7 +12,7 @@
 
     <script:component name="stringReplace">
         <script:script engine="groovy">
-            return src.toString().replaceAll("l", "x")
+            return payload.toString().replaceAll("l", "x")
         </script:script>
     </script:component>
 
