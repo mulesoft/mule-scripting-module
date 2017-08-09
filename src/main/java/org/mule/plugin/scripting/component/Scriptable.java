@@ -11,12 +11,11 @@ import static org.mule.runtime.core.api.config.i18n.CoreMessages.cannotLoadFromC
 import static org.mule.runtime.core.api.config.i18n.CoreMessages.propertiesNotSet;
 import static org.mule.runtime.core.api.util.IOUtils.getResourceAsStream;
 import static org.mule.runtime.core.api.util.StringUtils.isBlank;
-
 import org.mule.runtime.api.component.location.ComponentLocation;
 import org.mule.runtime.api.lifecycle.Initialisable;
 import org.mule.runtime.api.lifecycle.InitialisationException;
 import org.mule.runtime.api.message.Message;
-import org.mule.runtime.core.api.Event;
+import org.mule.runtime.core.api.InternalEvent;
 import org.mule.runtime.core.api.MuleContext;
 import org.mule.runtime.core.api.context.MuleContextAware;
 import org.mule.runtime.core.api.util.CollectionUtils;
@@ -54,7 +53,7 @@ public class Scriptable implements Initialisable, MuleContextAware {
   private static final String BINDING_SRC = "src";
   private static final String BINDING_EVENT = "event";
   private static final String BINDING_ID = "id";
-  private static final String BINDING_ROOT_CONTAINER = "rootContainer";
+  private static final String BINDING_FLOW = "flow";
   private static final String BINDING_VARS = "vars";
   private static final String BINDING_SESSION_VARS = "sessionVars";
   private static final String BINDING_EXCEPTION = "exception";
@@ -168,7 +167,7 @@ public class Scriptable implements Initialisable, MuleContextAware {
     }
   }
 
-  protected void populatePropertyBindings(Bindings bindings, Event event, ComponentLocation location) {
+  protected void populatePropertyBindings(Bindings bindings, InternalEvent event, ComponentLocation location) {
     if (properties != null) {
       for (ScriptingProperty property : properties) {
         String value = (String) property.getValue();
@@ -190,17 +189,17 @@ public class Scriptable implements Initialisable, MuleContextAware {
     bindings.put(BINDING_REGISTRY, muleContext.getRegistry());
   }
 
-  public void populateBindings(Bindings bindings, String rootContainerName, ComponentLocation location, Event event,
-                               Event.Builder eventBuilder) {
+  public void populateBindings(Bindings bindings, String rootContainerName, ComponentLocation location, InternalEvent event,
+                               InternalEvent.Builder eventBuilder) {
     populatePropertyBindings(bindings, event, location);
     populateDefaultBindings(bindings);
     populateMessageBindings(bindings, event, eventBuilder);
 
     bindings.put(BINDING_EVENT, event);
-    bindings.put(BINDING_ROOT_CONTAINER, rootContainerName);
+    bindings.put(BINDING_FLOW, rootContainerName);
   }
 
-  protected void populateMessageBindings(Bindings bindings, Event event, Event.Builder eventBuilder) {
+  protected void populateMessageBindings(Bindings bindings, InternalEvent event, InternalEvent.Builder eventBuilder) {
     Message message = event.getMessage();
 
     populateVariablesInOrder(bindings, event);
@@ -216,7 +215,7 @@ public class Scriptable implements Initialisable, MuleContextAware {
     populateHeadersVariablesAndException(bindings, event, eventBuilder);
   }
 
-  private void populateHeadersVariablesAndException(Bindings bindings, Event event, Event.Builder eventBuilder) {
+  private void populateHeadersVariablesAndException(Bindings bindings, InternalEvent event, InternalEvent.Builder eventBuilder) {
     bindings.put(BINDING_VARS, new EventVariablesMapContext(event, eventBuilder));
     bindings.put(BINDING_SESSION_VARS, new SessionVariableMapContext(event.getSession()));
 
@@ -228,7 +227,7 @@ public class Scriptable implements Initialisable, MuleContextAware {
     }
   }
 
-  private void populateVariablesInOrder(Bindings bindings, Event event) {
+  private void populateVariablesInOrder(Bindings bindings, InternalEvent event) {
     for (String key : event.getSession().getPropertyNamesAsSet()) {
       bindings.put(key, event.getSession().getProperty(key));
     }

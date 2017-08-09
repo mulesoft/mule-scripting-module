@@ -12,7 +12,7 @@ import org.mule.runtime.api.lifecycle.Initialisable;
 import org.mule.runtime.api.lifecycle.InitialisationException;
 import org.mule.runtime.api.message.Message;
 import org.mule.runtime.core.api.DefaultMuleException;
-import org.mule.runtime.core.api.Event;
+import org.mule.runtime.core.api.InternalEvent;
 import org.mule.runtime.core.api.MuleContext;
 import org.mule.runtime.core.api.context.MuleContextAware;
 import org.mule.runtime.core.api.lifecycle.LifecycleUtils;
@@ -45,8 +45,8 @@ public class ScriptProcessor extends AbstractProcessor
   }
 
   @Override
-  public Event process(Event event) throws MuleException {
-    Event.Builder eventBuilder = Event.builder(event);
+  public InternalEvent process(InternalEvent event) throws MuleException {
+    InternalEvent.Builder eventBuilder = InternalEvent.builder(event);
 
     // Set up initial script variables.
     Bindings bindings = script.getScriptEngine().createBindings();
