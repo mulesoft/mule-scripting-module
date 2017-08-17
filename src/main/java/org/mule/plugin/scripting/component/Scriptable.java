@@ -21,12 +21,15 @@ import org.mule.runtime.api.component.location.ComponentLocation;
 import org.mule.runtime.api.el.Binding;
 import org.mule.runtime.api.lifecycle.Initialisable;
 import org.mule.runtime.api.lifecycle.InitialisationException;
+import org.mule.runtime.api.meta.AbstractAnnotatedObject;
 import org.mule.runtime.core.api.InternalEvent;
 import org.mule.runtime.core.api.MuleContext;
 import org.mule.runtime.core.api.el.ExtendedExpressionManager;
 import org.mule.runtime.core.api.util.CollectionUtils;
 import org.mule.runtime.core.el.context.EventVariablesMapContext;
 import org.mule.runtime.core.el.context.SessionVariableMapContext;
+
+import org.slf4j.Logger;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -43,15 +46,13 @@ import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 
-import org.slf4j.Logger;
-
 /**
  * A JSR 223 Script service. Allows any JSR 223 compliant script engines such as JavaScript, Groovy or Rhino to be embedded as
  * Mule components.
- * 
+ *
  * @since 1.0
  */
-public class Scriptable implements Initialisable {
+public class Scriptable extends AbstractAnnotatedObject implements Initialisable {
 
   private static final Logger LOGGER = getLogger(Scriptable.class);
 
