@@ -28,8 +28,8 @@ import org.mule.runtime.core.api.el.ExtendedExpressionManager;
 import org.mule.runtime.core.api.util.CollectionUtils;
 import org.mule.runtime.core.el.context.EventVariablesMapContext;
 import org.mule.runtime.core.el.context.SessionVariableMapContext;
-
-import org.slf4j.Logger;
+import org.mule.runtime.extension.api.annotation.param.Optional;
+import org.mule.runtime.extension.api.annotation.param.Parameter;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -46,15 +46,17 @@ import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 
+import org.slf4j.Logger;
+
 /**
  * A JSR 223 Script service. Allows any JSR 223 compliant script engines such as JavaScript, Groovy or Rhino to be embedded as
  * Mule components.
  *
  * @since 1.0
  */
-public class Scriptable extends AbstractAnnotatedObject implements Initialisable {
+public class Script extends AbstractAnnotatedObject implements Initialisable {
 
-  private static final Logger LOGGER = getLogger(Scriptable.class);
+  private static final Logger LOGGER = getLogger(Script.class);
 
   private static final String BINDING_LOG = "log";
   private static final String BINDING_RESULT = "result";
@@ -65,15 +67,19 @@ public class Scriptable extends AbstractAnnotatedObject implements Initialisable
   private static final String BINDING_MULE_CLIENT = "_muleClient";
 
   /** The actual body of the script */
+  @Parameter
   private String scriptText;
 
   /** A file from which the script will be loaded */
+  @Optional
+  @Parameter
   private String scriptFile;
 
   /** Parameters to be made available to the script as variables */
   private List<ScriptingProperty> properties;
 
   /** The name of the JSR 223 scripting engine (e.g., "groovy") */
+  @Parameter
   private String scriptEngineName;
 
   // ///////////////////////////////////////////////////////////////////////////
@@ -181,7 +187,7 @@ public class Scriptable extends AbstractAnnotatedObject implements Initialisable
     bindings.put(BINDING_RESULT, null);
   }
 
-  public void populateBindings(Bindings bindings, String rootContainerName, ComponentLocation location, InternalEvent event,
+  public void populateBindings(Bindings bindings, ComponentLocation location, InternalEvent event,
                                InternalEvent.Builder eventBuilder) {
     // TODO MULE-10121 Provide a MessageBuilder API in scripting components to improve usability
     for (Binding binding : addEventBindings(event, NULL_BINDING_CONTEXT).bindings()) {

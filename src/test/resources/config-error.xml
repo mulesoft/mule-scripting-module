@@ -9,6 +9,12 @@
     <!-- This should produce an error, the "engine" attribute is required unless
     "file" is specified, in which case the file extension will be used to determine
     the appropriate script engine. -->
+    <script:config name="config"/>
+
+    <flow name="someFlow">
+        <script:execute />
+    </flow>
+
     <script:script name="configError">
         return "$message Received"
     </script:script>
