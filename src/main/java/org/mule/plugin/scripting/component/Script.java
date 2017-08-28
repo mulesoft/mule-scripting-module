@@ -6,43 +6,41 @@
  */
 package org.mule.plugin.scripting.component;
 
-import org.mule.runtime.extension.api.annotation.dsl.xml.TypeDsl;
-import org.mule.runtime.extension.api.annotation.param.Content;
-import org.mule.runtime.extension.api.annotation.param.Optional;
-import org.mule.runtime.extension.api.annotation.param.Parameter;
+import org.mule.runtime.api.meta.model.operation.OperationModel;
+import org.mule.runtime.extension.api.runtime.operation.ExecutionContext;
 
+import java.util.HashMap;
 import java.util.Map;
 
-/**
- * A JSR 223 Script service. Allows any JSR 223 compliant script engines such as JavaScript, Groovy or Rhino to be embedded as
- * Mule components.
- *
- * @since 1.0
- */
-@TypeDsl(allowTopLevelDefinition = true)
 public class Script {
 
+  public Script(ExecutionContext<OperationModel> context) {
+    if (context.hasParameter("text")) {
+      setText(context.getParameter("text"));
+    }
+    if (context.hasParameter("file")) {
+      setFile(context.getParameter("file"));
+    }
+    if (context.hasParameter("engine")) {
+      setEngine(context.getParameter("engine"));
+    }
+    if (context.hasParameter("parameters")) {
+      setParameters(context.getParameter("parameters"));
+    } else {
+      setParameters(new HashMap<>());
+    }
+  }
+
   /** The actual body of the script */
-  @Optional
-  @Parameter()
-  @Content(primary = true)
   private String text;
 
   /** A file from which the script will be loaded */
-  @Optional
-  @Parameter
   private String file;
 
   /** Parameters to be made available to the script as variables */
-  @Optional(defaultValue = "#[{}]")
-  @Parameter
-  //@TypeResolver(ScriptingTypeResolver.class)
-  @Content
   private Map<String, Object> parameters;
 
   /** The name of the JSR 223 scripting engine (e.g., "groovy") */
-  @Optional
-  @Parameter
   private String engine;
 
   public String getText() {

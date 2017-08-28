@@ -6,7 +6,7 @@
  */
 package org.mule.plugin.scripting.config;
 
-import org.mule.runtime.api.lifecycle.InitialisationException;
+import org.mule.runtime.core.api.exception.MessagingException;
 import org.mule.test.plugin.scripting.AbstractScriptingFunctionalTestCase;
 
 import org.junit.Test;
@@ -18,10 +18,8 @@ public class ScriptingConfigErrorTestCase extends AbstractScriptingFunctionalTes
     return "config-error.xml";
   }
 
-  @Test(expected = InitialisationException.class)
+  @Test(expected = MessagingException.class)
   public void testMissingEngine() throws Exception {
     runFlow("someFlow");
   }
 }
-
-

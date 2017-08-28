@@ -7,9 +7,6 @@
 package org.mule.plugin.scripting;
 
 import org.mule.plugin.scripting.operation.ScriptingOperationEnricher;
-import org.mule.runtime.api.lifecycle.Disposable;
-import org.mule.runtime.api.lifecycle.Initialisable;
-import org.mule.runtime.api.lifecycle.InitialisationException;
 import org.mule.runtime.extension.api.annotation.Extension;
 import org.mule.runtime.extension.api.annotation.Operations;
 import org.mule.runtime.extension.api.annotation.privileged.DeclarationEnrichers;
@@ -17,15 +14,6 @@ import org.mule.runtime.extension.api.annotation.privileged.DeclarationEnrichers
 @Extension(name = "Scripting")
 @Operations({ScriptingOperations.class})
 @DeclarationEnrichers(ScriptingOperationEnricher.class)
-public class ScriptingExtension implements Initialisable, Disposable {
+public class ScriptingExtension {
 
-  @Override
-  public void dispose() {
-
-  }
-
-  @Override
-  public void initialise() throws InitialisationException {
-
-  }
 }
