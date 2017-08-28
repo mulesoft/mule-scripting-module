@@ -8,9 +8,10 @@ public class ScriptingOperationEnricher implements DeclarationEnricher {
 
   @Override
   public void enrich(ExtensionLoadingContext extensionLoadingContext) {
-    // TODO: only enrich appropriate operation
     extensionLoadingContext.getExtensionDeclarer().getDeclaration().getOperations().forEach(operation -> {
-      operation.addModelProperty(new OperationExecutorModelProperty(new ScriptingOperationExecutorFactory()));
+      if (operation.getName().equals("execute")) {
+        operation.addModelProperty(new OperationExecutorModelProperty(new ScriptingOperationExecutorFactory()));
+      }
     });
   }
 }

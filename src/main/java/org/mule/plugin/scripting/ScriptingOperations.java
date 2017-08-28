@@ -6,22 +6,20 @@
  */
 package org.mule.plugin.scripting;
 
-import org.mule.plugin.scripting.component.Script;
 import org.mule.runtime.extension.api.annotation.metadata.OutputResolver;
-import org.mule.runtime.extension.api.annotation.metadata.TypeResolver;
 import org.mule.runtime.extension.api.annotation.param.Content;
 import org.mule.runtime.extension.api.annotation.param.Optional;
-import org.mule.runtime.extension.api.annotation.param.ParameterGroup;
 import org.mule.runtime.extension.api.runtime.operation.Result;
 
 import java.util.Map;
 
 public class ScriptingOperations {
 
-  @OutputResolver(output = Resolver.class)
-  public Result<Object, Object> execute(@ParameterGroup(name = "script") Script script,
-                                        @Content @TypeResolver(Resolver.class) @Optional(
-                                            defaultValue = "#[{}]") Map<String, Object> parameteres) {
+  @OutputResolver(output = ScriptingTypeResolver.class)
+  public Result<Object, Object> execute(@Optional @Content(primary = true) String text,
+                                        @Optional String engine,
+                                        @Optional String file,
+                                        @Optional @Content Map<String, Object> parameters) {
     return null;
   }
 

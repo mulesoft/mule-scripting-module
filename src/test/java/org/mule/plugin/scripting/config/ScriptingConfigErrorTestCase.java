@@ -6,22 +6,21 @@
  */
 package org.mule.plugin.scripting.config;
 
-import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
 import org.mule.runtime.api.lifecycle.InitialisationException;
-import org.mule.runtime.core.api.config.ConfigurationException;
+import org.mule.test.plugin.scripting.AbstractScriptingFunctionalTestCase;
 
 import org.junit.Test;
 
-public class ScriptingConfigErrorTestCase extends MuleArtifactFunctionalTestCase {
+public class ScriptingConfigErrorTestCase extends AbstractScriptingFunctionalTestCase {
 
-  @Override protected String getConfigFile() {
+  @Override
+  protected String getConfigFile() {
     return "config-error.xml";
   }
 
   @Test(expected = InitialisationException.class)
-  public void testMissingEngine() throws InitialisationException, ConfigurationException {
-    // TODO MULE-10061 - Review once the MuleContext lifecycle is clearly defined
-    //new DefaultMuleContextFactory().createMuleContext("config-error.xml");
+  public void testMissingEngine() throws Exception {
+    runFlow("someFlow");
   }
 }
 

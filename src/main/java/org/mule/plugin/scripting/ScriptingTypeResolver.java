@@ -7,27 +7,27 @@ import org.mule.runtime.api.metadata.MetadataResolvingException;
 import org.mule.runtime.api.metadata.resolving.InputTypeResolver;
 import org.mule.runtime.api.metadata.resolving.OutputTypeResolver;
 
-public class Resolver implements InputTypeResolver<String>, OutputTypeResolver<String> {
+public class ScriptingTypeResolver implements InputTypeResolver<String>, OutputTypeResolver<String> {
 
   @Override
   public String getResolverName() {
-    return "sadsa";
+    return "ScriptingTypeResolver";
   }
 
   @Override
   public MetadataType getInputMetadata(MetadataContext context, String key)
       throws MetadataResolvingException, ConnectionException {
-    return null;
+    return context.getTypeLoader().load(Object.class);
   }
 
   @Override
   public String getCategoryName() {
-    return "sdasdjkdsajkl";
+    return "Category";
   }
 
   @Override
   public MetadataType getOutputType(MetadataContext context, String key)
       throws MetadataResolvingException, ConnectionException {
-    return null;
+    return context.getTypeLoader().load(Object.class);
   }
 }
