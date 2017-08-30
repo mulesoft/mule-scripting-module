@@ -6,14 +6,17 @@
  */
 package org.mule.plugin.scripting;
 
+import org.mule.plugin.scripting.errors.ScriptingErrors;
 import org.mule.plugin.scripting.operation.ScriptingOperationEnricher;
 import org.mule.runtime.extension.api.annotation.Extension;
 import org.mule.runtime.extension.api.annotation.Operations;
+import org.mule.runtime.extension.api.annotation.error.ErrorTypes;
 import org.mule.runtime.extension.api.annotation.privileged.DeclarationEnrichers;
 
 @Extension(name = "Scripting")
 @Operations({ScriptingOperations.class})
 @DeclarationEnrichers(ScriptingOperationEnricher.class)
+@ErrorTypes(ScriptingErrors.class)
 public class ScriptingExtension {
 
 }

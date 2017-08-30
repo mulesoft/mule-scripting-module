@@ -9,9 +9,9 @@
 
     <flow name="sayHello">
        <script:execute engine="groovy">
-            <script:text>
+            <script:code>
                 return hello.sayHello()
-            </script:text>
+            </script:code>
         </script:execute>
         <logger/>
     </flow>

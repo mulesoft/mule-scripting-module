@@ -12,31 +12,31 @@
 
     <flow name="inlineScriptMutateProperty">
         <script:execute engine="groovy">
-            <script:text><![CDATA[
+            <script:code><![CDATA[
             message = new org.mule.functional.junit4.TestLegacyMessageBuilder(message).addOutboundProperty('foo',
             'bar-mutated').build()
         ]]>
-            </script:text>
+            </script:code>
         </script:execute>
         <test:assert expression="#[mel:message.outboundProperties.foo == 'bar-mutated']"/>
     </flow>
 
     <flow name="inlineScriptAddProperty">
         <script:execute engine="groovy">
-            <script:text>
+            <script:code>
                 <![CDATA[
                 message = new org.mule.functional.junit4.TestLegacyMessageBuilder(message).addOutboundProperty('foo',
                 'bar').build()
-            ]]></script:text>
+            ]]></script:code>
         </script:execute>
         <test:assert expression="#[mel:message.outboundProperties.foo == 'bar']"/>
     </flow>
 
     <flow name="inlineScriptMutatePropertiesMap">
         <script:execute engine="groovy">
-            <script:text><![CDATA[
+            <script:code><![CDATA[
                 outbound = new HashMap()              
-             ]]></script:text>
+             ]]></script:code>
         </script:execute>
         <test:assert expression="#[mel:message.outboundProperties.foo == 'bar']"/>
         <test:assert expression="#[mel:payload instanceof HashMap]"/>
@@ -44,27 +44,27 @@
 
     <flow name="inlineScriptMutateVariable">
         <script:execute engine="groovy">
-            <script:text>
+            <script:code>
                 vars['foo'] = 'bar-mutated'
-             </script:text>
+             </script:code>
         </script:execute>
         <test:assert expression="#[vars.foo == 'bar-mutated']"/>
     </flow>
     
     <flow name="inlineScriptAddVariable">
         <script:execute engine="groovy">
-            <script:text>
+            <script:code>
                 vars['foo'] = 'bar'
-             </script:text>
+             </script:code>
         </script:execute>
         <test:assert expression="#[vars.foo == 'bar']"/>
     </flow>
 
     <flow name="inlineScriptMutateVariablesMap">
         <script:execute engine="groovy">
-            <script:text>
+            <script:code>
                 vars = new HashMap()              
-             </script:text>
+             </script:code>
         </script:execute>
         <test:assert expression="#[vars.foo == 'bar']"/>
         <test:assert expression="#[mel:payload is HashMap]"/>
@@ -72,18 +72,18 @@
 
     <flow name="inlineScriptMutatePayload">
         <script:execute engine="groovy">
-            <script:text>
+            <script:code>
                 payload = 'bar-mutated'               
-             </script:text>
+             </script:code>
         </script:execute>
         <test:assert expression="#[payload == 'bar-mutated']"/>
     </flow>
     
     <flow name="scriptExpressionVariables">
         <script:execute engine="groovy">
-            <script:text>
+            <script:code>
                 payload = expr1 + expr2
-            </script:text>
+            </script:code>
             <script:parameters>
                 #[{expr1: vars.prop1, expr2: vars.prop2}]
             </script:parameters>
@@ -93,26 +93,26 @@
     
     <flow name="scriptReferencesAppClass">
         <script:execute engine="groovy">
-            <script:text>
+            <script:code>
                 payload = new org.mule.tck.testmodels.fruit.Apple()
-            </script:text>
+            </script:code>
         </script:execute>
     </flow>
     
     <flow name="inlineScriptFlow">
         <script:execute engine="groovy">
-            <script:text>
+            <script:code>
                 return payload.toString().replaceAll("l", "x")
-            </script:text>
+            </script:code>
         </script:execute>
         <test:queue name="inlineScriptTestOut"/>
     </flow>
 
     <flow name="inlineScriptWithParametersFlow">
         <script:execute engine="groovy">
-            <script:text>
+            <script:code>
                 return payload.toString().replaceAll("$oldStr", "$newStr")
-            </script:text>
+            </script:code>
             <script:parameters>
                 #[{oldStr: "l", newStr: "x"}]
             </script:parameters>

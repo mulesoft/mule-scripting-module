@@ -7,6 +7,9 @@ import org.mule.runtime.api.metadata.MetadataResolvingException;
 import org.mule.runtime.api.metadata.resolving.InputTypeResolver;
 import org.mule.runtime.api.metadata.resolving.OutputTypeResolver;
 
+/**
+ * Dummy resolver that doesn't provide metadata, as the script could do anything inside.
+ */
 public class ScriptingTypeResolver implements InputTypeResolver<String>, OutputTypeResolver<String> {
 
   @Override

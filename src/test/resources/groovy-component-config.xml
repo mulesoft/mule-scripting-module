@@ -13,9 +13,9 @@
             <!--<script:parameter key="prop1" value="Received"/>-->
             <!--<script:parameter key="prop2" value="A-OK"/>-->
         <!--</script:parameters>-->
-        <!--<script:text>-->
+        <!--<script:code>-->
             <!--return "$payload $prop1 $prop2"-->
-        <!--</script:text>-->
+        <!--</script:code>-->
     <!--</script:script>-->
 
     <flow name="inlineScript">
@@ -23,23 +23,25 @@
             This example demonstrates how to configure a Groovy Script component with an in-line script.
         </description>
         <script:execute engine="groovy">
-            <script:text>
+            <script:code>
                 return "$payload Received"
-            </script:text>
+            </script:code>
         </script:execute>
         <test:queue name="inlineScriptTestOut"/>
     </flow>
 
     <flow name="fileBasedScript">
-        <script:execute file="simple-script.groovy"/>
+        <script:execute engine="groovy">
+            <script:code>${file::simple-script.groovy}</script:code>
+        </script:execute>
         <test:queue name="fileBasedScriptTestOut"/>
     </flow>
 
     <flow name="scriptVariables">
         <script:execute engine="groovy">
-            <script:text>
+            <script:code>
                 return "$payload $prop1 $prop2"
-            </script:text>
+            </script:code>
             <script:parameters>
                 #[{prop1: "Received", prop2: "A-OK"}]
             </script:parameters>

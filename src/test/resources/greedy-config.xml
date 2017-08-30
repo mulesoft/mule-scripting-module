@@ -8,14 +8,16 @@
     <flow name="greedy">
         <choice>
             <when expression="#[vars.currency == 'USD']">
-                <scripting:execute file="greedy.groovy">
+                <scripting:execute engine="groovy">
+                    <scripting:code>${file::greedy.groovy}</scripting:code>
                     <scripting:parameters>
                         #[{currency: "USD"}]
                     </scripting:parameters>
                 </scripting:execute>
              </when>
             <when expression="#[vars.currency == 'GBP']">
-                <scripting:execute file="greedy.py">
+                <scripting:execute engine="python">
+                    <scripting:code>${file::greedy.py}</scripting:code>
                     <scripting:parameters>
                         #[{currency: "GBP"}]
                     </scripting:parameters>

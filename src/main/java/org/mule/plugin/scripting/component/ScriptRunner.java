@@ -1,28 +1,25 @@
 package org.mule.plugin.scripting.component;
 
+import static org.mule.plugin.scripting.errors.ScriptingErrors.COMPILATION;
+import static org.mule.plugin.scripting.errors.ScriptingErrors.EXECUTION;
+import static org.mule.plugin.scripting.errors.ScriptingErrors.UNKNOWN_ENGINE;
 import static org.mule.runtime.api.el.BindingContextUtils.FLOW;
 import static org.mule.runtime.api.el.BindingContextUtils.NULL_BINDING_CONTEXT;
 import static org.mule.runtime.api.el.BindingContextUtils.VARS;
 import static org.mule.runtime.api.el.BindingContextUtils.addEventBindings;
 import static org.mule.runtime.api.i18n.I18nMessageFactory.createStaticMessage;
-import static org.mule.runtime.core.api.config.i18n.CoreMessages.cannotLoadFromClasspath;
-import static org.mule.runtime.core.api.config.i18n.CoreMessages.propertiesNotSet;
-import static org.mule.runtime.core.api.util.IOUtils.getResourceAsStream;
-import static org.mule.runtime.core.api.util.StringUtils.isBlank;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import org.mule.runtime.api.component.location.ComponentLocation;
 import org.mule.runtime.api.el.Binding;
-import org.mule.runtime.api.exception.MuleRuntimeException;
 import org.mule.runtime.core.api.InternalEvent;
 import org.mule.runtime.core.api.MuleContext;
 import org.mule.runtime.core.api.util.CollectionUtils;
+import org.mule.runtime.core.api.util.IOUtils;
 import org.mule.runtime.core.el.context.EventVariablesMapContext;
 import org.mule.runtime.core.el.context.SessionVariableMapContext;
+import org.mule.runtime.extension.api.exception.ModuleException;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.StringReader;
 
@@ -37,7 +34,7 @@ import org.slf4j.Logger;
 
 public class ScriptRunner {
 
-  private static final Logger LOGGER = getLogger(Script.class);
+  private static final Logger LOGGER = getLogger(ScriptRunner.class);
 
   private static final String BINDING_LOG = "log";
   private static final String BINDING_RESULT = "result";
@@ -66,71 +63,25 @@ public class ScriptRunner {
   public void initialise() {
     scriptEngineManager = new ScriptEngineManager(this.getClass().getClassLoader());
 
-    // Create scripting engine
-    if (scriptConfig.getEngine() != null) {
-      scriptEngine = createScriptEngineByName(scriptConfig.getEngine());
-      if (scriptEngine == null) {
-        throw new MuleRuntimeException(createStaticMessage("Scripting engine '" + scriptConfig.getEngine()
-            + "' not found.  Available engines are: " + listAvailableEngines()));
-      }
-    }
-    // Determine scripting engine to use by file extension
-    else if (scriptConfig.getFile() != null) {
-      int i = scriptConfig.getFile().lastIndexOf(".");
-      if (i > -1) {
-        LOGGER.info("Script Engine name not set. Guessing by file extension.");
-        String extension = scriptConfig.getFile().substring(i + 1);
-        scriptEngine = createScriptEngineByExtension(extension);
-        if (scriptEngine == null) {
-          throw new MuleRuntimeException(createStaticMessage("File extension '" + extension
-              + "' does not map to a scripting engine.  Available engines are: " + listAvailableEngines()));
-        } else {
-          //setEngine(extension);
-        }
-      }
-    } else {
-      throw new MuleRuntimeException(createStaticMessage("Scripting engine not specified and file extension is not available for guessing. Available engines are: "
-          + listAvailableEngines()));
+    scriptEngine = createScriptEngineByName(scriptConfig.getEngine());
+    if (scriptEngine == null) {
+      String message =
+          "Scripting engine '" + scriptConfig.getEngine() + "' not found.  Available engines are: " + listAvailableEngines();
+      throw new ModuleException(createStaticMessage(message), UNKNOWN_ENGINE);
     }
 
-    Reader script = null;
+    Reader script = new StringReader(scriptConfig.getCode());
     try {
-      // Load script from variable
-      if (!isBlank(scriptConfig.getText())) {
-        script = new StringReader(scriptConfig.getText());
-      }
-      // Load script from file
-      else if (scriptConfig.getFile() != null) {
-        InputStream is;
-        try {
-          is = getResourceAsStream(scriptConfig.getFile(), getClass());
-        } catch (IOException e) {
-          throw new MuleRuntimeException(cannotLoadFromClasspath(scriptConfig.getFile()), e);
-        }
-        if (is == null) {
-          throw new MuleRuntimeException(cannotLoadFromClasspath(scriptConfig.getFile()));
-        }
-        script = new InputStreamReader(is);
-      } else {
-        throw new MuleRuntimeException(propertiesNotSet("text, file"));
-      }
-
       // Pre-compile script if scripting engine supports compilation.
       if (scriptEngine instanceof Compilable) {
         try {
           compiledScript = ((Compilable) scriptEngine).compile(script);
         } catch (ScriptException e) {
-          throw new MuleRuntimeException(e);
+          throw new ModuleException(COMPILATION, e);
         }
       }
     } finally {
-      if (script != null) {
-        try {
-          script.close();
-        } catch (IOException e) {
-          throw new MuleRuntimeException(e);
-        }
-      }
+      IOUtils.closeQuietly(script);
     }
   }
 
@@ -163,7 +114,7 @@ public class ScriptRunner {
     bindings.put(BINDING_MULE_CLIENT, muleContext.getClient());
   }
 
-  public Object runScript(Bindings bindings) throws ScriptException {
+  public Object runScript(Bindings bindings) {
     Object result;
     try {
       RegistryLookupBindings registryLookupBindings =
@@ -171,7 +122,7 @@ public class ScriptRunner {
       if (compiledScript != null) {
         result = compiledScript.eval(registryLookupBindings);
       } else {
-        result = scriptEngine.eval(scriptConfig.getText(), registryLookupBindings);
+        result = scriptEngine.eval(scriptConfig.getCode(), registryLookupBindings);
       }
 
       // The result of the script can be returned directly or it can
@@ -179,21 +130,14 @@ public class ScriptRunner {
       if (result == null) {
         result = registryLookupBindings.get(BINDING_RESULT);
       }
-    } catch (ScriptException e) {
-      // re-throw
-      throw e;
     } catch (Exception ex) {
-      throw new ScriptException(ex);
+      throw new ModuleException(EXECUTION, ex);
     }
     return result;
   }
 
   protected ScriptEngine createScriptEngineByName(String name) {
     return scriptEngineManager.getEngineByName(name);
-  }
-
-  protected ScriptEngine createScriptEngineByExtension(String ext) {
-    return scriptEngineManager.getEngineByExtension(ext);
   }
 
   protected String listAvailableEngines() {

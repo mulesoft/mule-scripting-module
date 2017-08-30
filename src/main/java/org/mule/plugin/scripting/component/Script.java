@@ -12,18 +12,18 @@ import org.mule.runtime.extension.api.runtime.operation.ExecutionContext;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Represents a script source code, type and optional parameters.
+ * They are extracted from the execution context of the operation.
+ *
+ * @since 4.0
+ */
 public class Script {
 
   public Script(ExecutionContext<OperationModel> context) {
-    if (context.hasParameter("text")) {
-      setText(context.getParameter("text"));
-    }
-    if (context.hasParameter("file")) {
-      setFile(context.getParameter("file"));
-    }
-    if (context.hasParameter("engine")) {
-      setEngine(context.getParameter("engine"));
-    }
+    setCode(context.getParameter("code"));
+    setEngine(context.getParameter("engine"));
+
     if (context.hasParameter("parameters")) {
       setParameters(context.getParameter("parameters"));
     } else {
@@ -32,10 +32,7 @@ public class Script {
   }
 
   /** The actual body of the script */
-  private String text;
-
-  /** A file from which the script will be loaded */
-  private String file;
+  private String code;
 
   /** Parameters to be made available to the script as variables */
   private Map<String, Object> parameters;
@@ -43,20 +40,12 @@ public class Script {
   /** The name of the JSR 223 scripting engine (e.g., "groovy") */
   private String engine;
 
-  public String getText() {
-    return text;
+  public String getCode() {
+    return code;
   }
 
-  public void setText(String text) {
-    this.text = text;
-  }
-
-  public String getFile() {
-    return file;
-  }
-
-  public void setFile(String file) {
-    this.file = file;
+  public void setCode(String code) {
+    this.code = code;
   }
 
   public void setEngine(String engine) {

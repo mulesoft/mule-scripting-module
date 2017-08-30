@@ -4,6 +4,9 @@ import org.mule.runtime.extension.api.loader.DeclarationEnricher;
 import org.mule.runtime.extension.api.loader.ExtensionLoadingContext;
 import org.mule.runtime.module.extension.internal.loader.java.property.OperationExecutorModelProperty;
 
+/**
+ * Configure operation to be executed in a custom way with privileged access.
+ */
 public class ScriptingOperationEnricher implements DeclarationEnricher {
 
   @Override

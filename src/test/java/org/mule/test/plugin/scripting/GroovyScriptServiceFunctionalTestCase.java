@@ -12,6 +12,7 @@ import static org.junit.Assert.assertNotNull;
 import org.mule.runtime.api.message.Message;
 import org.mule.runtime.core.api.client.MuleClient;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class GroovyScriptServiceFunctionalTestCase extends AbstractScriptingFunctionalTestCase {
@@ -30,7 +31,7 @@ public class GroovyScriptServiceFunctionalTestCase extends AbstractScriptingFunc
     assertEquals("Important Message Received", getPayloadAsString(response));
   }
 
-  //@Ignore("MULE-6926: flaky test")
+  @Ignore("MULE-6926: flaky test")
   @Test
   public void testFileBasedScript() throws Exception {
     MuleClient client = muleContext.getClient();
@@ -40,7 +41,7 @@ public class GroovyScriptServiceFunctionalTestCase extends AbstractScriptingFunc
     assertEquals("Important Message Received", getPayloadAsString(response));
   }
 
-  //@Ignore("MULE-6926: flaky test")
+  @Ignore("MULE-6926: flaky test")
   @Test
   public void testScriptVariables() throws Exception {
     MuleClient client = muleContext.getClient();

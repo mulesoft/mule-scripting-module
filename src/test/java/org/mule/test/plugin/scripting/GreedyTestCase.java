@@ -8,6 +8,7 @@ package org.mule.test.plugin.scripting;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertThat;
+
 import org.mule.runtime.core.api.InternalEvent;
 
 import org.junit.Test;

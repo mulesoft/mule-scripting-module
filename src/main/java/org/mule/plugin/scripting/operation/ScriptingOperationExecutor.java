@@ -6,7 +6,6 @@ import org.mule.runtime.api.component.location.ComponentLocation;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.message.Message;
 import org.mule.runtime.api.meta.model.operation.OperationModel;
-import org.mule.runtime.core.api.DefaultMuleException;
 import org.mule.runtime.core.api.InternalEvent;
 import org.mule.runtime.core.api.MuleContext;
 import org.mule.runtime.extension.api.runtime.operation.ExecutionContext;
@@ -18,7 +17,12 @@ import javax.script.Bindings;
 import org.reactivestreams.Publisher;
 import reactor.core.publisher.Mono;
 
+/**
+ * Custom executor to allow scripts to modify event variables.
+ */
 public class ScriptingOperationExecutor implements OperationExecutor {
+
+  private ScriptRunner scriptRunner;
 
   @Override
   public Publisher<Object> execute(ExecutionContext<OperationModel> executionContext) {
@@ -29,7 +33,7 @@ public class ScriptingOperationExecutor implements OperationExecutor {
     try {
       InternalEvent result = process(context.getEvent(), scriptConfig, context.getComponentLocation(), context.getMuleContext());
       return Mono.justOrEmpty(result);
-    } catch (MuleException e) {
+    } catch (Exception e) {
       return Mono.error(e);
     }
   }
@@ -37,7 +41,9 @@ public class ScriptingOperationExecutor implements OperationExecutor {
   public InternalEvent process(InternalEvent event, Script script, ComponentLocation componentLocation, MuleContext muleContext)
       throws MuleException {
     InternalEvent.Builder eventBuilder = InternalEvent.builder(event);
-    ScriptRunner scriptRunner = new ScriptRunner(script, muleContext);
+    if (scriptRunner == null) {
+      scriptRunner = new ScriptRunner(script, muleContext);
+    }
     Bindings bindings = scriptRunner.getScriptEngine().createBindings();
     scriptRunner.populateBindings(bindings, componentLocation, event, eventBuilder);
 
@@ -48,9 +54,6 @@ public class ScriptingOperationExecutor implements OperationExecutor {
       } else {
         eventBuilder.message(Message.builder(event.getMessage()).value(result).build());
       }
-    } catch (Exception e) {
-      // leave this catch block in place to help debug classloading issues
-      throw new DefaultMuleException(e);
     } finally {
       bindings.clear();
     }
