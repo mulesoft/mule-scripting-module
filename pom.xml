@@ -23,7 +23,7 @@
         <springVersion>4.1.9.RELEASE</springVersion>
         <groovyVersion>2.4.4</groovyVersion>
         
-        <mule.weave.version>2.0.0-rc.darkseid</mule.weave.version>
+        <mule.weave.version>2.0.0-rc-darkseid</mule.weave.version>
         <mule.app.plugins.maven.plugin.version>1.0.0-rc.darkseid</mule.app.plugins.maven.plugin.version>
     </properties>
 
