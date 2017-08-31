@@ -8,11 +8,11 @@
 
 
     <flow name="sayHello">
-       <script:component>
-            <script:script engine="groovy">
+       <script:execute engine="groovy">
+            <script:code>
                 return hello.sayHello()
-            </script:script>
-        </script:component>
+            </script:code>
+        </script:execute>
         <logger/>
     </flow>
                         

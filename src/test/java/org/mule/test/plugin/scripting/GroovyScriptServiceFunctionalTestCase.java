@@ -8,6 +8,7 @@ package org.mule.test.plugin.scripting;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+
 import org.mule.runtime.api.message.Message;
 import org.mule.runtime.core.api.client.MuleClient;
 
@@ -36,15 +37,6 @@ public class GroovyScriptServiceFunctionalTestCase extends AbstractScriptingFunc
     MuleClient client = muleContext.getClient();
     flowRunner("fileBasedScript").withPayload("Important Message").run();
     Message response = client.request("test://fileBasedScriptTestOut", RECEIVE_TIMEOUT).getRight().get();
-    assertNotNull(response);
-    assertEquals("Important Message Received", getPayloadAsString(response));
-  }
-
-  @Test
-  public void testReferencedScript() throws Exception {
-    MuleClient client = muleContext.getClient();
-    flowRunner("referencedScript").withPayload("Important Message").run();
-    Message response = client.request("test://referencedScriptTestOut", RECEIVE_TIMEOUT).getRight().get();
     assertNotNull(response);
     assertEquals("Important Message Received", getPayloadAsString(response));
   }

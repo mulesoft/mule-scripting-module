@@ -71,20 +71,20 @@ public class GroovyScriptFlowFunctionalTestCase extends GroovyScriptServiceFunct
   }
 
   @Test
-  public void testReferencedTransformer() throws Exception {
+  public void testInlineTransformer() throws Exception {
     MuleClient client = muleContext.getClient();
-    flowRunner("referencedScriptFlow").withPayload("hello").run();
-    Message response = client.request("test://referencedScriptTestOut", RECEIVE_TIMEOUT).getRight().get();
+    flowRunner("inlineScriptFlow").withPayload("hello").run();
+    Message response = client.request("test://inlineScriptTestOut", RECEIVE_TIMEOUT).getRight().get();
     assertThat(response, not(nullValue()));
     assertThat(response.getPayload().getValue(), is("hexxo"));
   }
 
   @Test
-  public void testReferencedScriptWithParameters() throws Exception {
+  public void testInlineScriptWithParameters() throws Exception {
     MuleClient client = muleContext.getClient();
-    flowRunner("referencedScriptWithParametersFlow").withPayload("hello").run();
+    flowRunner("inlineScriptWithParametersFlow").withPayload("hello").run();
     Message response =
-        client.request("test://referencedScriptWithParametersTestOut", RECEIVE_TIMEOUT).getRight().get();
+        client.request("test://inlineScriptWithParametersTestOut", RECEIVE_TIMEOUT).getRight().get();
     assertThat(response, not(nullValue()));
     assertThat(response.getPayload().getValue(), is("hexxo"));
   }
