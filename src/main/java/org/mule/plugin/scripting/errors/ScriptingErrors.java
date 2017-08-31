@@ -6,12 +6,7 @@
  */
 package org.mule.plugin.scripting.errors;
 
-import static java.util.Optional.ofNullable;
-
 import org.mule.runtime.extension.api.error.ErrorTypeDefinition;
-import org.mule.runtime.extension.api.error.MuleErrors;
-
-import java.util.Optional;
 
 /**
  * The extension can throw the following scripting related errors:
@@ -22,16 +17,5 @@ import java.util.Optional;
  * @since 1.0
  */
 public enum ScriptingErrors implements ErrorTypeDefinition<ScriptingErrors> {
-  EXECUTION(MuleErrors.ANY), COMPILATION(MuleErrors.ANY), UNKNOWN_ENGINE(MuleErrors.ANY);
-
-  private ErrorTypeDefinition<?> parentErrortype;
-
-  ScriptingErrors(ErrorTypeDefinition parentErrorType) {
-    this.parentErrortype = parentErrorType;
-  }
-
-  @Override
-  public Optional<ErrorTypeDefinition<? extends Enum<?>>> getParent() {
-    return ofNullable(parentErrortype);
-  }
+  EXECUTION, COMPILATION, UNKNOWN_ENGINE
 }
