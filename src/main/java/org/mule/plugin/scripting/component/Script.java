@@ -16,7 +16,7 @@ import java.util.Map;
  * Represents a script source code, type and optional parameters.
  * They are extracted from the execution context of the operation.
  *
- * @since 4.0
+ * @since 1.0
  */
 public class Script {
 

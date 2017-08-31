@@ -7,7 +7,7 @@ import org.mule.runtime.extension.api.runtime.operation.OperationExecutorFactory
 /**
  * Custom factory that creates our operation executor.
  *
- * @since 4.0
+ * @since 1.0
  */
 public class ScriptingOperationExecutorFactory implements OperationExecutorFactory {
 

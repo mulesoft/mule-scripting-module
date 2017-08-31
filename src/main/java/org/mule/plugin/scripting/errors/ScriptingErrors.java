@@ -19,7 +19,7 @@ import java.util.Optional;
  * - During script compilation
  * - During script execution
  *
- * @since 4.0
+ * @since 1.0
  */
 public enum ScriptingErrors implements ErrorTypeDefinition<ScriptingErrors> {
   EXECUTION(MuleErrors.ANY), COMPILATION(MuleErrors.ANY), UNKNOWN_ENGINE(MuleErrors.ANY);

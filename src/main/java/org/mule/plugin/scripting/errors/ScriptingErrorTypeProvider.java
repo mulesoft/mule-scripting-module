@@ -19,7 +19,7 @@ import java.util.Set;
 /**
  * Error type provider for scripting.
  *
- * @since 4.0
+ * @since 1.0
  */
 public class ScriptingErrorTypeProvider implements ErrorTypeProvider {
 

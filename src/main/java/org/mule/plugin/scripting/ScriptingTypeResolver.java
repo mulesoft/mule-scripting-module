@@ -10,7 +10,7 @@ import org.mule.runtime.api.metadata.resolving.OutputTypeResolver;
 /**
  * Dummy resolver that doesn't provide metadata, as the script could do anything inside.
  *
- * @since 4.0
+ * @since 1.0
  */
 public class ScriptingTypeResolver implements InputTypeResolver<String>, OutputTypeResolver<String> {
 

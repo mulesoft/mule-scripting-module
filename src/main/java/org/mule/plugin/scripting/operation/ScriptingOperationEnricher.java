@@ -8,7 +8,7 @@ import org.mule.runtime.module.extension.api.loader.java.property.OperationExecu
 /**
  * Sets a custom {@link OperationExecutorFactory} for the "execute" operation, allowing to use it through privileged access.
  *
- * @since 4.0
+ * @since 1.0
  */
 public class ScriptingOperationEnricher implements DeclarationEnricher {
 

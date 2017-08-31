@@ -11,6 +11,7 @@ import org.mule.runtime.extension.api.annotation.error.Throws;
 import org.mule.runtime.extension.api.annotation.metadata.OutputResolver;
 import org.mule.runtime.extension.api.annotation.param.Content;
 import org.mule.runtime.extension.api.annotation.param.Optional;
+import org.mule.runtime.extension.api.annotation.values.OfValues;
 import org.mule.runtime.extension.api.runtime.operation.Result;
 
 import java.util.Map;
@@ -18,7 +19,7 @@ import java.util.Map;
 /**
  * Scripting operations.
  *
- * @since 4.0
+ * @since 1.0
  */
 public class ScriptingOperations {
 
@@ -33,7 +34,7 @@ public class ScriptingOperations {
   @OutputResolver(output = ScriptingTypeResolver.class)
   @Throws(ScriptingErrorTypeProvider.class)
   public Result<Object, Object> execute(@Content(primary = true) String code,
-                                        String engine,
+                                        @OfValues(EnginesValueProvider.class) String engine,
                                         @Optional @Content Map<String, Object> parameters) {
 
     // the real operation is implemented through a custom executor

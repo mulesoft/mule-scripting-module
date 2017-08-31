@@ -20,7 +20,7 @@ import reactor.core.publisher.Mono;
 /**
  * Custom executor to allow scripts to modify event variables.
  *
- * @since 4.0
+ * @since 1.0
  */
 public class ScriptingOperationExecutor implements OperationExecutor {
 
