@@ -13,6 +13,14 @@ import org.mule.runtime.extension.api.error.MuleErrors;
 
 import java.util.Optional;
 
+/**
+ * The extension can throw the following scripting related errors:
+ * - Scripting engine not found
+ * - During script compilation
+ * - During script execution
+ *
+ * @since 4.0
+ */
 public enum ScriptingErrors implements ErrorTypeDefinition<ScriptingErrors> {
   EXECUTION(MuleErrors.ANY), COMPILATION(MuleErrors.ANY), UNKNOWN_ENGINE(MuleErrors.ANY);
 

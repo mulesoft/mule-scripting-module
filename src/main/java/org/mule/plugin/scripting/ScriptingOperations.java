@@ -15,13 +15,28 @@ import org.mule.runtime.extension.api.runtime.operation.Result;
 
 import java.util.Map;
 
+/**
+ * Scripting operations.
+ *
+ * @since 4.0
+ */
 public class ScriptingOperations {
 
+  /**
+   * Run a script with provided code, according to the engine and passing parameters.
+   *
+   * @param code the script source code to be executed
+   * @param engine name of the scripting engine for running ths script
+   * @param parameters variables provided to the script as bindings
+   * @return the result of script evaluation
+   */
   @OutputResolver(output = ScriptingTypeResolver.class)
   @Throws(ScriptingErrorTypeProvider.class)
   public Result<Object, Object> execute(@Content(primary = true) String code,
                                         String engine,
                                         @Optional @Content Map<String, Object> parameters) {
+
+    // the real operation is implemented through a custom executor
     return null;
   }
 

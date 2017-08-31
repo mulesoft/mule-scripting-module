@@ -16,6 +16,11 @@ import org.mule.runtime.extension.api.error.ErrorTypeDefinition;
 import java.util.HashSet;
 import java.util.Set;
 
+/**
+ * Error type provider for scripting.
+ *
+ * @since 4.0
+ */
 public class ScriptingErrorTypeProvider implements ErrorTypeProvider {
 
   @Override

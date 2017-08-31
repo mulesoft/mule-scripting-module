@@ -2,10 +2,13 @@ package org.mule.plugin.scripting.operation;
 
 import org.mule.runtime.extension.api.loader.DeclarationEnricher;
 import org.mule.runtime.extension.api.loader.ExtensionLoadingContext;
-import org.mule.runtime.module.extension.internal.loader.java.property.OperationExecutorModelProperty;
+import org.mule.runtime.extension.api.runtime.operation.OperationExecutorFactory;
+import org.mule.runtime.module.extension.api.loader.java.property.OperationExecutorModelProperty;
 
 /**
- * Configure operation to be executed in a custom way with privileged access.
+ * Sets a custom {@link OperationExecutorFactory} for the "execute" operation, allowing to use it through privileged access.
+ *
+ * @since 4.0
  */
 public class ScriptingOperationEnricher implements DeclarationEnricher {
 

@@ -10,7 +10,7 @@ import org.mule.runtime.core.api.InternalEvent;
 import org.mule.runtime.core.api.MuleContext;
 import org.mule.runtime.extension.api.runtime.operation.ExecutionContext;
 import org.mule.runtime.extension.api.runtime.operation.OperationExecutor;
-import org.mule.runtime.module.extension.internal.runtime.ExecutionContextAdapter;
+import org.mule.runtime.module.extension.api.runtime.privileged.ExecutionContextAdapter;
 
 import javax.script.Bindings;
 
@@ -19,6 +19,8 @@ import reactor.core.publisher.Mono;
 
 /**
  * Custom executor to allow scripts to modify event variables.
+ *
+ * @since 4.0
  */
 public class ScriptingOperationExecutor implements OperationExecutor {
 
@@ -38,7 +40,7 @@ public class ScriptingOperationExecutor implements OperationExecutor {
     }
   }
 
-  public InternalEvent process(InternalEvent event, Script script, ComponentLocation componentLocation, MuleContext muleContext)
+  private InternalEvent process(InternalEvent event, Script script, ComponentLocation componentLocation, MuleContext muleContext)
       throws MuleException {
     InternalEvent.Builder eventBuilder = InternalEvent.builder(event);
     if (scriptRunner == null) {
