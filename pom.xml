@@ -6,7 +6,7 @@
     <parent>
         <groupId>org.mule.extensions</groupId>
         <artifactId>mule-core-modules-parent</artifactId>
-        <version>1.0.0-SNAPSHOT</version>
+        <version>1.0.0-rc-SNASPHOT</version>
     </parent>
 
     <groupId>org.mule.modules</groupId>
@@ -27,7 +27,7 @@
         <groovyVersion>2.4.4</groovyVersion>
         
         <mule.weave.version>2.0.0-SNAPSHOT</mule.weave.version>
-        <mule.app.plugins.maven.plugin.version>1.0.0-SNAPSHOT</mule.app.plugins.maven.plugin.version>
+        <mule.app.plugins.maven.plugin.version>1.0.0-rc-SNASPHOT</mule.app.plugins.maven.plugin.version>
     </properties>
 
     <dependencies>
