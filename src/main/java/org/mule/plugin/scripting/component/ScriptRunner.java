@@ -16,8 +16,8 @@ import org.mule.runtime.core.api.InternalEvent;
 import org.mule.runtime.core.api.MuleContext;
 import org.mule.runtime.core.api.util.CollectionUtils;
 import org.mule.runtime.core.api.util.IOUtils;
-import org.mule.runtime.core.el.context.EventVariablesMapContext;
-import org.mule.runtime.core.el.context.SessionVariableMapContext;
+import org.mule.runtime.core.privileged.el.context.EventVariablesMapContext;
+import org.mule.runtime.core.privileged.el.context.SessionVariableMapContext;
 import org.mule.runtime.extension.api.exception.ModuleException;
 
 import java.io.Reader;
