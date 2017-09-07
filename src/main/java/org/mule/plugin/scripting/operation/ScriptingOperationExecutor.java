@@ -9,7 +9,7 @@ import org.mule.runtime.api.meta.model.operation.OperationModel;
 import org.mule.runtime.core.api.InternalEvent;
 import org.mule.runtime.core.api.MuleContext;
 import org.mule.runtime.extension.api.runtime.operation.ExecutionContext;
-import org.mule.runtime.extension.api.runtime.operation.OperationExecutor;
+import org.mule.runtime.extension.api.runtime.operation.ComponentExecutor;
 import org.mule.runtime.module.extension.api.runtime.privileged.ExecutionContextAdapter;
 
 import javax.script.Bindings;
@@ -22,7 +22,7 @@ import reactor.core.publisher.Mono;
  *
  * @since 1.0
  */
-public class ScriptingOperationExecutor implements OperationExecutor {
+public class ScriptingOperationExecutor implements ComponentExecutor<OperationModel> {
 
   private ScriptRunner scriptRunner;
 
