@@ -12,13 +12,16 @@ import static org.slf4j.LoggerFactory.getLogger;
 
 import org.mule.runtime.api.component.location.ComponentLocation;
 import org.mule.runtime.api.el.Binding;
-import org.mule.runtime.core.api.InternalEvent;
 import org.mule.runtime.core.api.MuleContext;
+import org.mule.runtime.core.api.event.BaseEvent;
 import org.mule.runtime.core.api.util.CollectionUtils;
 import org.mule.runtime.core.api.util.IOUtils;
 import org.mule.runtime.core.privileged.el.context.EventVariablesMapContext;
 import org.mule.runtime.core.privileged.el.context.SessionVariableMapContext;
+import org.mule.runtime.core.privileged.event.PrivilegedEvent;
 import org.mule.runtime.extension.api.exception.ModuleException;
+
+import org.slf4j.Logger;
 
 import java.io.Reader;
 import java.io.StringReader;
@@ -29,8 +32,6 @@ import javax.script.CompiledScript;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
-
-import org.slf4j.Logger;
 
 public class ScriptRunner {
 
@@ -96,14 +97,14 @@ public class ScriptRunner {
     bindings.put(BINDING_RESULT, null);
   }
 
-  public void populateBindings(Bindings bindings, ComponentLocation location, InternalEvent event,
-                               InternalEvent.Builder eventBuilder) {
+  public void populateBindings(Bindings bindings, ComponentLocation location, BaseEvent event,
+                               BaseEvent.Builder eventBuilder) {
     // TODO MULE-10121 Provide a MessageBuilder API in scripting components to improve usability
     for (Binding binding : addEventBindings(event, NULL_BINDING_CONTEXT).bindings()) {
       bindings.put(binding.identifier(), binding.value().getValue());
     }
     bindings.put(VARS, new EventVariablesMapContext(event, eventBuilder));
-    bindings.put(BINDING_SESSION_VARS, new SessionVariableMapContext(event.getSession()));
+    bindings.put(BINDING_SESSION_VARS, new SessionVariableMapContext(((PrivilegedEvent) event).getSession()));
     bindings.put(FLOW, location.getRootContainerName());
 
     populatePropertyBindings(bindings);

@@ -9,7 +9,7 @@ package org.mule.test.plugin.scripting;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertThat;
 
-import org.mule.runtime.core.api.InternalEvent;
+import org.mule.runtime.core.api.event.BaseEvent;
 
 import org.junit.Test;
 
@@ -31,7 +31,7 @@ public class GreedyTestCase extends AbstractScriptingFunctionalTestCase {
   }
 
   private void runTest(double amount, String currency, String expectedResult) throws Exception {
-    InternalEvent response = flowRunner("greedy").withPayload(amount * 100).withVariable("currency", currency).run();
+    BaseEvent response = flowRunner("greedy").withPayload(amount * 100).withVariable("currency", currency).run();
     assertThat(getPayloadAsString(response.getMessage()), equalTo(expectedResult));
   }
 }
