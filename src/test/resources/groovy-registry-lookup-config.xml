@@ -10,7 +10,7 @@
     <flow name="sayHello">
        <script:execute engine="groovy">
             <script:code>
-                return hello.sayHello()
+                return registry.lookupByName("hello").get().sayHello()
             </script:code>
         </script:execute>
         <logger/>

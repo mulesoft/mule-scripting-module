@@ -8,6 +8,7 @@ import static org.mule.runtime.api.el.BindingContextUtils.NULL_BINDING_CONTEXT;
 import static org.mule.runtime.api.el.BindingContextUtils.VARS;
 import static org.mule.runtime.api.el.BindingContextUtils.addEventBindings;
 import static org.mule.runtime.api.i18n.I18nMessageFactory.createStaticMessage;
+import static org.mule.runtime.core.api.config.MuleProperties.OBJECT_REGISTRY;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import org.mule.runtime.api.component.location.ComponentLocation;
@@ -21,8 +22,6 @@ import org.mule.runtime.core.privileged.el.context.SessionVariableMapContext;
 import org.mule.runtime.core.privileged.event.PrivilegedEvent;
 import org.mule.runtime.extension.api.exception.ModuleException;
 
-import org.slf4j.Logger;
-
 import java.io.Reader;
 import java.io.StringReader;
 
@@ -33,6 +32,8 @@ import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 
+import org.slf4j.Logger;
+
 public class ScriptRunner {
 
   private static final Logger LOGGER = getLogger(ScriptRunner.class);
@@ -40,6 +41,7 @@ public class ScriptRunner {
   private static final String BINDING_LOG = "log";
   private static final String BINDING_RESULT = "result";
   private static final String BINDING_SESSION_VARS = "sessionVars";
+  private static final String REGISTRY = "registry";
 
   // TODO MULE-9690 Remove this binding. An object with this key would be available from the registry when the MuleClient is moved
   // to compatibility.
@@ -106,6 +108,7 @@ public class ScriptRunner {
     bindings.put(VARS, new EventVariablesMapContext(event, eventBuilder));
     bindings.put(BINDING_SESSION_VARS, new SessionVariableMapContext(((PrivilegedEvent) event).getSession()));
     bindings.put(FLOW, location.getRootContainerName());
+    bindings.put(REGISTRY, muleContext.getRegistry().get(OBJECT_REGISTRY));
 
     populatePropertyBindings(bindings);
     populateDefaultBindings(bindings);
@@ -118,18 +121,16 @@ public class ScriptRunner {
   public Object runScript(Bindings bindings) {
     Object result;
     try {
-      RegistryLookupBindings registryLookupBindings =
-          new RegistryLookupBindings(muleContext.getRegistry(), bindings);
       if (compiledScript != null) {
-        result = compiledScript.eval(registryLookupBindings);
+        result = compiledScript.eval(bindings);
       } else {
-        result = scriptEngine.eval(scriptConfig.getCode(), registryLookupBindings);
+        result = scriptEngine.eval(scriptConfig.getCode(), bindings);
       }
 
       // The result of the script can be returned directly or it can
       // be set as the variable "result".
       if (result == null) {
-        result = registryLookupBindings.get(BINDING_RESULT);
+        result = bindings.get(BINDING_RESULT);
       }
     } catch (Exception ex) {
       throw new ModuleException(EXECUTION, ex);
