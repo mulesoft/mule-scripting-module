@@ -52,10 +52,6 @@ public class ScriptRunner {
   private static final String BINDING_SESSION_VARS = "sessionVars";
   private static final String REGISTRY = "registry";
 
-  // TODO MULE-9690 Remove this binding. An object with this key would be available from the registry when the MuleClient is moved
-  // to compatibility.
-  private static final String BINDING_MULE_CLIENT = "_muleClient";
-
   @Inject
   private Registry registry;
 
@@ -130,9 +126,6 @@ public class ScriptRunner {
     populatePropertyBindings(bindings);
     populateDefaultBindings(bindings);
 
-    // TODO MULE-9690 Remove this binding. An object with this key would be available from the registry when the MuleClient is
-    // moved to compatibility.
-    bindings.put(BINDING_MULE_CLIENT, muleContext.getClient());
   }
 
   public Object runScript(Bindings bindings) {
