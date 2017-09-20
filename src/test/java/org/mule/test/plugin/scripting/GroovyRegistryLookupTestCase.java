@@ -6,11 +6,15 @@
  */
 package org.mule.test.plugin.scripting;
 
+import static java.util.Collections.singletonMap;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+
 import org.mule.runtime.api.message.Message;
 
 import org.junit.Test;
+
+import java.util.Map;
 
 public class GroovyRegistryLookupTestCase extends AbstractScriptingFunctionalTestCase {
 
@@ -20,10 +24,8 @@ public class GroovyRegistryLookupTestCase extends AbstractScriptingFunctionalTes
   }
 
   @Override
-  protected void doSetUp() throws Exception {
-    super.doSetUp();
-
-    muleContext.getRegistry().registerObject("hello", new Hello());
+  protected Map<String, Object> getStartUpRegistryObjects() {
+    return singletonMap("hello", new Hello());
   }
 
   @Test

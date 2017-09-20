@@ -8,31 +8,34 @@ import static org.mule.runtime.api.el.BindingContextUtils.NULL_BINDING_CONTEXT;
 import static org.mule.runtime.api.el.BindingContextUtils.VARS;
 import static org.mule.runtime.api.el.BindingContextUtils.addEventBindings;
 import static org.mule.runtime.api.i18n.I18nMessageFactory.createStaticMessage;
-import static org.mule.runtime.core.api.config.MuleProperties.OBJECT_REGISTRY;
 import static org.slf4j.LoggerFactory.getLogger;
 
+import org.mule.runtime.api.artifact.Registry;
 import org.mule.runtime.api.component.location.ComponentLocation;
 import org.mule.runtime.api.el.Binding;
+import org.mule.runtime.api.exception.MuleException;
+import org.mule.runtime.api.exception.MuleRuntimeException;
 import org.mule.runtime.core.api.MuleContext;
 import org.mule.runtime.core.api.event.BaseEvent;
-import org.mule.runtime.core.privileged.util.CollectionUtils;
 import org.mule.runtime.core.api.util.IOUtils;
 import org.mule.runtime.core.privileged.el.context.EventVariablesMapContext;
 import org.mule.runtime.core.privileged.el.context.SessionVariableMapContext;
 import org.mule.runtime.core.privileged.event.PrivilegedEvent;
+import org.mule.runtime.core.privileged.util.CollectionUtils;
 import org.mule.runtime.extension.api.exception.ModuleException;
+
+import org.slf4j.Logger;
 
 import java.io.Reader;
 import java.io.StringReader;
 
+import javax.inject.Inject;
 import javax.script.Bindings;
 import javax.script.Compilable;
 import javax.script.CompiledScript;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
-
-import org.slf4j.Logger;
 
 public class ScriptRunner {
 
@@ -46,6 +49,9 @@ public class ScriptRunner {
   // TODO MULE-9690 Remove this binding. An object with this key would be available from the registry when the MuleClient is moved
   // to compatibility.
   private static final String BINDING_MULE_CLIENT = "_muleClient";
+
+  @Inject
+  private Registry registry;
 
   private Script scriptConfig;
   private MuleContext muleContext;
@@ -61,6 +67,11 @@ public class ScriptRunner {
     this.muleContext = muleContext;
 
     initialise();
+    try {
+      muleContext.getInjector().inject(this);
+    } catch (MuleException e) {
+      throw new MuleRuntimeException(e);
+    }
   }
 
   public void initialise() {
@@ -108,7 +119,7 @@ public class ScriptRunner {
     bindings.put(VARS, new EventVariablesMapContext(event, eventBuilder));
     bindings.put(BINDING_SESSION_VARS, new SessionVariableMapContext(((PrivilegedEvent) event).getSession()));
     bindings.put(FLOW, location.getRootContainerName());
-    bindings.put(REGISTRY, muleContext.getRegistry().get(OBJECT_REGISTRY));
+    bindings.put(REGISTRY, registry);
 
     populatePropertyBindings(bindings);
     populateDefaultBindings(bindings);
