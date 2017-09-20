@@ -15,7 +15,7 @@ import org.mule.runtime.api.component.location.ComponentLocation;
 import org.mule.runtime.api.el.Binding;
 import org.mule.runtime.core.api.MuleContext;
 import org.mule.runtime.core.api.event.BaseEvent;
-import org.mule.runtime.core.api.util.CollectionUtils;
+import org.mule.runtime.core.privileged.util.CollectionUtils;
 import org.mule.runtime.core.api.util.IOUtils;
 import org.mule.runtime.core.privileged.el.context.EventVariablesMapContext;
 import org.mule.runtime.core.privileged.el.context.SessionVariableMapContext;
