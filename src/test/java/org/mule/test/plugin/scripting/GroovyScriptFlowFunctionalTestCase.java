@@ -72,7 +72,7 @@ public class GroovyScriptFlowFunctionalTestCase extends GroovyScriptServiceFunct
 
   @Test
   public void testInlineTransformer() throws Exception {
-    TestConnectorQueueHandler queueHandler = new TestConnectorQueueHandler(muleContext);
+    TestConnectorQueueHandler queueHandler = new TestConnectorQueueHandler(registry);
     flowRunner("inlineScriptFlow").withPayload("hello").run();
     Message response = queueHandler.read("inlineScriptTestOut", RECEIVE_TIMEOUT).getMessage();
     assertThat(response, not(nullValue()));
@@ -81,7 +81,7 @@ public class GroovyScriptFlowFunctionalTestCase extends GroovyScriptServiceFunct
 
   @Test
   public void testInlineScriptWithParameters() throws Exception {
-    TestConnectorQueueHandler queueHandler = new TestConnectorQueueHandler(muleContext);
+    TestConnectorQueueHandler queueHandler = new TestConnectorQueueHandler(registry);
     flowRunner("inlineScriptWithParametersFlow").withPayload("hello").run();
     Message response =
         queueHandler.read("inlineScriptWithParametersTestOut", RECEIVE_TIMEOUT).getMessage();
