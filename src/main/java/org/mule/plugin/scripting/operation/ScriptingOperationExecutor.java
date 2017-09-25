@@ -13,7 +13,7 @@ import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.message.Message;
 import org.mule.runtime.api.meta.model.operation.OperationModel;
 import org.mule.runtime.core.api.MuleContext;
-import org.mule.runtime.core.api.event.BaseEvent;
+import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.runtime.extension.api.runtime.operation.ExecutionContext;
 import org.mule.runtime.extension.api.runtime.operation.ComponentExecutor;
 import org.mule.runtime.module.extension.api.runtime.privileged.ExecutionContextAdapter;
@@ -39,16 +39,16 @@ public class ScriptingOperationExecutor implements ComponentExecutor<OperationMo
     Script scriptConfig = new Script(context);
 
     try {
-      BaseEvent result = process(context.getEvent(), scriptConfig, context.getComponentLocation(), context.getMuleContext());
+      CoreEvent result = process(context.getEvent(), scriptConfig, context.getComponentLocation(), context.getMuleContext());
       return Mono.justOrEmpty(result);
     } catch (Exception e) {
       return Mono.error(e);
     }
   }
 
-  private BaseEvent process(BaseEvent event, Script script, ComponentLocation componentLocation, MuleContext muleContext)
+  private CoreEvent process(CoreEvent event, Script script, ComponentLocation componentLocation, MuleContext muleContext)
       throws MuleException {
-    BaseEvent.Builder eventBuilder = BaseEvent.builder(event);
+    CoreEvent.Builder eventBuilder = CoreEvent.builder(event);
     if (scriptRunner == null) {
       scriptRunner = new ScriptRunner(script, muleContext);
     }

@@ -22,7 +22,7 @@ import org.mule.runtime.api.el.Binding;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.exception.MuleRuntimeException;
 import org.mule.runtime.core.api.MuleContext;
-import org.mule.runtime.core.api.event.BaseEvent;
+import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.runtime.core.api.util.IOUtils;
 import org.mule.runtime.core.privileged.el.context.EventVariablesMapContext;
 import org.mule.runtime.core.privileged.el.context.SessionVariableMapContext;
@@ -116,8 +116,8 @@ public class ScriptRunner {
     bindings.put(BINDING_RESULT, null);
   }
 
-  public void populateBindings(Bindings bindings, ComponentLocation location, BaseEvent event,
-                               BaseEvent.Builder eventBuilder) {
+  public void populateBindings(Bindings bindings, ComponentLocation location, CoreEvent event,
+                               CoreEvent.Builder eventBuilder) {
     // TODO MULE-10121 Provide a MessageBuilder API in scripting components to improve usability
     for (Binding binding : addEventBindings(event, NULL_BINDING_CONTEXT).bindings()) {
       bindings.put(binding.identifier(), binding.value().getValue());
