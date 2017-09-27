@@ -44,11 +44,6 @@
             <version>${springVersion}</version>
             <scope>provided</scope>
         </dependency>
-        <dependency>
-            <groupId>io.projectreactor</groupId>
-            <artifactId>reactor-core</artifactId>
-            <version>3.0.7.RELEASE</version>
-        </dependency>
 
         <!--Test Dependencies-->
         <dependency>
