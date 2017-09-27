@@ -23,6 +23,7 @@
         <jython.version>2.7.1b3</jython.version>
         <rhinoVersion>1.7R4</rhinoVersion>
         <rhinoJsr223Version>1.1</rhinoJsr223Version>
+        <projectReactorVersion>3.1.0.RELEASE</projectReactorVersion>
         <springVersion>4.1.9.RELEASE</springVersion>
         <groovyVersion>2.4.4</groovyVersion>
         
@@ -43,6 +44,11 @@
             <artifactId>spring-core</artifactId>
             <version>${springVersion}</version>
             <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.projectreactor</groupId>
+            <artifactId>reactor-core</artifactId>
+            <version>${projectReactorVersion}</version>
         </dependency>
 
         <!--Test Dependencies-->
