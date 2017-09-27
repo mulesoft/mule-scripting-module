@@ -12,8 +12,8 @@ import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
 
+import org.mule.functional.api.component.TestConnectorQueueHandler;
 import org.mule.runtime.api.message.Message;
-import org.mule.runtime.core.api.client.MuleClient;
 import org.mule.tck.testmodels.fruit.Apple;
 
 import org.junit.Test;
@@ -72,19 +72,19 @@ public class GroovyScriptFlowFunctionalTestCase extends GroovyScriptServiceFunct
 
   @Test
   public void testInlineTransformer() throws Exception {
-    MuleClient client = muleContext.getClient();
+    TestConnectorQueueHandler queueHandler = new TestConnectorQueueHandler(registry);
     flowRunner("inlineScriptFlow").withPayload("hello").run();
-    Message response = client.request("test://inlineScriptTestOut", RECEIVE_TIMEOUT).getRight().get();
+    Message response = queueHandler.read("inlineScriptTestOut", RECEIVE_TIMEOUT).getMessage();
     assertThat(response, not(nullValue()));
     assertThat(response.getPayload().getValue(), is("hexxo"));
   }
 
   @Test
   public void testInlineScriptWithParameters() throws Exception {
-    MuleClient client = muleContext.getClient();
+    TestConnectorQueueHandler queueHandler = new TestConnectorQueueHandler(registry);
     flowRunner("inlineScriptWithParametersFlow").withPayload("hello").run();
     Message response =
-        client.request("test://inlineScriptWithParametersTestOut", RECEIVE_TIMEOUT).getRight().get();
+        queueHandler.read("inlineScriptWithParametersTestOut", RECEIVE_TIMEOUT).getMessage();
     assertThat(response, not(nullValue()));
     assertThat(response.getPayload().getValue(), is("hexxo"));
   }
