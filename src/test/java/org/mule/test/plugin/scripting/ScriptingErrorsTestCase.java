@@ -8,8 +8,7 @@ package org.mule.test.plugin.scripting;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
-
-import org.mule.runtime.core.api.exception.MessagingException;
+import org.mule.runtime.core.api.exception.EventProcessingException;
 
 import org.junit.Test;
 
@@ -22,7 +21,7 @@ public class ScriptingErrorsTestCase extends AbstractScriptingFunctionalTestCase
 
   @Test
   public void testExecutionError() throws Exception {
-    MessagingException exception = flowRunner("executionError").runExpectingException();
+    EventProcessingException exception = flowRunner("executionError").runExpectingException();
 
     assertThat(exception.getEvent().getError().isPresent(), is(true));
     assertThat(exception.getEvent().getError().get().getErrorType().getIdentifier(), is("EXECUTION"));
@@ -30,7 +29,7 @@ public class ScriptingErrorsTestCase extends AbstractScriptingFunctionalTestCase
 
   @Test
   public void testEngineError() throws Exception {
-    MessagingException exception = flowRunner("engineError").runExpectingException();
+    EventProcessingException exception = flowRunner("engineError").runExpectingException();
 
     assertThat(exception.getEvent().getError().isPresent(), is(true));
     assertThat(exception.getEvent().getError().get().getErrorType().getIdentifier(), is("UNKNOWN_ENGINE"));
