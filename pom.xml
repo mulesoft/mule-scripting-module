@@ -19,14 +19,13 @@
 
     <properties>
         <formatterConfigPath>formatter.xml</formatterConfigPath>
-        <jffi.version>1.2.10</jffi.version>
-        <jython.version>2.7.1b3</jython.version>
-        <rhinoVersion>1.7R4</rhinoVersion>
-        <rhinoJsr223Version>1.1</rhinoJsr223Version>
+
+        <jython.version>2.7.1</jython.version>
+        <groovyVersion>2.4.12</groovyVersion>
+        <jrubyVersion>9.1.13.0</jrubyVersion>
+
         <projectReactorVersion>3.1.0.RELEASE</projectReactorVersion>
         <springVersion>4.1.9.RELEASE</springVersion>
-        <groovyVersion>2.4.4</groovyVersion>
-        
         <mule.weave.version>2.0.0-SNAPSHOT</mule.weave.version>
         <mule.app.plugins.maven.plugin.version>1.0.0-SNAPSHOT</mule.app.plugins.maven.plugin.version>
     </properties>
@@ -86,174 +85,16 @@
             <version>${jython.version}</version>
         </dependency>
 
-        <!--Javascript-->
-        <dependency>
-            <groupId>javax.script</groupId>
-            <artifactId>js-engine</artifactId>
-            <version>${rhinoJsr223Version}</version>
-            <classifier>jdk14</classifier>
-        </dependency>
-        <dependency>
-            <groupId>org.mozilla</groupId>
-            <artifactId>rhino</artifactId>
-            <version>${rhinoVersion}</version>
-        </dependency>
-
         <!--Ruby-->
         <dependency>
             <groupId>org.jruby</groupId>
             <artifactId>jruby-core</artifactId>
-            <version>1.7.27</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>com.github.jnr</groupId>
-                    <artifactId>jnr-ffi</artifactId>
-                </exclusion>
-            </exclusions>
+            <version>${jrubyVersion}</version>
         </dependency>
         <dependency>
             <groupId>org.jruby</groupId>
             <artifactId>jruby-stdlib</artifactId>
-            <version>1.7.27</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.jruby.joni</groupId>
-            <artifactId>joni</artifactId>
-            <version>2.1.9</version>
-        </dependency>
-        <dependency>
-            <groupId>com.github.jnr</groupId>
-            <artifactId>jnr-netdb</artifactId>
-            <version>1.1.2</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>com.github.jnr</groupId>
-                    <artifactId>jnr-ffi</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>com.github.jnr</groupId>
-            <artifactId>jnr-enxio</artifactId>
-            <version>0.9</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>com.github.jnr</groupId>
-                    <artifactId>jnr-ffi</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>com.github.jnr</groupId>
-            <artifactId>jnr-x86asm</artifactId>
-            <version>1.0.2</version>
-        </dependency>
-        <dependency>
-            <groupId>com.github.jnr</groupId>
-            <artifactId>jnr-unixsocket</artifactId>
-            <version>0.8</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>com.github.jnr</groupId>
-                    <artifactId>jnr-ffi</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>com.github.jnr</groupId>
-            <artifactId>jnr-posix</artifactId>
-            <version>3.0.27</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>com.github.jnr</groupId>
-                    <artifactId>jnr-ffi</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>org.jruby.extras</groupId>
-            <artifactId>bytelist</artifactId>
-            <version>1.0.11</version>
-        </dependency>
-        <dependency>
-            <groupId>com.github.jnr</groupId>
-            <artifactId>jnr-constants</artifactId>
-            <version>0.9.0</version>
-        </dependency>
-        <dependency>
-            <groupId>org.jruby.jcodings</groupId>
-            <artifactId>jcodings</artifactId>
-            <version>1.0.16</version>
-        </dependency>
-        <dependency>
-            <groupId>com.github.jnr</groupId>
-            <artifactId>jnr-ffi</artifactId>
-            <version>2.0.5</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.ow2.asm</groupId>
-                    <artifactId>asm</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.ow2.asm</groupId>
-                    <artifactId>asm-commons</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.ow2.asm</groupId>
-                    <artifactId>asm-analysis</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.ow2.asm</groupId>
-                    <artifactId>asm-util</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.ow2.asm</groupId>
-                    <artifactId>asm-tree</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>com.github.jnr</groupId>
-            <artifactId>jffi</artifactId>
-            <version>${jffi.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.github.jnr</groupId>
-            <artifactId>jffi</artifactId>
-            <version>${jffi.version}</version>
-            <classifier>native</classifier>
-        </dependency>
-        <dependency>
-            <groupId>org.yaml</groupId>
-            <artifactId>snakeyaml</artifactId>
-            <version>1.15</version>
-        </dependency>
-        <dependency>
-            <groupId>com.jcraft</groupId>
-            <artifactId>jzlib</artifactId>
-            <version>1.1.3</version>
-        </dependency>
-        <dependency>
-            <groupId>com.headius</groupId>
-            <artifactId>invokebinder</artifactId>
-            <version>1.2</version>
-        </dependency>
-        <dependency>
-            <groupId>com.headius</groupId>
-            <artifactId>options</artifactId>
-            <version>1.3</version>
-        </dependency>
-        <dependency>
-            <groupId>com.martiansoftware</groupId>
-            <artifactId>nailgun-server</artifactId>
-            <version>0.9.1</version>
-        </dependency>
-        <dependency>
-            <groupId>org.jruby</groupId>
-            <artifactId>yecht</artifactId>
-            <version>1.1</version>
-            <classifier>jruby</classifier>
+            <version>${jrubyVersion}</version>
         </dependency>
 
         <!-- Test dependencies -->

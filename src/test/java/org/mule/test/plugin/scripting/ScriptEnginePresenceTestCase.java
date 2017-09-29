@@ -9,6 +9,7 @@ package org.mule.test.plugin.scripting;
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
+
 import org.mule.tck.junit4.AbstractMuleTestCase;
 import org.mule.tck.size.SmallTest;
 
@@ -38,10 +39,8 @@ public class ScriptEnginePresenceTestCase extends AbstractMuleTestCase {
   public static Collection<Object[]> data() {
     return Arrays.asList(new Object[][] {
         {"groovy", "groovy", "Groovy Scripting Engine", "2.0", "return 10"},
-        {"jython", "py", "jython", "2.7.3", "print \"hello world\""},
-        {"jruby", "rb", "JSR 223 JRuby Engine", "1.7.27", "1.+ 2"},
-        {"rhino", "js", "Mozilla Rhino", "1.6R5", "print(\"hello world\");"},
-        {"rhino", "js", "Mozilla Rhino", "1.6 release 2", "print(\"hello world\");"}
+        {"jython", "py", "jython", "2.7.1", "print \"hello world\""},
+        {"jruby", "rb", "JSR 223 JRuby Engine", "9.1.13.0", "1.+ 2"}
     });
   }
 
