@@ -6,9 +6,9 @@
  */
 package org.mule.test.plugin.scripting;
 
+import static org.hamcrest.Matchers.any;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
-import org.mule.runtime.core.api.exception.EventProcessingException;
+import static org.mule.tck.junit4.matcher.ErrorTypeMatcher.errorType;
 
 import org.junit.Test;
 
@@ -21,17 +21,11 @@ public class ScriptingErrorsTestCase extends AbstractScriptingFunctionalTestCase
 
   @Test
   public void testExecutionError() throws Exception {
-    EventProcessingException exception = flowRunner("executionError").runExpectingException();
-
-    assertThat(exception.getEvent().getError().isPresent(), is(true));
-    assertThat(exception.getEvent().getError().get().getErrorType().getIdentifier(), is("EXECUTION"));
+    flowRunner("executionError").runExpectingException(errorType(any(String.class), is("EXECUTION")));
   }
 
   @Test
   public void testEngineError() throws Exception {
-    EventProcessingException exception = flowRunner("engineError").runExpectingException();
-
-    assertThat(exception.getEvent().getError().isPresent(), is(true));
-    assertThat(exception.getEvent().getError().get().getErrorType().getIdentifier(), is("UNKNOWN_ENGINE"));
+    flowRunner("engineError").runExpectingException(errorType(any(String.class), is("UNKNOWN_ENGINE")));
   }
 }
