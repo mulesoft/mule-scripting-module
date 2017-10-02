@@ -6,17 +6,16 @@
  */
 package org.mule.plugin.scripting.operation;
 
-import org.mule.plugin.scripting.component.Script;
 import org.mule.plugin.scripting.component.ScriptRunner;
-import org.mule.runtime.api.component.location.ComponentLocation;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.message.Message;
 import org.mule.runtime.api.meta.model.operation.OperationModel;
-import org.mule.runtime.core.api.MuleContext;
 import org.mule.runtime.core.api.event.CoreEvent;
-import org.mule.runtime.extension.api.runtime.operation.ExecutionContext;
 import org.mule.runtime.extension.api.runtime.operation.ComponentExecutor;
+import org.mule.runtime.extension.api.runtime.operation.ExecutionContext;
 import org.mule.runtime.module.extension.api.runtime.privileged.ExecutionContextAdapter;
+
+import java.util.Map;
 
 import javax.script.Bindings;
 
@@ -36,31 +35,39 @@ public class ScriptingOperationExecutor implements ComponentExecutor<OperationMo
   public Publisher<Object> execute(ExecutionContext<OperationModel> executionContext) {
     ExecutionContextAdapter<OperationModel> context = (ExecutionContextAdapter<OperationModel>) executionContext;
 
-    Script scriptConfig = new Script(context);
-
     try {
-      CoreEvent result = process(context.getEvent(), scriptConfig, context.getComponentLocation(), context.getMuleContext());
+      if (scriptRunner == null) {
+        String engine = context.getParameter("engine");
+        String code = context.getParameter("code");
+
+        scriptRunner = new ScriptRunner(engine, code, context.getComponentLocation());
+        context.getMuleContext().getInjector().inject(scriptRunner);
+      }
+
+      Map<String, Object> parameters = context.getParameter("parameters");
+      CoreEvent result = process(context.getEvent(), parameters);
       return Mono.justOrEmpty(result);
     } catch (Exception e) {
       return Mono.error(e);
     }
   }
 
-  private CoreEvent process(CoreEvent event, Script script, ComponentLocation componentLocation, MuleContext muleContext)
+  private CoreEvent process(CoreEvent event, Map<String, Object> parameters)
       throws MuleException {
     CoreEvent.Builder eventBuilder = CoreEvent.builder(event);
-    if (scriptRunner == null) {
-      scriptRunner = new ScriptRunner(script, muleContext);
-    }
+
     Bindings bindings = scriptRunner.getScriptEngine().createBindings();
-    scriptRunner.populateBindings(bindings, componentLocation, event, eventBuilder);
+    scriptRunner.populateBindings(bindings, event, parameters);
 
     try {
       final Object result = scriptRunner.runScript(bindings);
       if (result instanceof Message) {
         eventBuilder.message((Message) result);
       } else {
-        eventBuilder.message(Message.builder(event.getMessage()).value(result).build());
+        Message message = Message.builder(event.getMessage())
+            .nullAttributesValue()
+            .value(result).build();
+        eventBuilder.message(message);
       }
     } finally {
       bindings.clear();

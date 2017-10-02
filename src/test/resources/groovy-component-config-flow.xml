@@ -48,7 +48,7 @@
                 vars['foo'] = 'bar-mutated'
              </script:code>
         </script:execute>
-        <test:assert expression="#[vars.foo == 'bar-mutated']"/>
+        <test:assert count="0"/>
     </flow>
     
     <flow name="inlineScriptAddVariable">
@@ -57,13 +57,13 @@
                 vars['foo'] = 'bar'
              </script:code>
         </script:execute>
-        <test:assert expression="#[vars.foo == 'bar']"/>
+        <test:assert count="0"/>
     </flow>
 
     <flow name="inlineScriptMutateVariablesMap">
         <script:execute engine="groovy">
             <script:code>
-                vars = new HashMap()              
+                vars = new HashMap()
              </script:code>
         </script:execute>
         <test:assert expression="#[vars.foo == 'bar']"/>
@@ -73,10 +73,11 @@
     <flow name="inlineScriptMutatePayload">
         <script:execute engine="groovy">
             <script:code>
-                payload = 'bar-mutated'               
+                payload = 'bar-mutated'
+                return 'bar-returned'
              </script:code>
         </script:execute>
-        <test:assert expression="#[payload == 'bar-mutated']"/>
+        <test:assert expression="#[payload == 'bar-returned']"/>
     </flow>
     
     <flow name="scriptExpressionVariables">
@@ -120,5 +121,16 @@
         <test:queue name="inlineScriptWithParametersTestOut"/>
     </flow>
 
+    <flow name="inlineScriptWithResolvedParameters">
+        <script:execute engine="groovy">
+            <script:code>
+                return testVar.element
+            </script:code>
+            <script:parameters>
+                #[{testVar: payload}]
+            </script:parameters>
+        </script:execute>
+        <test:queue name="inlineScriptTestOut"/>
+    </flow>
 </mule>
 

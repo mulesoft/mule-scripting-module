@@ -6,6 +6,7 @@
  */
 package org.mule.plugin.scripting.component;
 
+import static java.util.Collections.unmodifiableMap;
 import static org.mule.plugin.scripting.errors.ScriptingErrors.COMPILATION;
 import static org.mule.plugin.scripting.errors.ScriptingErrors.EXECUTION;
 import static org.mule.plugin.scripting.errors.ScriptingErrors.UNKNOWN_ENGINE;
@@ -19,21 +20,18 @@ import static org.slf4j.LoggerFactory.getLogger;
 import org.mule.runtime.api.artifact.Registry;
 import org.mule.runtime.api.component.location.ComponentLocation;
 import org.mule.runtime.api.el.Binding;
-import org.mule.runtime.api.exception.MuleException;
-import org.mule.runtime.api.exception.MuleRuntimeException;
-import org.mule.runtime.core.api.MuleContext;
+import org.mule.runtime.api.streaming.CursorProvider;
 import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.runtime.core.api.util.IOUtils;
-import org.mule.runtime.core.privileged.el.context.EventVariablesMapContext;
 import org.mule.runtime.core.privileged.el.context.SessionVariableMapContext;
 import org.mule.runtime.core.privileged.event.PrivilegedEvent;
 import org.mule.runtime.core.privileged.util.CollectionUtils;
 import org.mule.runtime.extension.api.exception.ModuleException;
 
-import org.slf4j.Logger;
-
 import java.io.Reader;
 import java.io.StringReader;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.script.Bindings;
@@ -42,6 +40,8 @@ import javax.script.CompiledScript;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
+
+import org.slf4j.Logger;
 
 public class ScriptRunner {
 
@@ -52,11 +52,12 @@ public class ScriptRunner {
   private static final String BINDING_SESSION_VARS = "sessionVars";
   private static final String REGISTRY = "registry";
 
+  private String engineText;
+  private String codeText;
+  private ComponentLocation location;
+
   @Inject
   private Registry registry;
-
-  private Script scriptConfig;
-  private MuleContext muleContext;
 
   /** A compiled version of the script, if the scripting engine supports it */
   private CompiledScript compiledScript;
@@ -64,29 +65,25 @@ public class ScriptRunner {
   private ScriptEngine scriptEngine;
   private ScriptEngineManager scriptEngineManager;
 
-  public ScriptRunner(Script scriptConfig, MuleContext muleContext) {
-    this.scriptConfig = scriptConfig;
-    this.muleContext = muleContext;
+  public ScriptRunner(String engine, String code, ComponentLocation location) {
+    this.engineText = engine;
+    this.codeText = code;
+    this.location = location;
 
     initialise();
-    try {
-      muleContext.getInjector().inject(this);
-    } catch (MuleException e) {
-      throw new MuleRuntimeException(e);
-    }
   }
 
   public void initialise() {
     scriptEngineManager = new ScriptEngineManager(this.getClass().getClassLoader());
 
-    scriptEngine = createScriptEngineByName(scriptConfig.getEngine());
+    scriptEngine = createScriptEngineByName(engineText);
     if (scriptEngine == null) {
       String message =
-          "Scripting engine '" + scriptConfig.getEngine() + "' not found.  Available engines are: " + listAvailableEngines();
+          "Scripting engine '" + engineText + "' not found.  Available engines are: " + listAvailableEngines();
       throw new ModuleException(createStaticMessage(message), UNKNOWN_ENGINE);
     }
 
-    Reader script = new StringReader(scriptConfig.getCode());
+    Reader script = new StringReader(codeText);
     try {
       // Pre-compile script if scripting engine supports compilation.
       if (scriptEngine instanceof Compilable) {
@@ -101,10 +98,6 @@ public class ScriptRunner {
     }
   }
 
-  protected void populatePropertyBindings(Bindings bindings) {
-    bindings.putAll(scriptConfig.getParameters());
-  }
-
   public void populateDefaultBindings(Bindings bindings) {
     bindings.put(BINDING_LOG, LOGGER);
     // A place holder for a returned result if the script doesn't return a result.
@@ -112,20 +105,21 @@ public class ScriptRunner {
     bindings.put(BINDING_RESULT, null);
   }
 
-  public void populateBindings(Bindings bindings, ComponentLocation location, CoreEvent event,
-                               CoreEvent.Builder eventBuilder) {
+  public void populateBindings(Bindings bindings, CoreEvent event, Map<String, Object> parameters) {
     // TODO MULE-10121 Provide a MessageBuilder API in scripting components to improve usability
+
     for (Binding binding : addEventBindings(event, NULL_BINDING_CONTEXT).bindings()) {
-      bindings.put(binding.identifier(), binding.value().getValue());
+      Object resolvedValue = resolveCursor(binding.value().getValue());
+      bindings.put(binding.identifier(), resolvedValue);
     }
-    bindings.put(VARS, new EventVariablesMapContext(event, eventBuilder));
+
+    bindings.put(VARS, unmodifiableMap(createResolvedMap(event)));
     bindings.put(BINDING_SESSION_VARS, new SessionVariableMapContext(((PrivilegedEvent) event).getSession()));
     bindings.put(FLOW, location.getRootContainerName());
     bindings.put(REGISTRY, registry);
 
-    populatePropertyBindings(bindings);
+    bindings.putAll(parameters);
     populateDefaultBindings(bindings);
-
   }
 
   public Object runScript(Bindings bindings) {
@@ -134,7 +128,7 @@ public class ScriptRunner {
       if (compiledScript != null) {
         result = compiledScript.eval(bindings);
       } else {
-        result = scriptEngine.eval(scriptConfig.getCode(), bindings);
+        result = scriptEngine.eval(codeText, bindings);
       }
 
       // The result of the script can be returned directly or it can
@@ -158,5 +152,19 @@ public class ScriptRunner {
 
   public ScriptEngine getScriptEngine() {
     return scriptEngine;
+  }
+
+  private Object resolveCursor(Object value) {
+    if (value instanceof CursorProvider) {
+      value = ((CursorProvider) value).openCursor();
+    }
+
+    return value;
+  }
+
+  private Map<String, Object> createResolvedMap(CoreEvent event) {
+    return event.getVariables().entrySet().stream().collect(
+                                                            Collectors.toMap(e -> e.getKey(),
+                                                                             e -> resolveCursor(e.getValue().getValue())));
   }
 }
