@@ -13,6 +13,8 @@ import org.mule.runtime.api.meta.model.operation.OperationModel;
 import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.runtime.extension.api.runtime.operation.ComponentExecutor;
 import org.mule.runtime.extension.api.runtime.operation.ExecutionContext;
+import org.mule.runtime.extension.api.runtime.operation.Result;
+import org.mule.runtime.module.extension.api.runtime.privileged.EventedResult;
 import org.mule.runtime.module.extension.api.runtime.privileged.ExecutionContextAdapter;
 
 import java.util.Map;
@@ -45,34 +47,28 @@ public class ScriptingOperationExecutor implements ComponentExecutor<OperationMo
       }
 
       Map<String, Object> parameters = context.getParameter("parameters");
-      CoreEvent result = process(context.getEvent(), parameters);
+      Result<Object, Object> result = process(context.getEvent(), parameters);
       return Mono.justOrEmpty(result);
     } catch (Exception e) {
       return Mono.error(e);
     }
   }
 
-  private CoreEvent process(CoreEvent event, Map<String, Object> parameters)
+  private Result<Object, Object> process(CoreEvent event, Map<String, Object> parameters)
       throws MuleException {
-    CoreEvent.Builder eventBuilder = CoreEvent.builder(event);
-
     Bindings bindings = scriptRunner.getScriptEngine().createBindings();
     scriptRunner.populateBindings(bindings, event, parameters);
 
     try {
       final Object result = scriptRunner.runScript(bindings);
       if (result instanceof Message) {
-        eventBuilder.message((Message) result);
+        CoreEvent resultEvent = CoreEvent.builder(event).message((Message) result).build();
+        return EventedResult.from(resultEvent);
       } else {
-        Message message = Message.builder(event.getMessage())
-            .nullAttributesValue()
-            .value(result).build();
-        eventBuilder.message(message);
+        return Result.builder(event.getMessage()).attributes(null).output(result).build();
       }
     } finally {
       bindings.clear();
     }
-
-    return eventBuilder.build();
   }
 }

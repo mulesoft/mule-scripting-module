@@ -18,7 +18,6 @@ import org.mule.runtime.api.metadata.MediaType;
 import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.tck.testmodels.fruit.Apple;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 public class GroovyScriptFlowFunctionalTestCase extends GroovyScriptServiceFunctionalTestCase {
@@ -34,8 +33,8 @@ public class GroovyScriptFlowFunctionalTestCase extends GroovyScriptServiceFunct
   }
 
   @Test
-  public void inlineScriptMutatePropertiesMap() throws Exception {
-    flowRunner("inlineScriptMutatePropertiesMap").withPayload("").withOutboundProperty("foo", "bar").run();
+  public void inlineScriptClearProperties() throws Exception {
+    flowRunner("inlineScriptClearProperties").withPayload("").withOutboundProperty("foo", "bar").run();
   }
 
   @Test
@@ -117,11 +116,11 @@ public class GroovyScriptFlowFunctionalTestCase extends GroovyScriptServiceFunct
     assertThat(event.getMessage().getPayload().getValue(), is(2));
   }
 
-  @Ignore("targetValue is not yet supported")
   @Test
   public void inlineScriptTargetValue() throws Exception {
-    CoreEvent event = flowRunner("inlineScriptTargetValue").withPayload("").run();
-    assertThat(event.getVariables().get("myVar"), is("hello"));
+    CoreEvent event = flowRunner("inlineScriptTargetValue").withPayload("original").run();
+    assertThat(event.getVariables().get("myVar").getValue(), is("hello"));
+    assertThat(event.getMessage().getPayload().getValue(), is("original"));
   }
 
   @Override
