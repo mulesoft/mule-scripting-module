@@ -130,7 +130,14 @@
                 #[{testVar: payload}]
             </script:parameters>
         </script:execute>
-        <test:queue name="inlineScriptTestOut"/>
+    </flow>
+
+    <flow name="inlineScriptTargetValue">
+        <script:execute engine="groovy" targetValue="myVar">
+            <script:code>
+                return "hello"
+            </script:code>
+        </script:execute>
     </flow>
 </mule>
 

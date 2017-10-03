@@ -18,6 +18,7 @@ import org.mule.runtime.api.metadata.MediaType;
 import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.tck.testmodels.fruit.Apple;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class GroovyScriptFlowFunctionalTestCase extends GroovyScriptServiceFunctionalTestCase {
@@ -39,7 +40,8 @@ public class GroovyScriptFlowFunctionalTestCase extends GroovyScriptServiceFunct
 
   @Test
   public void inlineScriptCannotMutateVariable() throws Exception {
-    Exception exception = flowRunner("inlineScriptMutateVariable").withPayload("").withVariable("foo", "bar").runExpectingException();
+    Exception exception =
+        flowRunner("inlineScriptMutateVariable").withPayload("").withVariable("foo", "bar").runExpectingException();
     assertThat(exception.getCause().getCause(), instanceOf(UnsupportedOperationException.class));
   }
 
@@ -103,16 +105,23 @@ public class GroovyScriptFlowFunctionalTestCase extends GroovyScriptServiceFunct
   public void inlineScriptWithResolvedParameters() throws Exception {
     CoreEvent event;
     event = flowRunner("inlineScriptWithResolvedParameters")
-                .withPayload("{\"element\": 1}")
-                .withMediaType(MediaType.APPLICATION_JSON)
-                .run();
+        .withPayload("{\"element\": 1}")
+        .withMediaType(MediaType.APPLICATION_JSON)
+        .run();
     assertThat(event.getMessage().getPayload().getValue(), is(1));
 
     event = flowRunner("inlineScriptWithResolvedParameters")
-                .withPayload("{\"element\": 2}")
-                .withMediaType(MediaType.APPLICATION_JSON)
-                .run();
+        .withPayload("{\"element\": 2}")
+        .withMediaType(MediaType.APPLICATION_JSON)
+        .run();
     assertThat(event.getMessage().getPayload().getValue(), is(2));
+  }
+
+  @Ignore("targetValue is not yet supported")
+  @Test
+  public void inlineScriptTargetValue() throws Exception {
+    CoreEvent event = flowRunner("inlineScriptTargetValue").withPayload("").run();
+    assertThat(event.getVariables().get("myVar"), is("hello"));
   }
 
   @Override
