@@ -7,6 +7,7 @@
 package org.mule.plugin.scripting.component;
 
 import static java.util.Collections.unmodifiableMap;
+import static java.util.stream.Collectors.toMap;
 import static org.mule.plugin.scripting.errors.ScriptingErrors.COMPILATION;
 import static org.mule.plugin.scripting.errors.ScriptingErrors.EXECUTION;
 import static org.mule.plugin.scripting.errors.ScriptingErrors.UNKNOWN_ENGINE;
@@ -31,7 +32,6 @@ import org.mule.runtime.extension.api.exception.ModuleException;
 import java.io.Reader;
 import java.io.StringReader;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.script.Bindings;
@@ -52,8 +52,8 @@ public class ScriptRunner {
   private static final String BINDING_SESSION_VARS = "sessionVars";
   private static final String REGISTRY = "registry";
 
-  private String engineText;
-  private String codeText;
+  private String engineName;
+  private String scriptBody;
   private ComponentLocation location;
 
   @Inject
@@ -66,8 +66,8 @@ public class ScriptRunner {
   private ScriptEngineManager scriptEngineManager;
 
   public ScriptRunner(String engine, String code, ComponentLocation location) {
-    this.engineText = engine;
-    this.codeText = code;
+    this.engineName = engine;
+    this.scriptBody = code;
     this.location = location;
 
     initialise();
@@ -76,14 +76,14 @@ public class ScriptRunner {
   public void initialise() {
     scriptEngineManager = new ScriptEngineManager(this.getClass().getClassLoader());
 
-    scriptEngine = createScriptEngineByName(engineText);
+    scriptEngine = createScriptEngineByName(engineName);
     if (scriptEngine == null) {
       String message =
-          "Scripting engine '" + engineText + "' not found.  Available engines are: " + listAvailableEngines();
+          "Scripting engine '" + engineName + "' not found.  Available engines are: " + listAvailableEngines();
       throw new ModuleException(createStaticMessage(message), UNKNOWN_ENGINE);
     }
 
-    Reader script = new StringReader(codeText);
+    Reader script = new StringReader(scriptBody);
     try {
       // Pre-compile script if scripting engine supports compilation.
       if (scriptEngine instanceof Compilable) {
@@ -128,7 +128,7 @@ public class ScriptRunner {
       if (compiledScript != null) {
         result = compiledScript.eval(bindings);
       } else {
-        result = scriptEngine.eval(codeText, bindings);
+        result = scriptEngine.eval(scriptBody, bindings);
       }
 
       // The result of the script can be returned directly or it can
@@ -164,7 +164,7 @@ public class ScriptRunner {
 
   private Map<String, Object> createResolvedMap(CoreEvent event) {
     return event.getVariables().entrySet().stream().collect(
-                                                            Collectors.toMap(e -> e.getKey(),
-                                                                             e -> resolveCursor(e.getValue().getValue())));
+                                                            toMap(e -> e.getKey(),
+                                                                  e -> resolveCursor(e.getValue().getValue())));
   }
 }
