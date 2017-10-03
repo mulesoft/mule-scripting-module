@@ -7,8 +7,6 @@
       "exportedPackages": [
       ],
       "exportedResources": [
-        "META-INF/spring.schemas",
-        "META-INF/mule-scripting.xsd"
       ]
     }
   },
