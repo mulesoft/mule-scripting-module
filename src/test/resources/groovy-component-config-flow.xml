@@ -12,10 +12,11 @@
 
     <flow name="inlineScriptMutateProperty">
         <script:execute engine="groovy">
-            <script:code><![CDATA[
-            message = new org.mule.functional.junit4.TestLegacyMessageBuilder(message).addOutboundProperty('foo',
-            'bar-mutated').build()
-        ]]>
+            <script:code>
+                <![CDATA[
+                return new org.mule.functional.junit4.TestLegacyMessageBuilder(message)
+                    .addOutboundProperty('foo', 'bar-mutated').build()
+            ]]>
             </script:code>
         </script:execute>
         <test:assert expression="#[mel:message.outboundProperties.foo == 'bar-mutated']"/>
@@ -25,20 +26,20 @@
         <script:execute engine="groovy">
             <script:code>
                 <![CDATA[
-                message = new org.mule.functional.junit4.TestLegacyMessageBuilder(message).addOutboundProperty('foo',
-                'bar').build()
+                return new org.mule.functional.junit4.TestLegacyMessageBuilder(message)
+                    .addOutboundProperty('foo', 'bar').build()
             ]]></script:code>
         </script:execute>
         <test:assert expression="#[mel:message.outboundProperties.foo == 'bar']"/>
     </flow>
 
-    <flow name="inlineScriptMutatePropertiesMap">
+    <flow name="inlineScriptClearProperties">
         <script:execute engine="groovy">
             <script:code><![CDATA[
-                outbound = new HashMap()              
+                return new HashMap()
              ]]></script:code>
         </script:execute>
-        <test:assert expression="#[mel:message.outboundProperties.foo == 'bar']"/>
+        <test:assert expression="#[mel:message.outboundProperties.foo != 'bar']"/>
         <test:assert expression="#[mel:payload instanceof HashMap]"/>
     </flow>
 
@@ -48,7 +49,7 @@
                 vars['foo'] = 'bar-mutated'
              </script:code>
         </script:execute>
-        <test:assert expression="#[vars.foo == 'bar-mutated']"/>
+        <test:assert count="0"/>
     </flow>
     
     <flow name="inlineScriptAddVariable">
@@ -57,13 +58,13 @@
                 vars['foo'] = 'bar'
              </script:code>
         </script:execute>
-        <test:assert expression="#[vars.foo == 'bar']"/>
+        <test:assert count="0"/>
     </flow>
 
     <flow name="inlineScriptMutateVariablesMap">
         <script:execute engine="groovy">
             <script:code>
-                vars = new HashMap()              
+                vars = new HashMap()
              </script:code>
         </script:execute>
         <test:assert expression="#[vars.foo == 'bar']"/>
@@ -73,16 +74,17 @@
     <flow name="inlineScriptMutatePayload">
         <script:execute engine="groovy">
             <script:code>
-                payload = 'bar-mutated'               
+                payload = 'bar-mutated'
+                return 'bar-returned'
              </script:code>
         </script:execute>
-        <test:assert expression="#[payload == 'bar-mutated']"/>
+        <test:assert expression="#[payload == 'bar-returned']"/>
     </flow>
     
     <flow name="scriptExpressionVariables">
         <script:execute engine="groovy">
             <script:code>
-                payload = expr1 + expr2
+                return expr1 + expr2
             </script:code>
             <script:parameters>
                 #[{expr1: vars.prop1, expr2: vars.prop2}]
@@ -94,7 +96,7 @@
     <flow name="scriptReferencesAppClass">
         <script:execute engine="groovy">
             <script:code>
-                payload = new org.mule.tck.testmodels.fruit.Apple()
+                return new org.mule.tck.testmodels.fruit.Apple()
             </script:code>
         </script:execute>
     </flow>
@@ -120,5 +122,23 @@
         <test:queue name="inlineScriptWithParametersTestOut"/>
     </flow>
 
+    <flow name="inlineScriptWithResolvedParameters">
+        <script:execute engine="groovy">
+            <script:code>
+                return testVar.element
+            </script:code>
+            <script:parameters>
+                #[{testVar: payload}]
+            </script:parameters>
+        </script:execute>
+    </flow>
+
+    <flow name="inlineScriptTargetValue">
+        <script:execute engine="groovy" target="myVar">
+            <script:code>
+                return "hello"
+            </script:code>
+        </script:execute>
+    </flow>
 </mule>
 
