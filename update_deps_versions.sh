@@ -38,8 +38,5 @@ propertiesDeps=("mule.app.plugins.maven.plugin.version")
 
 updatePropertiesVersion "$VERSION_TO_DEPS" pom.xml propertiesDeps[@]
 
-propertiesDeps=("mule.weave.version")
-
-updatePropertiesVersion "$VERSION_TO_WEAVE" pom.xml propertiesDeps[@]
 
 
