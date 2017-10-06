@@ -6,6 +6,11 @@
  */
 package org.mule.plugin.scripting.operation;
 
+import static org.mule.metadata.api.model.MetadataFormat.JAVA;
+
+import org.mule.metadata.api.builder.BaseTypeBuilder;
+import org.mule.metadata.api.model.AnyType;
+import org.mule.runtime.api.meta.model.declaration.fluent.OutputDeclaration;
 import org.mule.runtime.extension.api.loader.DeclarationEnricher;
 import org.mule.runtime.extension.api.loader.ExtensionLoadingContext;
 import org.mule.runtime.extension.api.runtime.operation.ComponentExecutorFactory;
@@ -22,6 +27,11 @@ public class ScriptingOperationEnricher implements DeclarationEnricher {
   public void enrich(ExtensionLoadingContext extensionLoadingContext) {
     extensionLoadingContext.getExtensionDeclarer().getDeclaration().getOperations().forEach(operation -> {
       if (operation.getName().equals("execute")) {
+        AnyType anyType = BaseTypeBuilder.create(JAVA).anyType().build();
+        OutputDeclaration outputDeclaration = new OutputDeclaration();
+        outputDeclaration.setType(anyType, false);
+
+        operation.setOutput(outputDeclaration);
         operation.addModelProperty(new ComponentExecutorModelProperty(new ScriptingOperationExecutorFactory()));
       }
     });
