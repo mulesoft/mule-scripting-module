@@ -8,7 +8,6 @@ package org.mule.plugin.scripting;
 
 import org.mule.plugin.scripting.errors.ScriptingErrorTypeProvider;
 import org.mule.runtime.extension.api.annotation.error.Throws;
-import org.mule.runtime.extension.api.annotation.metadata.OutputResolver;
 import org.mule.runtime.extension.api.annotation.param.Content;
 import org.mule.runtime.extension.api.annotation.param.NullSafe;
 import org.mule.runtime.extension.api.annotation.param.Optional;
@@ -33,7 +32,6 @@ public class ScriptingOperations {
    * @param parameters variables provided to the script as bindings
    * @return the result of script evaluation
    */
-  @OutputResolver(output = ScriptingTypeResolver.class)
   @Throws(ScriptingErrorTypeProvider.class)
   public Result<Object, Object> execute(@Text String code,
                                         @OfValues(EnginesValueProvider.class) String engine,
