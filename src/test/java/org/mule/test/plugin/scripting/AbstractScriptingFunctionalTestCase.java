@@ -10,7 +10,7 @@ package org.mule.test.plugin.scripting;
 import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
 import org.mule.test.runner.ArtifactClassLoaderRunnerConfig;
 
-@ArtifactClassLoaderRunnerConfig(sharedRuntimeLibs = {"org.mule.tests:mule-tests-functional"})
+@ArtifactClassLoaderRunnerConfig(sharedRuntimeLibs = {"org.mule.tests:mule-tests-functional", "org.mule.tests:mule-tests-unit"})
 public abstract class AbstractScriptingFunctionalTestCase extends MuleArtifactFunctionalTestCase {
 
 }
