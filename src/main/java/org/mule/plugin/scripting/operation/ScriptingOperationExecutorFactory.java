@@ -10,6 +10,8 @@ import org.mule.runtime.api.meta.model.operation.OperationModel;
 import org.mule.runtime.extension.api.runtime.operation.ComponentExecutor;
 import org.mule.runtime.extension.api.runtime.operation.ComponentExecutorFactory;
 
+import java.util.Map;
+
 /**
  * Custom factory that creates our operation executor.
  *
@@ -18,7 +20,7 @@ import org.mule.runtime.extension.api.runtime.operation.ComponentExecutorFactory
 public class ScriptingOperationExecutorFactory implements ComponentExecutorFactory<OperationModel> {
 
   @Override
-  public ComponentExecutor createExecutor(OperationModel operationModel) {
+  public ComponentExecutor createExecutor(OperationModel operationModel, Map<String, Object> parameters) {
     return new ScriptingOperationExecutor();
   }
 }
