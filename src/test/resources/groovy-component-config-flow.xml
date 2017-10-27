@@ -92,6 +92,14 @@
         </script:execute>
         <test:assert expression="#[payload == 'ReceivedA-OK']"/>
     </flow>
+
+    <flow name="scriptReadVariable">
+        <script:execute engine="groovy">
+            <script:code>
+                return vars.myVar
+            </script:code>
+        </script:execute>
+    </flow>
     
     <flow name="scriptReferencesAppClass">
         <script:execute engine="groovy">

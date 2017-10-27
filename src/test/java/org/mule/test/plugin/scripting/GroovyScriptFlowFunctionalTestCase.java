@@ -72,6 +72,12 @@ public class GroovyScriptFlowFunctionalTestCase extends GroovyScriptServiceFunct
   }
 
   @Test
+  public void scriptReadsNullVariable() throws Exception {
+    CoreEvent result = flowRunner("scriptReadVariable").withPayload("").withVariable("myVar", null).run();
+    assertThat(result.getMessage().getPayload().getValue(), nullValue());
+  }
+
+  @Test
   public void scriptReferencesAppClass() throws Exception {
     final Object value = flowRunner("scriptReferencesAppClass").withPayload("").run().getMessage().getPayload().getValue();
 

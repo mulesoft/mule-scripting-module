@@ -7,7 +7,6 @@
 package org.mule.plugin.scripting.component;
 
 import static java.util.Collections.unmodifiableMap;
-import static java.util.stream.Collectors.toMap;
 import static org.mule.plugin.scripting.errors.ScriptingErrors.COMPILATION;
 import static org.mule.plugin.scripting.errors.ScriptingErrors.EXECUTION;
 import static org.mule.plugin.scripting.errors.ScriptingErrors.UNKNOWN_ENGINE;
@@ -31,6 +30,7 @@ import org.mule.runtime.extension.api.exception.ModuleException;
 
 import java.io.Reader;
 import java.io.StringReader;
+import java.util.HashMap;
 import java.util.Map;
 
 import javax.inject.Inject;
@@ -163,8 +163,13 @@ public class ScriptRunner {
   }
 
   private Map<String, Object> createResolvedMap(CoreEvent event) {
-    return event.getVariables().entrySet().stream().collect(
-                                                            toMap(e -> e.getKey(),
-                                                                  e -> resolveCursor(e.getValue().getValue())));
+    HashMap<String, Object> variables = new HashMap<>();
+
+    event.getVariables().entrySet().forEach(e -> {
+      Object value = resolveCursor(e.getValue().getValue());
+      variables.put(e.getKey(), value);
+    });
+
+    return variables;
   }
 }
