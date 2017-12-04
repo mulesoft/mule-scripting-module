@@ -15,6 +15,7 @@ import static org.mule.runtime.api.el.BindingContextUtils.NULL_BINDING_CONTEXT;
 import static org.mule.runtime.api.el.BindingContextUtils.VARS;
 import static org.mule.runtime.api.el.BindingContextUtils.addEventBindings;
 import static org.mule.runtime.api.i18n.I18nMessageFactory.createStaticMessage;
+import static org.mule.runtime.core.api.util.ClassUtils.withContextClassLoader;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import org.mule.runtime.api.artifact.Registry;
@@ -22,6 +23,7 @@ import org.mule.runtime.api.component.location.ComponentLocation;
 import org.mule.runtime.api.el.Binding;
 import org.mule.runtime.api.streaming.CursorProvider;
 import org.mule.runtime.core.api.event.CoreEvent;
+import org.mule.runtime.core.api.functional.Either;
 import org.mule.runtime.core.api.util.IOUtils;
 import org.mule.runtime.core.privileged.el.context.SessionVariableMapContext;
 import org.mule.runtime.core.privileged.event.PrivilegedEvent;
@@ -32,6 +34,8 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Consumer;
 
 import javax.inject.Inject;
 import javax.script.Bindings;
@@ -55,20 +59,22 @@ public class ScriptRunner {
   private String engineName;
   private String scriptBody;
   private ComponentLocation location;
+  private ClassLoader classLoader;
 
   @Inject
   private Registry registry;
 
   /** A compiled version of the script, if the scripting engine supports it */
-  private CompiledScript compiledScript;
+  private AtomicReference<CompiledScript> compiledScriptRef = new AtomicReference<>();
 
   private ScriptEngine scriptEngine;
   private ScriptEngineManager scriptEngineManager;
 
-  public ScriptRunner(String engine, String code, ComponentLocation location) {
+  public ScriptRunner(String engine, String code, ComponentLocation location, ClassLoader classLoader) {
     this.engineName = engine;
     this.scriptBody = code;
     this.location = location;
+    this.classLoader = classLoader;
 
     initialise();
   }
@@ -87,11 +93,15 @@ public class ScriptRunner {
     try {
       // Pre-compile script if scripting engine supports compilation.
       if (scriptEngine instanceof Compilable) {
-        try {
-          compiledScript = ((Compilable) scriptEngine).compile(script);
-        } catch (ScriptException e) {
-          throw new ModuleException(COMPILATION, e);
-        }
+        runInClassloader(classLoader, resultRef -> {
+          try {
+            CompiledScript compiled = ((Compilable) scriptEngine).compile(script);
+            resultRef.set(Either.right(compiled));
+          } catch (ScriptException e) {
+            Exception exception = unwrapScriptingException(e);
+            resultRef.set(Either.left(new ModuleException(COMPILATION, exception)));
+          }
+        });
       }
     } finally {
       IOUtils.closeQuietly(script);
@@ -123,22 +133,25 @@ public class ScriptRunner {
   }
 
   public Object runScript(Bindings bindings) {
-    Object result;
-    try {
-      if (compiledScript != null) {
-        result = compiledScript.eval(bindings);
-      } else {
-        result = scriptEngine.eval(scriptBody, bindings);
+    Object result = runInClassloader(classLoader, resultRef -> {
+      try {
+        CompiledScript compiledScript = compiledScriptRef.get();
+        if (compiledScript != null) {
+          resultRef.set(Either.right(compiledScript.eval(bindings)));
+        } else {
+          resultRef.set(Either.right(scriptEngine.eval(scriptBody, bindings)));
+        }
+      } catch (Exception e) {
+        Exception exception = unwrapScriptingException(e);
+        resultRef.set(Either.left(new ModuleException(EXECUTION, exception)));
       }
+    });
 
-      // The result of the script can be returned directly or it can
-      // be set as the variable "result".
-      if (result == null) {
-        result = bindings.get(BINDING_RESULT);
-      }
-    } catch (Exception ex) {
-      throw new ModuleException(EXECUTION, ex);
+    // The result of the script can be returned directly or it can be set as the variable "result".
+    if (result == null) {
+      result = bindings.get(BINDING_RESULT);
     }
+
     return result;
   }
 
@@ -171,5 +184,31 @@ public class ScriptRunner {
     });
 
     return variables;
+  }
+
+  private Exception unwrapScriptingException(Exception e) {
+    while (e instanceof ScriptException && e.getCause() instanceof ScriptException) {
+      e = (Exception) e.getCause();
+    }
+
+    return e;
+  }
+
+  private static <T> T runInClassloader(ClassLoader classLoader,
+                                        Consumer<AtomicReference<Either<RuntimeException, T>>> callable) {
+    AtomicReference<Either<RuntimeException, T>> resultRef = new AtomicReference<>();
+
+    withContextClassLoader(classLoader, () -> callable.accept(resultRef));
+
+    Either<RuntimeException, T> result = resultRef.get();
+    if (result == null) {
+      return null;
+    } else if (result.isRight()) {
+      return result.getRight();
+    } else if (result.isLeft()) {
+      throw result.getLeft();
+    } else {
+      return null;
+    }
   }
 }
