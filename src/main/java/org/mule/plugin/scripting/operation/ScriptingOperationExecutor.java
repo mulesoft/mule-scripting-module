@@ -10,6 +10,7 @@ import org.mule.plugin.scripting.component.ScriptRunner;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.message.Message;
 import org.mule.runtime.api.meta.model.operation.OperationModel;
+import org.mule.runtime.core.api.MuleContext;
 import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.runtime.extension.api.runtime.operation.ComponentExecutor;
 import org.mule.runtime.extension.api.runtime.operation.ExecutionContext;
@@ -36,14 +37,15 @@ public class ScriptingOperationExecutor implements ComponentExecutor<OperationMo
   @Override
   public Publisher<Object> execute(ExecutionContext<OperationModel> executionContext) {
     ExecutionContextAdapter<OperationModel> context = (ExecutionContextAdapter<OperationModel>) executionContext;
+    MuleContext muleContext = context.getMuleContext();
 
     try {
       if (scriptRunner == null) {
         String engine = context.getParameter("engine");
         String code = context.getParameter("code");
 
-        scriptRunner = new ScriptRunner(engine, code, context.getComponentLocation());
-        context.getMuleContext().getInjector().inject(scriptRunner);
+        scriptRunner = new ScriptRunner(engine, code, context.getComponentLocation(), muleContext.getExecutionClassLoader());
+        muleContext.getInjector().inject(scriptRunner);
       }
 
       Map<String, Object> parameters = context.getParameter("parameters");
