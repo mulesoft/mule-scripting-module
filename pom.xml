@@ -26,7 +26,6 @@
 
         <projectReactorVersion>3.1.1.RELEASE</projectReactorVersion>
         <springVersion>4.1.9.RELEASE</springVersion>
-        <mule.app.plugins.maven.plugin.version>1.1.0-SNAPSHOT</mule.app.plugins.maven.plugin.version>
     </properties>
 
     <dependencies>
