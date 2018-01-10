@@ -24,7 +24,7 @@
         <groovyVersion>2.4.12</groovyVersion>
         <jrubyVersion>9.1.13.0</jrubyVersion>
 
-        <projectReactorVersion>3.1.1.RELEASE</projectReactorVersion>
+        <projectReactorVersion>3.2.0.M1</projectReactorVersion>
         <springVersion>4.1.9.RELEASE</springVersion>
     </properties>
 
