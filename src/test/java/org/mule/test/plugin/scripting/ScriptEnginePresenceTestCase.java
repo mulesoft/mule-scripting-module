@@ -6,6 +6,7 @@
  */
 package org.mule.test.plugin.scripting;
 
+import static java.lang.System.getProperty;
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
@@ -40,7 +41,8 @@ public class ScriptEnginePresenceTestCase extends AbstractMuleTestCase {
     return Arrays.asList(new Object[][] {
         {"groovy", "groovy", "Groovy Scripting Engine", "2.0", "return 10"},
         {"jython", "py", "jython", "2.7.1", "print \"hello world\""},
-        {"jruby", "rb", "JSR 223 JRuby Engine", "9.1.13.0", "1.+ 2"}
+        {"jruby", "rb", "JSR 223 JRuby Engine", "9.1.13.0", "1.+ 2"},
+        {"nashorn", "js", "Oracle Nashorn", getProperty("java.version"), "var asdf = 1"}
     });
   }
 
