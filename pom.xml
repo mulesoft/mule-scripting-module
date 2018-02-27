@@ -22,7 +22,7 @@
 
         <jython.version>2.7.1</jython.version>
         <groovyVersion>2.4.12</groovyVersion>
-        <jrubyVersion>9.1.13.0</jrubyVersion>
+        <jrubyVersion>9.1.16.0</jrubyVersion>
 
         <projectReactorVersion>3.2.0.M1</projectReactorVersion>
         <springVersion>4.1.9.RELEASE</springVersion>
