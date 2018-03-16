@@ -6,8 +6,11 @@
  */
 package org.mule.plugin.scripting;
 
+import static org.mule.runtime.api.meta.model.operation.ExecutionType.CPU_INTENSIVE;
+
 import org.mule.plugin.scripting.errors.ScriptingErrorTypeProvider;
 import org.mule.runtime.extension.api.annotation.error.Throws;
+import org.mule.runtime.extension.api.annotation.execution.Execution;
 import org.mule.runtime.extension.api.annotation.param.Content;
 import org.mule.runtime.extension.api.annotation.param.NullSafe;
 import org.mule.runtime.extension.api.annotation.param.Optional;
@@ -28,16 +31,17 @@ public class ScriptingOperations {
    * Run a script with provided code, according to the engine and passing parameters.
    *
    * @param code the script source code to be executed
-   * @param engine name of the scripting engine for running ths script
+   * @param engine name of the scripting engine for running this script
    * @param parameters variables provided to the script as bindings
    * @return the result of script evaluation
    */
   @Throws(ScriptingErrorTypeProvider.class)
+  @Execution(CPU_INTENSIVE)
   public Result<Object, Object> execute(@Text String code,
                                         @OfValues(EnginesValueProvider.class) String engine,
                                         @Optional @NullSafe @Content Map<String, Object> parameters) {
 
-    // the real operation is implemented through a custom executor
+    // the real operation is implemented through a custom executor: org.mule.plugin.scripting.operation.ScriptingOperationExecutor
     return null;
   }
 
