@@ -10,7 +10,9 @@ import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
+import static org.hamcrest.Matchers.startsWith;
 import static org.junit.Assert.assertThat;
+
 import org.mule.functional.api.component.TestConnectorQueueHandler;
 import org.mule.runtime.api.message.Message;
 import org.mule.runtime.api.metadata.MediaType;
@@ -126,6 +128,12 @@ public class GroovyScriptFlowFunctionalTestCase extends GroovyScriptServiceFunct
     CoreEvent event = flowRunner("inlineScriptTargetValue").withPayload("original").run();
     assertThat(event.getVariables().get("myVar").getValue(), is("hello"));
     assertThat(event.getMessage().getPayload().getValue(), is("original"));
+  }
+
+  @Test
+  public void scriptThreadName() throws Exception {
+    CoreEvent event = flowRunner("scriptThreadName").run();
+    assertThat(event.getMessage().getPayload().getValue().toString(), startsWith("[MuleRuntime].cpuIntensive."));
   }
 
   @Override

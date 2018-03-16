@@ -148,5 +148,13 @@
             </script:code>
         </script:execute>
     </flow>
+
+    <flow name="scriptThreadName">
+        <script:execute engine="groovy">
+            <script:code>
+                return java.lang.Thread.currentThread().getName()
+            </script:code>
+        </script:execute>
+    </flow>
 </mule>
 
