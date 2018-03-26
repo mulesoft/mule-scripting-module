@@ -11,10 +11,12 @@ import static org.mule.plugin.scripting.errors.ScriptingErrors.COMPILATION;
 import static org.mule.plugin.scripting.errors.ScriptingErrors.EXECUTION;
 import static org.mule.plugin.scripting.errors.ScriptingErrors.UNKNOWN_ENGINE;
 import static org.mule.runtime.api.el.BindingContextUtils.FLOW;
+import static org.mule.runtime.api.el.BindingContextUtils.MESSAGE;
 import static org.mule.runtime.api.el.BindingContextUtils.NULL_BINDING_CONTEXT;
 import static org.mule.runtime.api.el.BindingContextUtils.VARS;
 import static org.mule.runtime.api.el.BindingContextUtils.addEventBindings;
 import static org.mule.runtime.api.i18n.I18nMessageFactory.createStaticMessage;
+import static org.mule.runtime.core.api.config.MuleProperties.COMPATIBILITY_PLUGIN_INSTALLED;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import org.mule.runtime.api.artifact.Registry;
@@ -113,8 +115,13 @@ public class ScriptRunner {
       bindings.put(binding.identifier(), resolvedValue);
     }
 
+    if (registry.lookupByName(COMPATIBILITY_PLUGIN_INSTALLED).isPresent()) {
+      // Regular bindings will not include compatibility data so we override it
+      bindings.put(MESSAGE, event.getMessage());
+      bindings.put(BINDING_SESSION_VARS, new SessionVariableMapContext(((PrivilegedEvent) event).getSession()));
+    }
+
     bindings.put(VARS, unmodifiableMap(createResolvedMap(event)));
-    bindings.put(BINDING_SESSION_VARS, new SessionVariableMapContext(((PrivilegedEvent) event).getSession()));
     bindings.put(FLOW, location.getRootContainerName());
     bindings.put(REGISTRY, registry);
 
