@@ -9,6 +9,7 @@ package org.mule.test.plugin.scripting;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.Matchers.startsWith;
 import static org.junit.Assert.assertThat;
@@ -62,9 +63,9 @@ public class GroovyScriptFlowFunctionalTestCase extends GroovyScriptServiceFunct
   }
 
   @Test
-  public void inlineScriptRemovesAttributes() throws Exception {
+  public void inlineScriptKeepsAttributes() throws Exception {
     CoreEvent event = flowRunner("inlineScriptMutatePayload").withPayload("").withAttributes("Test").run();
-    assertThat(event.getMessage().getAttributes().getValue(), is(nullValue()));
+    assertThat(event.getMessage().getAttributes().getValue(), is(notNullValue()));
   }
 
   @Test
