@@ -12,7 +12,7 @@
     <groupId>org.mule.modules</groupId>
     <artifactId>mule-scripting-module</artifactId>
     <packaging>mule-extension</packaging>
-    <version>1.1.2-SNAPSHOT</version>
+    <version>1.1.2</version>
 
     <name>Scripting Module</name>
     <description>Support for embedding scripts inside Mule artifacts</description>
