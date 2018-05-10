@@ -25,7 +25,6 @@
         <jrubyVersion>9.1.16.0</jrubyVersion>
 
         <projectReactorVersion>3.2.0.M1</projectReactorVersion>
-        <springVersion>4.1.9.RELEASE</springVersion>
     </properties>
 
     <dependencies>
@@ -34,12 +33,6 @@
             <groupId>org.mule.runtime</groupId>
             <artifactId>mule-core</artifactId>
             <version>${mule.version}</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-core</artifactId>
-            <version>${springVersion}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -53,18 +46,6 @@
             <groupId>org.mule.runtime</groupId>
             <artifactId>mule-module-spring-config</artifactId>
             <version>${mule.version}</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-context</artifactId>
-            <version>${springVersion}</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-aop</artifactId>
-            <version>${springVersion}</version>
             <scope>provided</scope>
         </dependency>
 
