@@ -21,7 +21,7 @@
         <formatterConfigPath>formatter.xml</formatterConfigPath>
 
         <jython.version>2.7.1</jython.version>
-        <groovyVersion>2.4.12</groovyVersion>
+        <groovyVersion>2.4.15</groovyVersion>
         <jrubyVersion>9.1.16.0</jrubyVersion>
 
         <projectReactorVersion>3.2.0.M1</projectReactorVersion>
