@@ -66,13 +66,12 @@ public class ScriptRunner {
 
   private ScriptEngine scriptEngine;
   private ScriptEngineManager scriptEngineManager;
+  private boolean compatibilityMode;
 
   public ScriptRunner(String engine, String code, ComponentLocation location) {
     this.engineName = engine;
     this.scriptBody = code;
     this.location = location;
-
-    initialise();
   }
 
   public void initialise() {
@@ -98,6 +97,8 @@ public class ScriptRunner {
     } finally {
       IOUtils.closeQuietly(script);
     }
+
+    compatibilityMode = registry.lookupByName(COMPATIBILITY_PLUGIN_INSTALLED).isPresent();
   }
 
   public void populateDefaultBindings(Bindings bindings) {
@@ -115,7 +116,7 @@ public class ScriptRunner {
       bindings.put(binding.identifier(), resolvedValue);
     }
 
-    if (registry.lookupByName(COMPATIBILITY_PLUGIN_INSTALLED).isPresent()) {
+    if (compatibilityMode) {
       // Regular bindings will not include compatibility data so we override it
       bindings.put(MESSAGE, event.getMessage());
       bindings.put(BINDING_SESSION_VARS, new SessionVariableMapContext(((PrivilegedEvent) event).getSession()));
