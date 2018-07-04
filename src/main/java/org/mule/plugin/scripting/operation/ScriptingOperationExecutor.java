@@ -44,6 +44,7 @@ public class ScriptingOperationExecutor implements ComponentExecutor<OperationMo
 
         scriptRunner = new ScriptRunner(engine, code, context.getComponentLocation());
         context.getMuleContext().getInjector().inject(scriptRunner);
+        scriptRunner.initialise();
       }
 
       Map<String, Object> parameters = context.getParameter("parameters");
