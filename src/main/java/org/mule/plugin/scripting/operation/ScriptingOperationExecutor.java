@@ -50,15 +50,13 @@ public class ScriptingOperationExecutor implements ComponentExecutor<OperationMo
     }
   }
 
-  private synchronized void initScriptRunner(ExecutionContextAdapter<OperationModel> context) throws MuleException {
-    if (scriptRunner == null) {
-      String engine = context.getParameter("engine");
-      String code = context.getParameter("code");
+  private void initScriptRunner(ExecutionContextAdapter<OperationModel> context) throws MuleException {
+    String engine = context.getParameter("engine");
+    String code = context.getParameter("code");
 
-      scriptRunner = new ScriptRunner(engine, code, context.getComponentLocation());
-      context.getMuleContext().getInjector().inject(scriptRunner);
-      scriptRunner.initialise();
-    }
+    scriptRunner = new ScriptRunner(engine, code, context.getComponentLocation());
+    context.getMuleContext().getInjector().inject(scriptRunner);
+    scriptRunner.initialise();
   }
 
   private Result<Object, Object> process(CoreEvent event, Map<String, Object> parameters,
