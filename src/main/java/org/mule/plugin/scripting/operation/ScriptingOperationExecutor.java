@@ -11,6 +11,8 @@ import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.message.Message;
 import org.mule.runtime.api.meta.model.operation.OperationModel;
 import org.mule.runtime.core.api.event.CoreEvent;
+import org.mule.runtime.core.api.util.func.Once;
+import org.mule.runtime.core.api.util.func.Once.ConsumeOnce;
 import org.mule.runtime.extension.api.runtime.operation.ComponentExecutor;
 import org.mule.runtime.extension.api.runtime.operation.ExecutionContext;
 import org.mule.runtime.extension.api.runtime.operation.Result;
@@ -31,32 +33,35 @@ import reactor.core.publisher.Mono;
  */
 public class ScriptingOperationExecutor implements ComponentExecutor<OperationModel> {
 
+
   private ScriptRunner scriptRunner;
+  private final ConsumeOnce<ExecutionContextAdapter<OperationModel>> initScriptRunner = Once.of(this::initScriptRunner);
 
   @Override
   public Publisher<Object> execute(ExecutionContext<OperationModel> executionContext) {
     ExecutionContextAdapter<OperationModel> context = (ExecutionContextAdapter<OperationModel>) executionContext;
 
     try {
-      if (scriptRunner == null) {
-        String engine = context.getParameter("engine");
-        String code = context.getParameter("code");
-
-        scriptRunner = new ScriptRunner(engine, code, context.getComponentLocation());
-        context.getMuleContext().getInjector().inject(scriptRunner);
-        scriptRunner.initialise();
-      }
-
       Map<String, Object> parameters = context.getParameter("parameters");
-      Result<Object, Object> result = process(context.getEvent(), parameters);
+      Result<Object, Object> result = process(context.getEvent(), parameters, context);
       return Mono.justOrEmpty(result);
     } catch (Exception e) {
       return Mono.error(e);
     }
   }
 
-  private Result<Object, Object> process(CoreEvent event, Map<String, Object> parameters)
-      throws MuleException {
+  private void initScriptRunner(ExecutionContextAdapter<OperationModel> context) throws MuleException {
+    String engine = context.getParameter("engine");
+    String code = context.getParameter("code");
+
+    scriptRunner = new ScriptRunner(engine, code, context.getComponentLocation());
+    context.getMuleContext().getInjector().inject(scriptRunner);
+    scriptRunner.initialise();
+  }
+
+  private Result<Object, Object> process(CoreEvent event, Map<String, Object> parameters,
+                                         ExecutionContextAdapter<OperationModel> context) {
+    initScriptRunner.consumeOnce(context);
     Bindings bindings = scriptRunner.getScriptEngine().createBindings();
     scriptRunner.populateBindings(bindings, event, parameters);
 
