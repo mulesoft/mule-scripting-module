@@ -8,11 +8,9 @@ package org.mule.test.plugin.scripting;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-
 import org.mule.functional.api.component.TestConnectorQueueHandler;
 import org.mule.runtime.api.message.Message;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 public class GroovyScriptServiceFunctionalTestCase extends AbstractScriptingFunctionalTestCase {
@@ -38,7 +36,6 @@ public class GroovyScriptServiceFunctionalTestCase extends AbstractScriptingFunc
     assertEquals("Important Message Received", getPayloadAsString(response));
   }
 
-  @Ignore("MULE-6926: flaky test")
   @Test
   public void testFileBasedScript() throws Exception {
     flowRunner("fileBasedScript").withPayload("Important Message").run();
@@ -47,7 +44,6 @@ public class GroovyScriptServiceFunctionalTestCase extends AbstractScriptingFunc
     assertEquals("Important Message Received", getPayloadAsString(response));
   }
 
-  @Ignore("MULE-6926: flaky test")
   @Test
   public void testScriptVariables() throws Exception {
     flowRunner("scriptVariables").withPayload("Important Message").run();
