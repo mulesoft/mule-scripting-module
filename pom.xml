@@ -25,47 +25,14 @@
         <jrubyVersion>9.1.16.0</jrubyVersion>
 
         <projectReactorVersion>3.2.0.M1</projectReactorVersion>
-        <springVersion>4.1.9.RELEASE</springVersion>
     </properties>
 
     <dependencies>
-        <!-- Mule Dependencies -->
-        <dependency>
-            <groupId>org.mule.runtime</groupId>
-            <artifactId>mule-core</artifactId>
-            <version>${mule.version}</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-core</artifactId>
-            <version>${springVersion}</version>
-            <scope>provided</scope>
-        </dependency>
+        <!-- Reactor -->
         <dependency>
             <groupId>io.projectreactor</groupId>
             <artifactId>reactor-core</artifactId>
             <version>${projectReactorVersion}</version>
-        </dependency>
-
-        <!--Test Dependencies-->
-        <dependency>
-            <groupId>org.mule.runtime</groupId>
-            <artifactId>mule-module-spring-config</artifactId>
-            <version>${mule.version}</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-context</artifactId>
-            <version>${springVersion}</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-aop</artifactId>
-            <version>${springVersion}</version>
-            <scope>provided</scope>
         </dependency>
 
         <!--Groovy-->
@@ -96,44 +63,6 @@
         </dependency>
 
         <!-- Test dependencies -->
-        <dependency>
-            <groupId>org.mule.tests</groupId>
-            <artifactId>mule-tests-functional</artifactId>
-            <version>${mule.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.mule.tests</groupId>
-            <artifactId>mule-tests-runner</artifactId>
-            <version>${mule.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <!--TODO: MULE-10837-->
-        <dependency>
-            <groupId>org.mule.runtime</groupId>
-            <artifactId>mule-module-service</artifactId>
-            <version>${mule.version}</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.mule.services</groupId>
-            <artifactId>mule-service-weave</artifactId>
-            <version>${mule.weave.version}</version>
-            <classifier>mule-service</classifier>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.mule.runtime</groupId>
-            <artifactId>mule-service-http-api</artifactId>
-            <version>${mule.version}</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.mule.tests</groupId>
-            <artifactId>mule-tests-unit</artifactId>
-            <version>${mule.version}</version>
-            <scope>test</scope>
-        </dependency>
         <dependency>
             <groupId>org.mule.tests.plugin</groupId>
             <artifactId>mule-tests-component-plugin</artifactId>
