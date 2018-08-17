@@ -24,7 +24,7 @@
         <groovyVersion>2.4.15</groovyVersion>
         <jrubyVersion>9.1.16.0</jrubyVersion>
 
-        <projectReactorVersion>3.2.0.M1</projectReactorVersion>
+        <projectReactorVersion>3.2.0.M4</projectReactorVersion>
 
         <!-- Remove when a new parent version with MTF is available -->
         <munit.input.directory>src/test/munit</munit.input.directory>
