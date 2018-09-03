@@ -73,7 +73,11 @@ public class ScriptingOperationExecutor implements ComponentExecutor<OperationMo
         CoreEvent resultEvent = CoreEvent.builder(event).message((Message) result).build();
         return EventedResult.from(resultEvent);
       } else {
-        return Result.builder(event.getMessage()).output(result).mediaType(APPLICATION_JAVA).build();
+        return Result.builder(event.getMessage())
+            .attributes(null)
+            .output(result)
+            .mediaType(APPLICATION_JAVA)
+            .build();
       }
     } finally {
       bindings.clear();
