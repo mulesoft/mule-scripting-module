@@ -36,7 +36,7 @@ import org.junit.runners.Parameterized.Parameters;
 @RunWith(Parameterized.class)
 public class ScriptEnginePresenceTestCase extends AbstractMuleTestCase {
 
-  @Parameters
+  @Parameters(name = "{0}")
   public static Collection<Object[]> data() {
     return Arrays.asList(new Object[][] {
         {"groovy", "groovy", "Groovy Scripting Engine", "2.0", "return 10"},

@@ -6,6 +6,8 @@
  */
 package org.mule.plugin.scripting.operation;
 
+import static org.mule.runtime.api.metadata.MediaType.APPLICATION_JAVA;
+
 import org.mule.plugin.scripting.component.ScriptRunner;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.message.Message;
@@ -71,7 +73,11 @@ public class ScriptingOperationExecutor implements ComponentExecutor<OperationMo
         CoreEvent resultEvent = CoreEvent.builder(event).message((Message) result).build();
         return EventedResult.from(resultEvent);
       } else {
-        return Result.builder(event.getMessage()).attributes(null).output(result).build();
+        return Result.builder(event.getMessage())
+            .output(result)
+            .attributes(null)
+            .mediaType(APPLICATION_JAVA)
+            .build();
       }
     } finally {
       bindings.clear();
