@@ -130,7 +130,7 @@
                     <configuration>
                         <runtimeConfiguration>
                             <discoverRuntimes>
-                                <product>EE</product>
+                                <product>ALL</product>
                                 <includeSnapshots>true</includeSnapshots>
                             </discoverRuntimes>
                         </runtimeConfiguration>
