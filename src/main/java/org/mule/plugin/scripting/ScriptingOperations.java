@@ -37,9 +37,9 @@ public class ScriptingOperations {
    */
   @Throws(ScriptingErrorTypeProvider.class)
   @Execution(CPU_INTENSIVE)
-  public Result<Object, Object> execute(@Text String code,
-                                        @OfValues(EnginesValueProvider.class) String engine,
-                                        @Optional @NullSafe @Content Map<String, Object> parameters) {
+  public Result<Object, Void> execute(@Text String code,
+                                      @OfValues(EnginesValueProvider.class) String engine,
+                                      @Optional @NullSafe @Content Map<String, Object> parameters) {
 
     // the real operation is implemented through a custom executor: org.mule.plugin.scripting.operation.ScriptingOperationExecutor
     return null;
