@@ -40,8 +40,8 @@ public class ScriptEnginePresenceTestCase extends AbstractMuleTestCase {
   public static Collection<Object[]> data() {
     return Arrays.asList(new Object[][] {
         {"groovy", "groovy", "Groovy Scripting Engine", "2.0", "return 10"},
-        {"jython", "py", "jython", "2.7.1", "print \"hello world\""},
-        {"jruby", "rb", "JSR 223 JRuby Engine", "9.2.6.0", "1.+ 2"},
+        {"jython", "py", "jython", getProperty("jython.version"), "print \"hello world\""},
+        {"jruby", "rb", "JSR 223 JRuby Engine", getProperty("jruby.version"), "1.+ 2"},
         {"nashorn", "js", "Oracle Nashorn", getProperty("java.version"), "var asdf = 1"}
     });
   }
