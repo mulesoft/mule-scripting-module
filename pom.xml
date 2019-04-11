@@ -21,10 +21,10 @@
         <formatterConfigPath>formatter.xml</formatterConfigPath>
 
         <jython.version>2.7.1</jython.version>
-        <groovyVersion>2.4.16</groovyVersion>
-        <jrubyVersion>9.2.7.0</jrubyVersion>
+        <groovy.version>2.4.16</groovy.version>
+        <jruby.version>9.2.7.0</jruby.version>
 
-        <projectReactorVersion>3.2.8.RELEASE</projectReactorVersion>
+        <project.reactor.version>3.2.8.RELEASE</project.reactor.version>
 
         <!-- Remove when a new parent version with MTF is available -->
         <munit.input.directory>src/test/munit</munit.input.directory>
@@ -39,14 +39,14 @@
         <dependency>
             <groupId>io.projectreactor</groupId>
             <artifactId>reactor-core</artifactId>
-            <version>${projectReactorVersion}</version>
+            <version>${project.reactor.version}</version>
         </dependency>
 
         <!--Groovy-->
         <dependency>
             <groupId>org.codehaus.groovy</groupId>
             <artifactId>groovy-all</artifactId>
-            <version>${groovyVersion}</version>
+            <version>${groovy.version}</version>
             <classifier>indy</classifier>
         </dependency>
 
@@ -61,12 +61,12 @@
         <dependency>
             <groupId>org.jruby</groupId>
             <artifactId>jruby-core</artifactId>
-            <version>${jrubyVersion}</version>
+            <version>${jruby.version}</version>
         </dependency>
         <dependency>
             <groupId>org.jruby</groupId>
             <artifactId>jruby-stdlib</artifactId>
-            <version>${jrubyVersion}</version>
+            <version>${jruby.version}</version>
         </dependency>
 
         <!-- Test dependencies -->
@@ -87,6 +87,16 @@
 
     <build>
         <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <systemPropertyVariables>
+                        <jruby.version>${jruby.version}</jruby.version>
+                        <jython.version>${jython.version}</jython.version>
+                    </systemPropertyVariables>
+                </configuration>
+            </plugin>
             <plugin>
                 <groupId>org.mule.runtime.plugins</groupId>
                 <artifactId>mule-plugin-maven-plugin</artifactId>
