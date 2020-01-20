@@ -6,9 +6,11 @@
  */
 package org.mule.plugin.scripting;
 
+import static org.mule.runtime.api.meta.ExpressionSupport.REQUIRED;
 import static org.mule.runtime.api.meta.model.operation.ExecutionType.CPU_INTENSIVE;
 
 import org.mule.plugin.scripting.errors.ScriptingErrorTypeProvider;
+import org.mule.runtime.extension.api.annotation.Expression;
 import org.mule.runtime.extension.api.annotation.error.Throws;
 import org.mule.runtime.extension.api.annotation.execution.Execution;
 import org.mule.runtime.extension.api.annotation.param.Content;
@@ -39,7 +41,7 @@ public class ScriptingOperations {
   @Execution(CPU_INTENSIVE)
   public Result<Object, Void> execute(@Text String code,
                                       @OfValues(EnginesValueProvider.class) String engine,
-                                      @Optional @NullSafe @Content Map<String, Object> parameters) {
+                                      @Optional @NullSafe @Content @Expression(REQUIRED) Map<String, Object> parameters) {
 
     // the real operation is implemented through a custom executor: org.mule.plugin.scripting.operation.ScriptingOperationExecutor
     return null;
