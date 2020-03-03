@@ -1,0 +1,23 @@
+{
+  "configs": [
+    "script-module-test.xml"
+  ],
+  "secureProperties": [],
+  "redeploymentEnabled": true,
+  "minMuleVersion": "4.2.2",
+  "requiredProduct": "MULE",
+  "classLoaderModelLoaderDescriptor": {
+    "id": "mule",
+    "attributes": {
+      "exportedPackages": [],
+      "exportedResources": [
+        "log4j2.xml",
+        "script-module-test.xml"
+      ]
+    }
+  },
+  "bundleDescriptorLoader": {
+    "id": "mule",
+    "attributes": {}
+  }
+}

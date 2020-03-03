@@ -7,7 +7,7 @@
 
 
     <flow name="executionError">
-        <scripting:execute engine="python">
+        <scripting:execute engine="groovy">
             <scripting:code>invalid</scripting:code>
         </scripting:execute>
     </flow>

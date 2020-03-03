@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:scripting="http://www.mulesoft.org/schema/mule/scripting" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+      xmlns="http://www.mulesoft.org/schema/mule/core"
+      xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/scripting http://www.mulesoft.org/schema/mule/scripting/current/mule-scripting.xsd">
+    <http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="f62b4666-83b8-4501-838d-98e1eed90c7d" >
+        <http:listener-connection host="0.0.0.0" port="8081" />
+    </http:listener-config>
+    <flow name="script-module-testFlow" doc:id="02abc7a6-cb22-49ff-adcb-a61fbd020fa3" >
+        <http:listener doc:name="Listener" doc:id="fb109686-d7e9-4243-b861-593138da38e4" config-ref="HTTP_Listener_config" path="/test"/>
+        <scripting:execute doc:name="Execute" doc:id="9925b22b-f4ba-4266-8530-0d6ab0a613b0" engine="nashorn">
+            <scripting:code >result =1</scripting:code>
+        </scripting:execute>
+    </flow>
+</mule>
