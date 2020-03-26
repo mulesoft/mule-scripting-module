@@ -20,7 +20,7 @@
     <properties>
         <formatterConfigPath>formatter.xml</formatterConfigPath>
 
-        <jython.version>2.7.1</jython.version>
+        <jython.version>2.7.2</jython.version>
         <groovy.version>2.4.16</groovy.version>
         <jruby.version>9.2.11.0</jruby.version>
 
