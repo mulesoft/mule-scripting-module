@@ -22,7 +22,7 @@
 
         <jython.version>2.7.2</jython.version>
         <groovy.version>2.4.16</groovy.version>
-        <jruby.version>9.2.11.0</jruby.version>
+        <jruby.version>9.2.11.1</jruby.version>
 
         <project.reactor.version>3.3.3.RELEASE</project.reactor.version>
 
