@@ -10,12 +10,14 @@ import org.mule.plugin.scripting.errors.ScriptingErrors;
 import org.mule.plugin.scripting.operation.ScriptingOperationEnricher;
 import org.mule.runtime.extension.api.annotation.Extension;
 import org.mule.runtime.extension.api.annotation.Operations;
+import org.mule.runtime.extension.api.annotation.connectivity.ConnectionProviders;
 import org.mule.runtime.extension.api.annotation.error.ErrorTypes;
 import org.mule.runtime.extension.api.annotation.privileged.DeclarationEnrichers;
 
 @Extension(name = "Scripting")
 @Operations({ScriptingOperations.class})
 @DeclarationEnrichers(ScriptingOperationEnricher.class)
+@ConnectionProviders({GenericEngineProvider.class})
 @ErrorTypes(ScriptingErrors.class)
 public class ScriptingExtension {
 
