@@ -12,10 +12,10 @@ import org.mule.runtime.api.value.Value;
 import org.mule.runtime.extension.api.values.ValueProvider;
 import org.mule.runtime.extension.api.values.ValueResolvingException;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import javax.script.ScriptEngineFactory;
+import javax.script.ScriptEngineManager;
+
+import java.util.*;
 
 /**
  * {@link ValueProvider} implementation which provides the common values for the script engine parameter.
@@ -24,21 +24,17 @@ import java.util.Set;
  */
 public final class EnginesValueProvider implements ValueProvider {
 
-  private static final Map<String, String> engines =
-      Collections.unmodifiableMap(new HashMap<String, String>() {
-
-        {
-          put("groovy", "Groovy");
-          put("jython", "Jython (Python)");
-          put("ruby", "JRuby (Ruby)");
-          put("nashorn", "Nashorn (JavaScript)");
-        }
-      });
-
-  private static final Set<Value> values = getValuesFor(engines);
-
   @Override
   public Set<Value> resolve() throws ValueResolvingException {
-    return values;
+    ScriptEngineManager scriptEngineManager = new ScriptEngineManager();
+    List<ScriptEngineFactory> scriptEngineFactories = scriptEngineManager.getEngineFactories();
+    Map<String, String> map = new HashMap<String, String>();
+
+    scriptEngineFactories.forEach(entry -> map.put(entry.getEngineName().concat(entry.getEngineVersion()),
+                                                   entry.getEngineName().concat(" ")
+                                                       .concat(entry.getEngineVersion().concat(" ")
+                                                           .concat(entry.getLanguageName()))));
+
+    return getValuesFor(map);
   }
 }
