@@ -12,6 +12,7 @@ import org.mule.runtime.api.connection.ConnectionValidationResult;
 import org.mule.runtime.extension.api.annotation.Alias;
 import org.mule.runtime.extension.api.annotation.ExternalLib;
 import org.mule.runtime.extension.api.annotation.param.display.DisplayName;
+import org.mule.runtime.extension.api.connectivity.NoConnectivityTest;
 
 import javax.sql.DataSource;
 import static org.mule.runtime.api.meta.ExternalLibraryType.JAR;
@@ -26,7 +27,7 @@ import static org.mule.runtime.api.meta.ExternalLibraryType.JAR;
 @Alias("data-source")
 @ExternalLib(name = "JSR-223 Engine", description = "A JSR-223 supported engine",
     nameRegexpMatcher = "(.*)\\.jar", type = JAR, optional = true)
-public class GenericEngineProvider implements ConnectionProvider<ScriptingEngine> {
+public class GenericEngineProvider implements ConnectionProvider<ScriptingEngine>, NoConnectivityTest {
 
   @Override
   public ScriptingEngine connect() throws ConnectionException {

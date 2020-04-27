@@ -28,7 +28,7 @@ public final class EnginesValueProvider implements ValueProvider {
   public Set<Value> resolve() throws ValueResolvingException {
     ScriptEngineManager scriptEngineManager = new ScriptEngineManager();
     List<ScriptEngineFactory> scriptEngineFactories = scriptEngineManager.getEngineFactories();
-    Map<String, String> map = new HashMap<String, String>();
+    Map<String, String> map = new HashMap<>();
 
     scriptEngineFactories.forEach(entry -> map.put(entry.getEngineName().concat(entry.getEngineVersion()),
                                                    entry.getEngineName().concat(" ")

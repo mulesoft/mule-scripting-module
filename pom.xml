@@ -12,17 +12,13 @@
     <groupId>org.mule.modules</groupId>
     <artifactId>mule-scripting-module</artifactId>
     <packaging>mule-extension</packaging>
-    <version>1.2.6-SNAPSHOT</version>
+    <version>1.2.8-SNAPSHOT</version>
 
     <name>Scripting Module</name>
     <description>Support for embedding scripts inside Mule artifacts</description>
 
     <properties>
         <formatterConfigPath>formatter.xml</formatterConfigPath>
-
-        <jython.version>2.7.2</jython.version>
-        <groovy.version>2.4.16</groovy.version>
-        <jruby.version>9.2.11.1</jruby.version>
 
         <project.reactor.version>3.3.4.RELEASE</project.reactor.version>
 
@@ -40,33 +36,6 @@
             <groupId>io.projectreactor</groupId>
             <artifactId>reactor-core</artifactId>
             <version>${project.reactor.version}</version>
-        </dependency>
-
-        <!--Groovy-->
-        <dependency>
-            <groupId>org.codehaus.groovy</groupId>
-            <artifactId>groovy-all</artifactId>
-            <version>${groovy.version}</version>
-            <classifier>indy</classifier>
-        </dependency>
-
-        <!--Jython-->
-        <dependency>
-            <groupId>org.python</groupId>
-            <artifactId>jython-standalone</artifactId>
-            <version>${jython.version}</version>
-        </dependency>
-
-        <!--Ruby-->
-        <dependency>
-            <groupId>org.jruby</groupId>
-            <artifactId>jruby-core</artifactId>
-            <version>${jruby.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.jruby</groupId>
-            <artifactId>jruby-stdlib</artifactId>
-            <version>${jruby.version}</version>
         </dependency>
 
         <!-- Test dependencies -->
@@ -90,12 +59,6 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <configuration>
-                    <systemPropertyVariables>
-                        <jruby.version>${jruby.version}</jruby.version>
-                        <jython.version>${jython.version}</jython.version>
-                    </systemPropertyVariables>
-                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.mule.runtime.plugins</groupId>
