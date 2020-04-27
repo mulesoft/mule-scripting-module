@@ -30,10 +30,7 @@ public final class EnginesValueProvider implements ValueProvider {
     List<ScriptEngineFactory> scriptEngineFactories = scriptEngineManager.getEngineFactories();
     Map<String, String> map = new HashMap<>();
 
-    scriptEngineFactories.forEach(entry -> map.put(entry.getEngineName().concat(entry.getEngineVersion()),
-                                                   entry.getEngineName().concat(" ")
-                                                       .concat(entry.getEngineVersion().concat(" ")
-                                                           .concat(entry.getLanguageName()))));
+    scriptEngineFactories.forEach(entry -> map.put(entry.getEngineName(), entry.getLanguageName()));
 
     return getValuesFor(map);
   }
