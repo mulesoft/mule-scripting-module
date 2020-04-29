@@ -26,11 +26,11 @@ public final class EnginesValueProvider implements ValueProvider {
 
   @Override
   public Set<Value> resolve() throws ValueResolvingException {
-    ScriptEngineManager scriptEngineManager = new ScriptEngineManager();
+    ScriptEngineManager scriptEngineManager = new ScriptEngineManager(this.getClass().getClassLoader());
     List<ScriptEngineFactory> scriptEngineFactories = scriptEngineManager.getEngineFactories();
     Map<String, String> map = new HashMap<>();
 
-    scriptEngineFactories.forEach(entry -> map.put(entry.getEngineName(), entry.getLanguageName()));
+    scriptEngineFactories.forEach(entry -> map.put(entry.getLanguageName(), entry.getLanguageName()));
 
     return getValuesFor(map);
   }
