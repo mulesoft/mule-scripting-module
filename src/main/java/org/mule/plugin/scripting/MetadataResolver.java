@@ -6,24 +6,26 @@
  */
 package org.mule.plugin.scripting;
 
+import static org.mule.metadata.api.model.MetadataFormat.JAVA;
+
+import org.mule.metadata.api.builder.BaseTypeBuilder;
+import org.mule.metadata.api.model.AnyType;
 import org.mule.metadata.api.model.MetadataType;
-import org.mule.runtime.api.connection.ConnectionException;
-import org.mule.runtime.api.metadata.MetadataContext;
-import org.mule.runtime.api.metadata.MetadataResolvingException;
-import org.mule.runtime.api.metadata.resolving.OutputTypeResolver;
+import org.mule.runtime.api.metadata.resolving.OutputStaticTypeResolver;
 
 
-public class MetadataResolver implements OutputTypeResolver<String> {
+public class MetadataResolver extends OutputStaticTypeResolver {
 
-  @Override
-  public MetadataType getOutputType(MetadataContext context, String s)
-      throws MetadataResolvingException, ConnectionException {
-
-    return null;
-  }
+  private static final AnyType ANY_TYPE = BaseTypeBuilder.create(JAVA).anyType().build();
 
   @Override
   public String getCategoryName() {
-    return "scriptCategory";
+    return "SCRIPT";
+  }
+
+  @Override
+  public MetadataType getStaticMetadata() {
+    return ANY_TYPE;
   }
 }
+

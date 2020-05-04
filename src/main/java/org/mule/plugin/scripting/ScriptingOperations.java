@@ -41,9 +41,7 @@ public class ScriptingOperations {
    */
   @Throws(ScriptingErrorTypeProvider.class)
   @Execution(CPU_INTENSIVE)
-  @OutputResolver(output = MetadataResolver.class)
-  public Result<Object, Void> execute(@Config ScriptingExtension connector,
-                                      @Text String code,
+  public Result<Object, Void> execute(@Text String code,
                                       @OfValues(EnginesValueProvider.class) String engine,
                                       @Optional @NullSafe @Content @Expression(REQUIRED) Map<String, Object> parameters) {
 
