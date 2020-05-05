@@ -12,7 +12,7 @@
     <groupId>org.mule.modules</groupId>
     <artifactId>mule-scripting-module</artifactId>
     <packaging>mule-extension</packaging>
-    <version>1.2.21-SNAPSHOT</version>
+    <version>1.2.0-SNAPSHOT</version>
 
     <name>Scripting Module</name>
     <description>Support for embedding scripts inside Mule artifacts</description>
@@ -47,7 +47,6 @@
             <groupId>org.codehaus.groovy</groupId>
             <artifactId>groovy-all</artifactId>
             <version>${groovy.version}</version>
-            <scope>test</scope>
             <classifier>indy</classifier>
         </dependency>
 
@@ -56,7 +55,6 @@
             <groupId>org.python</groupId>
             <artifactId>jython-standalone</artifactId>
             <version>${jython.version}</version>
-            <scope>test</scope>
         </dependency>
 
         <!--Ruby-->
@@ -64,9 +62,12 @@
             <groupId>org.jruby</groupId>
             <artifactId>jruby-core</artifactId>
             <version>${jruby.version}</version>
-            <scope>test</scope>
         </dependency>
-
+        <dependency>
+            <groupId>org.jruby</groupId>
+            <artifactId>jruby-stdlib</artifactId>
+            <version>${jruby.version}</version>
+        </dependency>
 
         <!-- Test dependencies -->
         <dependency>
@@ -89,6 +90,12 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <systemPropertyVariables>
+                        <jruby.version>${jruby.version}</jruby.version>
+                        <jython.version>${jython.version}</jython.version>
+                    </systemPropertyVariables>
+                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.mule.runtime.plugins</groupId>
