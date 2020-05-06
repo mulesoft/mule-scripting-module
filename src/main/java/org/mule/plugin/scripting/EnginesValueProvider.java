@@ -31,10 +31,8 @@ public final class EnginesValueProvider implements ValueProvider {
     Map<String, String> map = new HashMap<>();
 
     try {
-      // TODO: Verify whats the best options between this two.
-      //scriptEngineFactories.forEach(entry -> map.put(entry.getNames().get(0), entry.getLanguageName()));
       scriptEngineFactories.forEach(entry -> map.put(entry.getEngineName(),
-                                                     entry.getLanguageName().concat(" ").concat(entry.getLanguageVersion())));
+                                                     entry.getLanguageName()));
     } catch (Exception e) {
       throw new ValueResolvingException(e.getMessage(), ValueResolvingException.UNKNOWN);
     }

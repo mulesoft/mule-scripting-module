@@ -23,8 +23,12 @@ import static org.mule.runtime.api.meta.ExternalLibraryType.JAR;
 @DeclarationEnrichers(ScriptingOperationEnricher.class)
 @DisplayName("Data Source Reference Connection")
 @Alias("data-source")
-@ExternalLib(name = "JSR-223 Engine", description = "A JSR-223 supported engine",
-    nameRegexpMatcher = "(.*)\\.jar", type = JAR, optional = true)
+@ExternalLib(name = "JSR-223 Engine",
+    description = "A JSR-223 supported engine",
+    nameRegexpMatcher = "(.*)\\.jar",
+    requiredClassName = "org.codehaus.groovy.groovy-all",
+    type = JAR, coordinates = "org.codehaus.groovy:groovy-all:2.4.16",
+    optional = true)
 @ErrorTypes(ScriptingErrors.class)
 public class ScriptingExtension {
 
