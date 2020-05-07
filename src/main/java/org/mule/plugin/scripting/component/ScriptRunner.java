@@ -34,6 +34,7 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.script.Bindings;
@@ -75,7 +76,7 @@ public class ScriptRunner {
   }
 
   public void initialise() {
-    scriptEngineManager = new ScriptEngineManager(this.getClass().getClassLoader());
+    scriptEngineManager = new ScriptEngineManager(Thread.currentThread().getContextClassLoader());
 
     scriptEngine = createScriptEngineByName(engineName);
     if (scriptEngine == null) {
@@ -155,7 +156,9 @@ public class ScriptRunner {
   }
 
   protected String listAvailableEngines() {
-    return CollectionUtils.toString(scriptEngineManager.getEngineFactories(), false);
+    return scriptEngineManager.getEngineFactories().stream()
+        .map(x -> x.getEngineName())
+        .collect(Collectors.joining(", "));
   }
 
   public ScriptEngine getScriptEngine() {

@@ -48,7 +48,7 @@
             <artifactId>groovy-all</artifactId>
             <version>${groovy.version}</version>
             <classifier>indy</classifier>
-            <scope>test</scope>
+            <scope>tests</scope>
         </dependency>
 
         <!--Jython-->
@@ -56,7 +56,7 @@
             <groupId>org.python</groupId>
             <artifactId>jython-standalone</artifactId>
             <version>${jython.version}</version>
-            <scope>test</scope>
+            <scope>tests</scope>
         </dependency>
 
         <!--Ruby-->
@@ -64,13 +64,13 @@
             <groupId>org.jruby</groupId>
             <artifactId>jruby-core</artifactId>
             <version>${jruby.version}</version>
-            <scope>test</scope>
+            <scope>tests</scope>
         </dependency>
         <dependency>
             <groupId>org.jruby</groupId>
             <artifactId>jruby-stdlib</artifactId>
             <version>${jruby.version}</version>
-            <scope>test</scope>
+            <scope>tests</scope>
         </dependency>
 
         <!-- Test dependencies -->
@@ -99,13 +99,6 @@
                         <jruby.version>${jruby.version}</jruby.version>
                         <jython.version>${jython.version}</jython.version>
                     </systemPropertyVariables>
-                    <excludes>
-                        <exclude>**/GroovyScriptFlowFunctionalTestCase.java</exclude>
-                        <exclude>**/GreedyTestCase.java</exclude>
-                        <exclude>**/ScriptingErrorsTestCase.java</exclude>
-                        <exclude>**/GroovyRegistryLookupTestCase.java</exclude>
-                        <exclude>**/GroovyScriptServiceFunctionalTestCase.java</exclude>
-                    </excludes>
                 </configuration>
             </plugin>
             <plugin>
@@ -178,45 +171,4 @@
                 </plugin>
         </plugins>
     </build>
-    <profiles>
-        <profile>
-            <activation>
-                <property>
-                    <name>engines</name>
-                    <value>true</value>
-                </property>
-            </activation>
-            <id>engines</id>
-            <dependencies>
-                <dependency>
-                    <groupId>org.codehaus.groovy</groupId>
-                    <artifactId>groovy-all</artifactId>
-                    <version>${groovy.version}</version>
-                    <classifier>indy</classifier>
-                </dependency>
-                <dependency>
-                    <groupId>org.python</groupId>
-                    <artifactId>jython-standalone</artifactId>
-                    <version>${jython.version}</version>
-                </dependency>
-            </dependencies>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-surefire-plugin</artifactId>
-                        <configuration>
-                            <systemPropertyVariables>
-                                <jruby.version>${jruby.version}</jruby.version>
-                                <jython.version>${jython.version}</jython.version>
-                            </systemPropertyVariables>
-                            <excludes>
-                                <exclude>Nothing</exclude>
-                            </excludes>
-                        </configuration>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-    </profiles>
 </project>
