@@ -5,24 +5,5 @@
       xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
         http://www.mulesoft.org/schema/mule/scripting http://www.mulesoft.org/schema/mule/scripting/current/mule-scripting.xsd">
 
-    <flow name="greedy">
-        <choice>
-            <when expression="#[vars.currency == 'USD']">
-                <scripting:execute engine="groovy">
-                    <scripting:code>${file::greedy.groovy}</scripting:code>
-                    <scripting:parameters>
-                        #[{currency: "USD"}]
-                    </scripting:parameters>
-                </scripting:execute>
-             </when>
-            <when expression="#[vars.currency == 'GBP']">
-                <scripting:execute engine="python">
-                    <scripting:code>${file::greedy.py}</scripting:code>
-                    <scripting:parameters>
-                        #[{currency: "GBP"}]
-                    </scripting:parameters>
-                </scripting:execute>
-             </when>
-        </choice>
-    </flow>
+
 </mule>
