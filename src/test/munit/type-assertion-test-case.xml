@@ -1,0 +1,26 @@
+
+
+<mule xmlns:java="http://www.mulesoft.org/schema/mule/java" xmlns="http://www.mulesoft.org/schema/mule/core"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:munit="http://www.mulesoft.org/schema/mule/munit"
+      xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+      		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd
+        http://www.mulesoft.org/schema/mule/java http://www.mulesoft.org/schema/mule/java/current/mule-java.xsd">
+    <munit:config name="prueba.xml"/>
+
+    <munit:test name="scriptReferencesAppClass">
+        <munit:execution>
+            <set-variable variableName="requestsNumber" value="#[%dw 2.0
+import java!org::mule::tck::testmodels::fruit::Apple
+
+output application/java
+---
+Apple::new()]"/>
+        </munit:execution >
+        <munit:validation>
+            <java:validate-type class="org.mule.tck.testmodels.fruit.Apple" instance="#[vars.requestsNumber]" />
+
+        </munit:validation>
+    </munit:test>
+
+</mule>
