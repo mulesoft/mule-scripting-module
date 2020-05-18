@@ -42,37 +42,6 @@
             <version>${project.reactor.version}</version>
         </dependency>
 
-        <!--Groovy-->
-        <dependency>
-            <groupId>org.codehaus.groovy</groupId>
-            <artifactId>groovy-all</artifactId>
-            <version>${groovy.version}</version>
-            <classifier>indy</classifier>
-            <scope>tests</scope>
-        </dependency>
-
-        <!--Jython-->
-        <dependency>
-            <groupId>org.python</groupId>
-            <artifactId>jython-standalone</artifactId>
-            <version>${jython.version}</version>
-            <scope>tests</scope>
-        </dependency>
-
-        <!--Ruby-->
-        <dependency>
-            <groupId>org.jruby</groupId>
-            <artifactId>jruby-core</artifactId>
-            <version>${jruby.version}</version>
-            <scope>tests</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.jruby</groupId>
-            <artifactId>jruby-stdlib</artifactId>
-            <version>${jruby.version}</version>
-            <scope>tests</scope>
-        </dependency>
-
         <!-- Test dependencies -->
         <dependency>
             <groupId>org.mule.tests.plugin</groupId>
@@ -85,6 +54,36 @@
             <groupId>org.mule.tests</groupId>
             <artifactId>mule-tests-model</artifactId>
             <version>${mule.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <!--Groovy-->
+        <dependency>
+            <groupId>org.codehaus.groovy</groupId>
+            <artifactId>groovy-all</artifactId>
+            <version>${groovy.version}</version>
+            <classifier>indy</classifier>
+            <scope>test</scope>
+        </dependency>
+
+        <!--Jython-->
+        <dependency>
+            <groupId>org.python</groupId>
+            <artifactId>jython-standalone</artifactId>
+            <version>${jython.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!--Ruby-->
+        <dependency>
+            <groupId>org.jruby</groupId>
+            <artifactId>jruby-core</artifactId>
+            <version>${jruby.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.jruby</groupId>
+            <artifactId>jruby-stdlib</artifactId>
+            <version>${jruby.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
