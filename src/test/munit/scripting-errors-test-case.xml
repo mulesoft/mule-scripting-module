@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:scripting="http://www.mulesoft.org/schema/mule/scripting"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:munit="http://www.mulesoft.org/schema/mule/munit"
+      xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+      xmlns="http://www.mulesoft.org/schema/mule/core"
+      xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd
+http://www.mulesoft.org/schema/mule/scripting http://www.mulesoft.org/schema/mule/scripting/current/mule-scripting.xsd">
+
+    <munit:config name="scripting-errors-config.xml" />
+
+    <munit:test name="executionError">
+        <munit:execution>
+            <try>
+                <scripting:execute engine="python">
+                    <scripting:code>invalid</scripting:code>
+                </scripting:execute>
+                <error-handler>
+                    <on-error-continue type="SCRIPTING:EXECUTION">
+                        <set-payload value="#[{ message : 'execution'}]" />
+                    </on-error-continue>
+                </error-handler>
+            </try>
+        </munit:execution>
+        <munit:validation >
+            <munit-tools:assert-that expression="#[payload.message]" is="#[MunitTools::equalTo('execution')]"/>
+        </munit:validation>
+    </munit:test>
+
+    <munit:test name="engineError">
+        <munit:execution>
+            <try>
+                <scripting:execute engine="invalid">
+                    <scripting:code>10</scripting:code>
+                </scripting:execute>
+                <error-handler>
+                    <on-error-continue type="SCRIPTING:UNKNOWN_ENGINE">
+                        <set-payload value="#[{ message : 'unknown engine'}]" />
+                    </on-error-continue>
+                </error-handler>
+            </try>
+        </munit:execution>
+        <munit:validation >
+            <munit-tools:assert-that expression="#[payload.message]" is="#[MunitTools::equalTo('unknown engine')]"/>
+        </munit:validation>
+    </munit:test>
+</mule>
