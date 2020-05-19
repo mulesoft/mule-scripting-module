@@ -11,7 +11,7 @@
 
     <munit:config name="groovy-test-cases.xml"/>
 
-    <munit:test name="inlineScriptMutateProperty">
+    <munit:test name="inlineScriptMutateVariable">
         <munit:behavior>
             <set-variable value="bar-original" variableName="foo"/>
         </munit:behavior>
@@ -34,6 +34,29 @@
         </munit:validation >
     </munit:test>
 
+    <munit:test name="inlineScriptMutateVariablesMap">
+        <munit:behavior>
+            <set-payload value="#['']" />
+            <set-variable value="bar" variableName="foo"/>
+        </munit:behavior>
+        <munit:execution>
+            <scripting:execute engine="groovy">
+                <scripting:code>
+                    vars = new HashMap()
+                </scripting:code>
+            </scripting:execute>
+            <scripting:execute engine="groovy">
+                <scripting:code>
+                    return (payload instanceof HashMap)
+                </scripting:code>
+            </scripting:execute>
+        </munit:execution >
+        <munit:validation >
+            <munit-tools:assert-that expression="#[vars.foo]" is="#[MunitTools::equalTo('bar')]"/>
+            <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::equalTo(true)]"/>
+        </munit:validation >
+    </munit:test>
+
     <munit:test name="inlineScriptAddVariable">
         <munit:execution>
             <try>
@@ -53,6 +76,29 @@
             <munit-tools:assert-that expression="#[payload.message]" is="#[MunitTools::equalTo('Unknown operation')]"/>
         </munit:validation >
     </munit:test>
+
+    <munit:test name="scriptReferencesAppClass">
+        <munit:behavior>
+            <scripting:execute engine="groovy">
+                <scripting:code>
+                    import org.mule.tck.testmodels.fruit.Apple
+                    return new Apple()
+                </scripting:code>
+            </scripting:execute>
+        </munit:behavior>
+        <munit:execution>
+            <scripting:execute engine="groovy">
+                <scripting:code>
+                    import org.mule.tck.testmodels.fruit.Apple
+                    return (payload instanceof Apple)
+                </scripting:code>
+            </scripting:execute>
+        </munit:execution >
+        <munit:validation >
+            <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::equalTo(true)]"/>
+        </munit:validation >
+    </munit:test>
+
 
     <munit:test name="inlineScriptMutatePayload">
         <munit:execution>
@@ -209,5 +255,6 @@
             </scripting:code>
         </scripting:execute>
     </flow>
+
 
 </mule>
