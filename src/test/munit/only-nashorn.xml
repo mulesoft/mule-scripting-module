@@ -9,7 +9,7 @@
 		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd
 http://www.mulesoft.org/schema/mule/scripting http://www.mulesoft.org/schema/mule/scripting/current/mule-scripting.xsd">
 
-    <munit:config name="new-test.xml" />
+    <munit:config name="new-test.xml" ignore="true"/>
 
     <munit:test name="groovy-not-found" description="Expect error since there is only nashorn engine">
         <munit:execution>
