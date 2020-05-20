@@ -151,7 +151,7 @@
         </munit:validation >
     </munit:test>
 
-    <munit:test name="inlineScriptFlow">
+    <munit:test name="inlineScript">
         <munit:behavior>
             <set-payload value="hello" />
         </munit:behavior>
@@ -228,6 +228,18 @@
         </munit:validation >
     </munit:test>
 
+    <munit:test name="inlineScriptQueued">
+        <munit:behavior>
+            <set-payload value="Important Message"/>
+        </munit:behavior>
+        <munit:execution>
+            <flow-ref name="inlineScriptFlow"/>
+        </munit:execution >
+        <munit:validation >
+            <munit-tools:dequeue target="dequeued"/>
+            <munit-tools:assert-that expression="#[vars.dequeued]" is="#[MunitTools::equalTo('Important Message Received')]"/>
+        </munit:validation >
+    </munit:test>
 
     <flow name="inlineScriptWithResolvedParametersFlow">
         <scripting:execute engine="groovy">
@@ -256,5 +268,13 @@
         </scripting:execute>
     </flow>
 
+    <flow name="inlineScriptFlow">
+        <scripting:execute engine="groovy">
+            <scripting:code>
+                return "$payload Received"
+            </scripting:code>
+        </scripting:execute>
+        <munit-tools:queue/>
+    </flow>
 
 </mule>
