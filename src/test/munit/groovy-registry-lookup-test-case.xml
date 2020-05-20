@@ -10,7 +10,7 @@
 		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd
         http://www.mulesoft.org/schema/mule/scripting http://www.mulesoft.org/schema/mule/scripting/current/mule-scripting.xsd">
 
-    <munit:config name="n.xml"/>
+    <munit:config name="registry-lookup-config.xml"/>
 
     <flow name="testflow" initialState="started">
         <set-variable value="Hello" variableName="bar"/>

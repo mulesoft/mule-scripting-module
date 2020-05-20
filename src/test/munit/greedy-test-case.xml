@@ -11,7 +11,7 @@ http://www.mulesoft.org/schema/mule/scripting http://www.mulesoft.org/schema/mul
 
     <munit:config name="new-test-suite-greedy.xml" />
 
-    <munit:test name="GreedyDolarTestCase">
+    <munit:test name="GreedyDollarTestCase">
         <munit:behavior>
             <set-variable value="USD" variableName="currency"/>
             <set-payload value="#[233]"/>
