@@ -2,34 +2,41 @@
 
 <mule xmlns:scripting="http://www.mulesoft.org/schema/mule/scripting"
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:munit="http://www.mulesoft.org/schema/mule/munit"
-      xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools" xmlns="http://www.mulesoft.org/schema/mule/core"
-      xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xsi:schemaLocation="
+      xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+      xmlns="http://www.mulesoft.org/schema/mule/core"
+      xsi:schemaLocation="
 		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
 		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
 		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd
-http://www.mulesoft.org/schema/mule/scripting http://www.mulesoft.org/schema/mule/scripting/current/mule-scripting.xsd">
+        http://www.mulesoft.org/schema/mule/scripting http://www.mulesoft.org/schema/mule/scripting/current/mule-scripting.xsd">
 
-    <munit:config name="new-test-suite-greedy.xml" />
+    <munit:config name="n.xml"/>
 
-    <munit:test name="GreedyDolarTestCase">
-        <munit:behavior>
-            <set-variable value="USD" variableName="currency"/>
-            <set-propierty value="#[233]"/>
-        </munit:behavior>
-        <munit:execution >
-            <flow-ref name="sayHello"/>
+    <flow name="testflow" initialState="started">
+        <set-variable value="Hello" variableName="bar"/>
+    </flow>
+
+    <munit:test name="AccessingRegistryTestCase">
+        <munit:execution>
+            <scripting:execute engine="groovy">
+                <scripting:code>
+                    flow = registry.lookupByName("testflow").get();
+                    flow.stop()
+                </scripting:code>
+            </scripting:execute>
+            <try>
+                <flow-ref name="testflow"/>
+                <error-handler>
+                    <on-error-continue type="ANY">
+                        <set-payload value="#[{'errorDescription' : error.description}]" />
+                    </on-error-continue>
+                </error-handler>
+            </try>
         </munit:execution>
-        <munit:validation >
-            <munit-tools:assert-equals actual="#[payload]" expected="hello"/>
+        <munit:validation>
+            <munit-tools:assert-that expression="#[payload.errorDescription]" is="#[MunitTools::equalTo('Cannot process event as &quot;testflow&quot; is stopped')]"/>
         </munit:validation>
     </munit:test>
 
-    <flow name="sayHello">
-        <script:execute engine="groovy">
-            <script:code>
-                return registry.lookupByName("hello").get().sayHello()
-            </script:code>
-        </script:execute>
-        <logger/>
-    </flow>
+
 </mule>
