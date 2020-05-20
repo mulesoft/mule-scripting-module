@@ -27,7 +27,7 @@ import static org.mule.runtime.api.meta.ExternalLibraryType.JAR;
     description = "A JSR-223 supported engine",
     nameRegexpMatcher = "(.*)\\.jar",
     requiredClassName = "org.codehaus.groovy.groovy-all",
-    type = JAR, coordinates = "org.codehaus.groovy:groovy-all:2.4.16:indie",
+    type = JAR, coordinates = "org.codehaus.groovy:groovy-all:2.4.16:indy",
     optional = true)
 @ErrorTypes(ScriptingErrors.class)
 public class ScriptingExtension {
