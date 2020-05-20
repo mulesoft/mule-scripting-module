@@ -18,6 +18,7 @@ import static org.mule.runtime.api.el.BindingContextUtils.addEventBindings;
 import static org.mule.runtime.api.i18n.I18nMessageFactory.createStaticMessage;
 import static org.mule.runtime.core.api.config.MuleProperties.COMPATIBILITY_PLUGIN_INSTALLED;
 import static org.slf4j.LoggerFactory.getLogger;
+import static java.lang.Thread.currentThread;
 
 import org.mule.runtime.api.artifact.Registry;
 import org.mule.runtime.api.component.location.ComponentLocation;
@@ -27,7 +28,6 @@ import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.runtime.core.api.util.IOUtils;
 import org.mule.runtime.core.privileged.el.context.SessionVariableMapContext;
 import org.mule.runtime.core.privileged.event.PrivilegedEvent;
-import org.mule.runtime.core.privileged.util.CollectionUtils;
 import org.mule.runtime.extension.api.exception.ModuleException;
 
 import java.io.Reader;
@@ -76,7 +76,7 @@ public class ScriptRunner {
   }
 
   public void initialise() {
-    scriptEngineManager = new ScriptEngineManager(Thread.currentThread().getContextClassLoader());
+    scriptEngineManager = new ScriptEngineManager(currentThread().getContextClassLoader());
 
     scriptEngine = createScriptEngineByName(engineName);
     if (scriptEngine == null) {

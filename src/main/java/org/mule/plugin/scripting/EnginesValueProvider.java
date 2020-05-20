@@ -7,6 +7,7 @@
 package org.mule.plugin.scripting;
 
 import static org.mule.runtime.extension.api.values.ValueBuilder.getValuesFor;
+import static java.lang.Thread.currentThread;
 
 import org.mule.runtime.api.value.Value;
 import org.mule.runtime.extension.api.values.ValueProvider;
@@ -14,8 +15,10 @@ import org.mule.runtime.extension.api.values.ValueResolvingException;
 
 import javax.script.ScriptEngineFactory;
 import javax.script.ScriptEngineManager;
-
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * {@link ValueProvider} implementation which provides the common values for the script engine parameter.
@@ -26,7 +29,7 @@ public final class EnginesValueProvider implements ValueProvider {
 
   @Override
   public Set<Value> resolve() throws ValueResolvingException {
-    ScriptEngineManager scriptEngineManager = new ScriptEngineManager(Thread.currentThread().getContextClassLoader());
+    ScriptEngineManager scriptEngineManager = new ScriptEngineManager(currentThread().getContextClassLoader());
     List<ScriptEngineFactory> scriptEngineFactories = scriptEngineManager.getEngineFactories();
     Map<String, String> map = new HashMap<>();
 
