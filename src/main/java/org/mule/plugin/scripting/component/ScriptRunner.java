@@ -37,12 +37,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
-import javax.script.Bindings;
-import javax.script.Compilable;
-import javax.script.CompiledScript;
-import javax.script.ScriptEngine;
-import javax.script.ScriptEngineManager;
-import javax.script.ScriptException;
+import javax.script.*;
 
 import org.slf4j.Logger;
 
@@ -157,7 +152,7 @@ public class ScriptRunner {
 
   protected String listAvailableEngines() {
     return scriptEngineManager.getEngineFactories().stream()
-        .map(x -> x.getEngineName())
+        .map(ScriptEngineFactory::getEngineName)
         .collect(Collectors.joining(", "));
   }
 
