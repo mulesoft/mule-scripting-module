@@ -18,25 +18,28 @@
 
     <munit:test name="AccessingRegistryTestCase">
         <munit:execution>
-            <scripting:execute engine="groovy">
+            <flow-ref name="testflow"/>
+            <scripting:execute engine="groovy" target="bar1">
                 <scripting:code>
-                    flow = registry.lookupByName("testflow").get();
-                    flow.stop()
+                    registry.lookupByName("testflow").get().isStarted()
                 </scripting:code>
             </scripting:execute>
-            <try>
-                <flow-ref name="testflow"/>
-                <error-handler>
-                    <on-error-continue type="ANY">
-                        <set-payload value="#[{'errorDescription' : error.description}]" />
-                    </on-error-continue>
-                </error-handler>
-            </try>
+        <scripting:execute engine="groovy">
+            <scripting:code>
+                flow = registry.lookupByName("testflow").get();
+                if (flow.isStarted())
+                    flow.stop()
+            </scripting:code>
+        </scripting:execute>
+        <scripting:execute engine="groovy" target="bar2">
+            <scripting:code>
+                registry.lookupByName("testflow").get().isStarted()
+            </scripting:code>
+        </scripting:execute>
         </munit:execution>
         <munit:validation>
-            <munit-tools:assert-that expression="#[payload.errorDescription]" is="#[MunitTools::equalTo('Cannot process event as &quot;testflow&quot; is stopped')]"/>
+            <munit-tools:assert-that expression="#[vars.bar1]" is="#[MunitTools::equalTo(true)]"/>
+            <munit-tools:assert-that expression="#[vars.bar2]" is="#[MunitTools::equalTo(false)]"/>
         </munit:validation>
     </munit:test>
-
-
 </mule>
