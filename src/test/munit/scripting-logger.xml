@@ -9,9 +9,9 @@
 		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd
 http://www.mulesoft.org/schema/mule/scripting http://www.mulesoft.org/schema/mule/scripting/current/mule-scripting.xsd">
 
-    <munit:config name="logger-suite.xml" />
+    <munit:config name="logger-suite.xml"/>
 
-    <munit:test name="logger">
+    <munit:test name="logger" description="Some description">
         <munit:execution >
             <scripting:execute engine="groovy">
                 <scripting:code>
