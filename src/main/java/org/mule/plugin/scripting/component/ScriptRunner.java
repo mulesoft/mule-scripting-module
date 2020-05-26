@@ -69,7 +69,7 @@ public class ScriptRunner {
   private ScriptEngineManager scriptEngineManager;
   private boolean compatibilityMode;
 
-  public ScriptRunner(String engine, String code, ComponentLocation location) {
+  public ScriptRunner(String code, String engine, ComponentLocation location) {
     this.engineName = engine;
     this.scriptBody = code;
     this.location = location;
