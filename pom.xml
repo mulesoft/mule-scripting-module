@@ -14,6 +14,8 @@
     <name>Scripting Module</name>
     <description>Support for embedding scripts inside Mule artifacts</description>
     <properties>
+        <munit.extensions.maven.plugin.version>1.0.0</munit.extensions.maven.plugin.version>
+        <munit.version>2.2.4</munit.version>
         <formatterConfigPath>formatter.xml</formatterConfigPath>
         <jython.version>2.7.2</jython.version>
         <groovy.version>2.4.16</groovy.version>
