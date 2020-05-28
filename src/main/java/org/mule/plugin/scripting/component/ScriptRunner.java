@@ -23,6 +23,7 @@ import static java.lang.Thread.currentThread;
 import org.mule.runtime.api.artifact.Registry;
 import org.mule.runtime.api.component.location.ComponentLocation;
 import org.mule.runtime.api.el.Binding;
+import org.mule.runtime.api.streaming.Cursor;
 import org.mule.runtime.api.streaming.CursorProvider;
 import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.runtime.core.api.util.IOUtils;
@@ -30,6 +31,7 @@ import org.mule.runtime.core.privileged.el.context.SessionVariableMapContext;
 import org.mule.runtime.core.privileged.event.PrivilegedEvent;
 import org.mule.runtime.extension.api.exception.ModuleException;
 
+import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
 import java.util.HashMap;
@@ -129,6 +131,19 @@ public class ScriptRunner {
 
     bindings.putAll(parameters);
     populateDefaultBindings(bindings);
+  }
+
+  public void closeCursors(Bindings bindings) {
+    for (Map.Entry<String, Object> entry : bindings.entrySet()) {
+      Object value = entry.getValue();
+      if (value instanceof Cursor) {
+        try {
+          ((Cursor) value).close();
+        } catch (IOException e) {
+          LOGGER.error(e.getMessage());
+        }
+      }
+    }
   }
 
   public Object runScript(Bindings bindings) {

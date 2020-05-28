@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:scripting="http://www.mulesoft.org/schema/mule/scripting"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:munit="http://www.mulesoft.org/schema/mule/munit"
+      xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools" xmlns="http://www.mulesoft.org/schema/mule/core"
+      xmlns:file="http://www.mulesoft.org/schema/mule/file"
+      xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd
+		http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd
+        http://www.mulesoft.org/schema/mule/scripting http://www.mulesoft.org/schema/mule/scripting/current/mule-scripting.xsd">
+
+    <munit:config name="new-test-suite.xml" />
+
+    <file:config name="test-resources">
+        <file:connection workingDir="target/test-classes"/>
+    </file:config>
+
+    <munit:test name="Cursor">
+        <munit:behavior>
+            <file:read  config-ref="test-resources" path="log4j2-test.xml" outputMimeType="text/plain"/>
+        </munit:behavior>
+        <munit:execution >
+            <flow-ref name="scripting-docFlow1"/>
+            <flow-ref name="scripting-docFlow2"/>
+        </munit:execution>
+        <munit:validation >
+            <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::equalTo('nop')]"/>
+        </munit:validation>
+    </munit:test>
+
+    <flow name="scripting-docFlow1" >
+        <scripting:execute engine="groovy">
+            <scripting:code >
+                return payload
+            </scripting:code>
+        </scripting:execute>
+    </flow>
+    <flow name="scripting-docFlow2" >
+        <scripting:execute engine="groovy">
+            <scripting:code >
+                if (payload.isDisposed()) {
+                    return 'yes'
+                } else {
+                    return 'nop'
+                }
+            </scripting:code>
+        </scripting:execute>
+    </flow>
+
+</mule>
