@@ -23,6 +23,7 @@ import static java.lang.Thread.currentThread;
 import org.mule.runtime.api.artifact.Registry;
 import org.mule.runtime.api.component.location.ComponentLocation;
 import org.mule.runtime.api.el.Binding;
+import org.mule.runtime.api.metadata.TypedValue;
 import org.mule.runtime.api.streaming.Cursor;
 import org.mule.runtime.api.streaming.CursorProvider;
 import org.mule.runtime.core.api.event.CoreEvent;
@@ -35,6 +36,8 @@ import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -60,6 +63,8 @@ public class ScriptRunner {
   private String engineName;
   private String scriptBody;
   private ComponentLocation location;
+  private List<Cursor> openedCursors = new LinkedList<>();
+
 
   @Inject
   private Registry registry;
@@ -133,17 +138,14 @@ public class ScriptRunner {
     populateDefaultBindings(bindings);
   }
 
-  public void closeCursors(Bindings bindings) {
-    for (Map.Entry<String, Object> entry : bindings.entrySet()) {
-      Object value = entry.getValue();
-      if (value instanceof Cursor) {
-        try {
-          ((Cursor) value).close();
-        } catch (IOException e) {
-          LOGGER.error(e.getMessage());
-        }
+  public void closeCursors() {
+    this.openedCursors.stream().forEach(c -> {
+      try {
+        c.close();
+      } catch (IOException ignored) {
       }
-    }
+    });
+    this.openedCursors.clear();
   }
 
   public Object runScript(Bindings bindings) {
@@ -183,6 +185,7 @@ public class ScriptRunner {
   private Object resolveCursor(Object value) {
     if (value instanceof CursorProvider) {
       value = ((CursorProvider) value).openCursor();
+      this.openedCursors.add((Cursor) value);
     }
 
     return value;

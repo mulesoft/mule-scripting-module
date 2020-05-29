@@ -40,7 +40,7 @@
     <flow name="scripting-docFlow2" >
         <scripting:execute engine="groovy">
             <scripting:code >
-                if (payload.isDisposed()) {
+                if (payload.isReleased()) {
                     return 'yes'
                 } else {
                     return 'nop'

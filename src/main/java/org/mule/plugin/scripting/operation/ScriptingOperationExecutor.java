@@ -80,7 +80,7 @@ public class ScriptingOperationExecutor implements ComponentExecutor<OperationMo
             .build();
       }
     } finally {
-      scriptRunner.closeCursors(bindings);
+      scriptRunner.closeCursors();
       bindings.clear();
     }
   }
