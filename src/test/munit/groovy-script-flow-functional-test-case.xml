@@ -11,7 +11,7 @@
 
     <munit:config name="groovy-test-cases.xml"/>
 
-    <munit:test name="inlineScriptMutateVariable">
+    <munit:test name="inlineScriptMutateVariable" description="Trying to mutate a var must throw scripting execution error">
         <munit:behavior>
             <set-variable value="bar-original" variableName="foo"/>
         </munit:behavior>
@@ -34,7 +34,7 @@
         </munit:validation >
     </munit:test>
 
-    <munit:test name="inlineScriptMutateVariablesMap">
+    <munit:test name="inlineScriptMutateVariablesMap" description="vars does not mutate">
         <munit:behavior>
             <set-payload value="#['']" />
             <set-variable value="bar" variableName="foo"/>

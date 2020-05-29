@@ -16,7 +16,7 @@
         <set-variable value="Hello" variableName="bar"/>
     </flow>
 
-    <munit:test name="AccessingRegistryTestCase">
+    <munit:test name="AccessingRegistryTestCase" description="Accessing the registry to stop a flow">
         <munit:execution>
             <flow-ref name="testflow"/>
             <scripting:execute engine="groovy" target="bar1">
