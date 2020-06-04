@@ -6,14 +6,12 @@
  */
 package org.mule.plugin.scripting.component;
 
-import static java.util.Collections.unmodifiableMap;
 import static org.mule.plugin.scripting.errors.ScriptingErrors.COMPILATION;
 import static org.mule.plugin.scripting.errors.ScriptingErrors.EXECUTION;
 import static org.mule.plugin.scripting.errors.ScriptingErrors.UNKNOWN_ENGINE;
 import static org.mule.runtime.api.el.BindingContextUtils.FLOW;
 import static org.mule.runtime.api.el.BindingContextUtils.MESSAGE;
 import static org.mule.runtime.api.el.BindingContextUtils.NULL_BINDING_CONTEXT;
-import static org.mule.runtime.api.el.BindingContextUtils.VARS;
 import static org.mule.runtime.api.el.BindingContextUtils.addEventBindings;
 import static org.mule.runtime.api.i18n.I18nMessageFactory.createStaticMessage;
 import static org.mule.runtime.core.api.config.MuleProperties.COMPATIBILITY_PLUGIN_INSTALLED;
@@ -25,21 +23,21 @@ import org.mule.runtime.api.component.location.ComponentLocation;
 import org.mule.runtime.api.el.Binding;
 import org.mule.runtime.api.metadata.TypedValue;
 import org.mule.runtime.api.streaming.Cursor;
-import org.mule.runtime.api.streaming.CursorProvider;
 import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.runtime.core.api.util.IOUtils;
 import org.mule.runtime.core.privileged.el.context.SessionVariableMapContext;
 import org.mule.runtime.core.privileged.event.PrivilegedEvent;
 import org.mule.runtime.extension.api.exception.ModuleException;
+import org.mule.runtime.extension.api.runtime.streaming.StreamingHelper;
 
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
-import java.util.HashMap;
-import java.util.LinkedList;
+import java.util.stream.Collectors;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.LinkedList;
+import java.util.HashMap;
 
 import javax.inject.Inject;
 import javax.script.Bindings;
@@ -49,6 +47,7 @@ import javax.script.ScriptEngine;
 import javax.script.ScriptEngineFactory;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
+
 import org.slf4j.Logger;
 
 public class ScriptRunner {
@@ -116,11 +115,12 @@ public class ScriptRunner {
     bindings.put(BINDING_RESULT, null);
   }
 
-  public void populateBindings(Bindings bindings, CoreEvent event, Map<String, Object> parameters) {
+  public void populateBindings(Bindings bindings, CoreEvent event, Map<String, Object> parameters,
+                               StreamingHelper streamingHelper) {
     // TODO MULE-10121 Provide a MessageBuilder API in scripting components to improve usability
 
     for (Binding binding : addEventBindings(event, NULL_BINDING_CONTEXT).bindings()) {
-      Object resolvedValue = resolveCursor(binding.value().getValue());
+      Object resolvedValue = resolveCursors(binding.value().getValue(), streamingHelper);
       bindings.put(binding.identifier(), resolvedValue);
     }
 
@@ -130,7 +130,6 @@ public class ScriptRunner {
       bindings.put(BINDING_SESSION_VARS, new SessionVariableMapContext(((PrivilegedEvent) event).getSession()));
     }
 
-    bindings.put(VARS, unmodifiableMap(createResolvedMap(event)));
     bindings.put(FLOW, location.getRootContainerName());
     bindings.put(REGISTRY, registry);
 
@@ -138,14 +137,20 @@ public class ScriptRunner {
     populateDefaultBindings(bindings);
   }
 
-  public void closeCursors() {
-    this.openedCursors.stream().forEach(c -> {
+  public void closeCursors(Bindings bindings) {
+    bindings.forEach((k, v) -> closeCursor(TypedValue.unwrap(v)));
+  }
+
+  private void closeCursor(Object o) {
+    if (o instanceof Map) {
+      Map map = (Map) o;
+      map.forEach((k, v) -> closeCursor(TypedValue.unwrap(v)));
+    } else if (o instanceof Cursor) {
       try {
-        c.close();
+        ((Cursor) o).close();
       } catch (IOException ignored) {
       }
-    });
-    this.openedCursors.clear();
+    }
   }
 
   public Object runScript(Bindings bindings) {
@@ -182,23 +187,19 @@ public class ScriptRunner {
     return scriptEngine;
   }
 
-  private Object resolveCursor(Object value) {
-    if (value instanceof CursorProvider) {
-      value = ((CursorProvider) value).openCursor();
-      this.openedCursors.add((Cursor) value);
+  private Object resolveCursors(Object value, StreamingHelper streamingHelper) {
+    Object objectValue = TypedValue.unwrap(value);
+    if(objectValue instanceof Map) {
+      return createResolvedMap((Map)objectValue, streamingHelper);
     }
-
-    return value;
+    else {
+      return streamingHelper.resolveCursor(objectValue);
+    }
   }
 
-  private Map<String, Object> createResolvedMap(CoreEvent event) {
-    HashMap<String, Object> variables = new HashMap<>();
-
-    event.getVariables().entrySet().forEach(e -> {
-      Object value = resolveCursor(e.getValue().getValue());
-      variables.put(e.getKey(), value);
-    });
-
-    return variables;
+  private Map<String, Object> createResolvedMap(Map<String, Object> map, StreamingHelper streamingHelper) {
+    HashMap<String, Object> resolvedMap = new HashMap<>();
+    map.forEach((key, value) -> resolvedMap.put(key, TypedValue.unwrap(value)));
+    return streamingHelper.resolveCursors(resolvedMap, true);
   }
 }

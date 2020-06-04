@@ -18,8 +18,10 @@ import org.mule.runtime.core.api.util.func.Once.ConsumeOnce;
 import org.mule.runtime.extension.api.runtime.operation.ComponentExecutor;
 import org.mule.runtime.extension.api.runtime.operation.ExecutionContext;
 import org.mule.runtime.extension.api.runtime.operation.Result;
+import org.mule.runtime.extension.api.runtime.streaming.StreamingHelper;
 import org.mule.runtime.module.extension.api.runtime.privileged.EventedResult;
 import org.mule.runtime.module.extension.api.runtime.privileged.ExecutionContextAdapter;
+import org.mule.runtime.module.extension.api.runtime.privileged.StreamingHelperFactory;
 
 import java.util.Map;
 
@@ -65,7 +67,8 @@ public class ScriptingOperationExecutor implements ComponentExecutor<OperationMo
                                          ExecutionContextAdapter<OperationModel> context) {
     initScriptRunner.consumeOnce(context);
     Bindings bindings = scriptRunner.getScriptEngine().createBindings();
-    scriptRunner.populateBindings(bindings, event, parameters);
+    StreamingHelper streamingHelper = new StreamingHelperFactory().resolve(context);
+    scriptRunner.populateBindings(bindings, event, parameters, streamingHelper);
 
     try {
       final Object result = scriptRunner.runScript(bindings);
@@ -80,7 +83,7 @@ public class ScriptingOperationExecutor implements ComponentExecutor<OperationMo
             .build();
       }
     } finally {
-      scriptRunner.closeCursors();
+      scriptRunner.closeCursors(bindings);
       bindings.clear();
     }
   }
