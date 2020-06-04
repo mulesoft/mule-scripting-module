@@ -6,13 +6,13 @@
  */
 package org.mule.plugin.scripting.component;
 
+import static java.util.Collections.unmodifiableMap;
 import static org.mule.plugin.scripting.errors.ScriptingErrors.COMPILATION;
 import static org.mule.plugin.scripting.errors.ScriptingErrors.EXECUTION;
 import static org.mule.plugin.scripting.errors.ScriptingErrors.UNKNOWN_ENGINE;
 import static org.mule.runtime.api.el.BindingContextUtils.FLOW;
-import static org.mule.runtime.api.el.BindingContextUtils.MESSAGE;
-import static org.mule.runtime.api.el.BindingContextUtils.NULL_BINDING_CONTEXT;
-import static org.mule.runtime.api.el.BindingContextUtils.addEventBindings;
+import static org.mule.runtime.api.el.BindingContextUtils.VARS;
+import static org.mule.runtime.api.el.BindingContextUtils.PAYLOAD;
 import static org.mule.runtime.api.i18n.I18nMessageFactory.createStaticMessage;
 import static org.mule.runtime.core.api.config.MuleProperties.COMPATIBILITY_PLUGIN_INSTALLED;
 import static org.slf4j.LoggerFactory.getLogger;
@@ -20,13 +20,10 @@ import static java.lang.Thread.currentThread;
 
 import org.mule.runtime.api.artifact.Registry;
 import org.mule.runtime.api.component.location.ComponentLocation;
-import org.mule.runtime.api.el.Binding;
 import org.mule.runtime.api.metadata.TypedValue;
 import org.mule.runtime.api.streaming.Cursor;
 import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.runtime.core.api.util.IOUtils;
-import org.mule.runtime.core.privileged.el.context.SessionVariableMapContext;
-import org.mule.runtime.core.privileged.event.PrivilegedEvent;
 import org.mule.runtime.extension.api.exception.ModuleException;
 import org.mule.runtime.extension.api.runtime.streaming.StreamingHelper;
 
@@ -56,7 +53,6 @@ public class ScriptRunner {
 
   private static final String BINDING_LOG = "log";
   private static final String BINDING_RESULT = "result";
-  private static final String BINDING_SESSION_VARS = "sessionVars";
   private static final String REGISTRY = "registry";
 
   private String engineName;
@@ -119,17 +115,8 @@ public class ScriptRunner {
                                StreamingHelper streamingHelper) {
     // TODO MULE-10121 Provide a MessageBuilder API in scripting components to improve usability
 
-    for (Binding binding : addEventBindings(event, NULL_BINDING_CONTEXT).bindings()) {
-      Object resolvedValue = resolveCursors(binding.value().getValue(), streamingHelper);
-      bindings.put(binding.identifier(), resolvedValue);
-    }
-
-    if (compatibilityMode) {
-      // Regular bindings will not include compatibility data so we override it
-      bindings.put(MESSAGE, event.getMessage());
-      bindings.put(BINDING_SESSION_VARS, new SessionVariableMapContext(((PrivilegedEvent) event).getSession()));
-    }
-
+    bindings.put(PAYLOAD, resolveCursors(event.getMessage().getPayload(), streamingHelper));
+    bindings.put(VARS, unmodifiableMap((Map) resolveCursors(event.getVariables(), streamingHelper)));
     bindings.put(FLOW, location.getRootContainerName());
     bindings.put(REGISTRY, registry);
 
@@ -189,10 +176,10 @@ public class ScriptRunner {
 
   private Object resolveCursors(Object value, StreamingHelper streamingHelper) {
     Object objectValue = TypedValue.unwrap(value);
-    if(objectValue instanceof Map) {
-      return createResolvedMap((Map)objectValue, streamingHelper);
-    }
-    else {
+
+    if (objectValue instanceof Map) {
+      return createResolvedMap((Map) objectValue, streamingHelper);
+    } else {
       return streamingHelper.resolveCursor(objectValue);
     }
   }

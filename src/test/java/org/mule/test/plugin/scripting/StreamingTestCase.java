@@ -32,14 +32,14 @@ public class StreamingTestCase extends AbstractScriptingFunctionalTestCase {
 
   @Test
   @Description("When there is a cursor provider in vars, only one cursor must be open before execution" +
-               "and closed after")
+      "and closed after")
   public void assertCursorProviderMustOpenCursorAndMustCloseThisCursor() throws Exception {
     CursorStream providedCursorStream = createMockCursor();
     CursorStreamProvider provider = createMockCursorProvider(providedCursorStream);
 
     CoreEvent response = flowRunner("scripting-test-flow")
-            .withVariable("stream", provider)
-            .run();
+        .withVariable("stream", provider)
+        .run();
 
     verify(provider, times(1)).openCursor();
     verify(providedCursorStream, times(1)).close();
@@ -48,14 +48,14 @@ public class StreamingTestCase extends AbstractScriptingFunctionalTestCase {
   @Test
   @Description("When there is a cursor in vars, it will be closed after execution")
   public void assertMastCloseOpenedCursor() throws Exception {
-  CursorStream userCursorStream = createMockCursor();
+    CursorStream userCursorStream = createMockCursor();
 
-  CoreEvent response = flowRunner("scripting-test-flow")
-          .withVariable("cursor", userCursorStream)
-          .run();
+    CoreEvent response = flowRunner("scripting-test-flow")
+        .withVariable("cursor", userCursorStream)
+        .run();
 
-  verify(userCursorStream, times(1)).close();
-}
+    verify(userCursorStream, times(1)).close();
+  }
 
 
   @Test
@@ -65,8 +65,8 @@ public class StreamingTestCase extends AbstractScriptingFunctionalTestCase {
     CursorStreamProvider provider = createMockCursorProvider(providedCursorStream);
 
     CoreEvent response = flowRunner("scripting-close-cursor-flow")
-            .withVariable("var1", provider)
-            .run();
+        .withVariable("var1", provider)
+        .run();
 
     verify(provider, times(1)).openCursor();
     verify(providedCursorStream, times(2)).close();
@@ -78,57 +78,57 @@ public class StreamingTestCase extends AbstractScriptingFunctionalTestCase {
     TypedValue<CursorStream> wrappedCursor = TypedValue.of(createMockCursor());
 
     CoreEvent response = flowRunner("scripting-test-flow")
-            .withVariable("wrapped", wrappedCursor)
-            .run();
+        .withVariable("wrapped", wrappedCursor)
+        .run();
 
     verify(wrappedCursor.getValue(), times(1)).close();
   }
 
   @Test
   @Description("When a map is provided in vars and it has an inner map booth are"
-    + "recursively scanned in order to close cursors even the ones that are wrapped in TypeValues")
+      + "recursively scanned in order to close cursors even the ones that are wrapped in TypeValues")
   public void assertCursorRecursivelyClosed() throws Exception {
     CursorStream cursor = createMockCursor();
     TypedValue<CursorStream> wrappedCursor = TypedValue.of(createMockCursor());
 
     Map<String, Object> map = new HashMap<>();
-    map.put("cursor",cursor);
+    map.put("cursor", cursor);
     map.put("wrapped", wrappedCursor);
 
     Map<String, Object> innerMap = new HashMap<>();
     map.put("map", innerMap);
-    innerMap.put("cursor",cursor);
+    innerMap.put("cursor", cursor);
     innerMap.put("wrapped", wrappedCursor);
 
     CoreEvent response = flowRunner("scripting-test-flow")
-            .withVariable("map", map)
-            .run();
+        .withVariable("map", map)
+        .run();
 
-      verify(cursor, times(2)).close();
-      verify(wrappedCursor.getValue(), times(2)).close();
-}
+    verify(cursor, times(2)).close();
+    verify(wrappedCursor.getValue(), times(2)).close();
+  }
 
   @Test
   @Description("When a wrapped map is provided in vars and it has an inner map booth are"
-          + "recursively scanned in order to close cursors even the ones that are wrapped in TypeValues")
+      + "recursively scanned in order to close cursors even the ones that are wrapped in TypeValues")
   public void assertWrappedCursorRecursivelyClosed() throws Exception {
     CursorStream cursor = createMockCursor();
     TypedValue<CursorStream> wrappedCursor = TypedValue.of(createMockCursor());
 
     Map<String, Object> map = new HashMap<>();
-    map.put("cursor",cursor);
+    map.put("cursor", cursor);
     map.put("wrapped", wrappedCursor);
 
     Map<String, Object> innerMap = new HashMap<>();
     map.put("map", innerMap);
-    innerMap.put("cursor",cursor);
+    innerMap.put("cursor", cursor);
     innerMap.put("wrapped", wrappedCursor);
 
     TypedValue<Map<String, Object>> wrappedMap = TypedValue.of(map);
 
     CoreEvent response = flowRunner("scripting-test-flow")
-            .withVariable("map", wrappedMap)
-            .run();
+        .withVariable("map", wrappedMap)
+        .run();
 
     verify(cursor, times(2)).close();
     verify(wrappedCursor.getValue(), times(2)).close();
@@ -136,49 +136,28 @@ public class StreamingTestCase extends AbstractScriptingFunctionalTestCase {
 
   @Test
   @Description("When a wrapped map is provided in the payload and it has an inner map booth are"
-          + "recursively scanned in order to close cursors even the ones that are wrapped in TypeValues")
+      + "recursively scanned in order to close cursors even the ones that are wrapped in TypeValues")
   public void assertWrappedCursorAreRecursivelyClosedInPayload() throws Exception {
     CursorStream cursor = createMockCursor();
     TypedValue<CursorStream> wrappedCursor = TypedValue.of(createMockCursor());
 
     Map<String, Object> map = new HashMap<>();
-    map.put("cursor",cursor);
+    map.put("cursor", cursor);
     map.put("wrapped", wrappedCursor);
 
     Map<String, Object> innerMap = new HashMap<>();
     map.put("map", innerMap);
-    innerMap.put("cursor",cursor);
+    innerMap.put("cursor", cursor);
     innerMap.put("wrapped", wrappedCursor);
 
     TypedValue<Map<String, Object>> wrappedMap = TypedValue.of(map);
 
     CoreEvent response = flowRunner("scripting-test-flow")
-            .withPayload(wrappedMap)
-            .run();
+        .withPayload(wrappedMap)
+        .run();
 
     verify(cursor, times(2)).close();
     verify(wrappedCursor.getValue(), times(2)).close();
-  }
-
-  @Test
-  @Description("When a wrapped map is provided in the payload and it has an inner map booth are"
-          + "recursively scanned in order to close cursors even the ones that are wrapped in TypeValues")
-  public void assertPayloadMapOpenCursor() throws Exception {
-    CursorStreamProvider provider = createMockCursorProvider(createMockCursor());
-    TypedValue<CursorStreamProvider> wrappedProvider = TypedValue.of(createMockCursorProvider(createMockCursor()));
-
-    Map<String, Object> map = new HashMap<>();
-    map.put("provider",provider);
-    map.put("wrappedProvider", wrappedProvider);
-
-    TypedValue<Map<String, Object>> wrappedMap = TypedValue.of(map);
-
-    CoreEvent response = flowRunner("scripting-test-flow")
-            .withPayload(wrappedMap)
-            .run();
-
-    verify(provider, times(1)).openCursor();
-    verify(wrappedProvider.getValue(), times(1)).openCursor();
   }
 
   private CursorStream createMockCursor() {
