@@ -14,7 +14,6 @@ import static org.mule.runtime.api.el.BindingContextUtils.FLOW;
 import static org.mule.runtime.api.el.BindingContextUtils.VARS;
 import static org.mule.runtime.api.el.BindingContextUtils.PAYLOAD;
 import static org.mule.runtime.api.i18n.I18nMessageFactory.createStaticMessage;
-import static org.mule.runtime.core.api.config.MuleProperties.COMPATIBILITY_PLUGIN_INSTALLED;
 import static org.slf4j.LoggerFactory.getLogger;
 import static java.lang.Thread.currentThread;
 
