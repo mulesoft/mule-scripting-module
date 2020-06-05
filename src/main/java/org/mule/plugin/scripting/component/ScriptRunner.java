@@ -58,8 +58,6 @@ public class ScriptRunner {
   private String engineName;
   private String scriptBody;
   private ComponentLocation location;
-  private List<Cursor> openedCursors = new LinkedList<>();
-
 
   @Inject
   private Registry registry;
