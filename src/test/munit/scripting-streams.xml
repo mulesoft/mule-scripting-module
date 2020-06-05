@@ -24,13 +24,13 @@
         <munit:execution >
             <try>
                 <set-variable value="#[payload]" variableName="provider"/>
-                <flow-ref name="scripting-docFlow0"/>
-            <error-handler>
-                <on-error-continue type="SCRIPTING:EXECUTION">
-                    <set-payload value="#[error.description]" />
-                </on-error-continue>
-            </error-handler>
-        </try>
+                <flow-ref name="CursorOpenerFlow"/>
+                <error-handler>
+                    <on-error-continue type="SCRIPTING:EXECUTION">
+                        <set-payload value="#[error.description]" />
+                    </on-error-continue>
+                </error-handler>
+            </try>
         </munit:execution>
         <munit:validation >
             <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::startsWith('groovy.lang.MissingMethodException')]"/>
@@ -42,9 +42,20 @@
             <file:read  config-ref="test-resources" path="sample-file.txt" outputMimeType="text/plain"/>
         </munit:behavior>
         <munit:execution >
-            <set-variable value="#[payload]" variableName="cursor"/>
-            <flow-ref name="scripting-docFlow1"/>
-        </munit:execution>
+            <try>
+                <set-variable value="#[payload]" variableName="cursor"/>
+                <flow-ref name="CursorCloserFlow"/>
+                <set-payload value="#['Ok']" />
+                <error-handler>
+                    <on-error-continue>
+                        <set-payload value="#['Error']" />
+                    </on-error-continue>
+                </error-handler>
+            </try>
+        </munit:execution >
+        <munit:validation >
+            <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::equalTo('Ok')]"/>
+        </munit:validation>
     </munit:test>
 
     <munit:test name="ReadCursor">
@@ -53,14 +64,14 @@
         </munit:behavior>
         <munit:execution >
             <set-variable value="#[payload]" variableName="cursor"/>
-            <flow-ref name="scripting-docFlow2"/>
+            <flow-ref name="CursorReaderFlow"/>
         </munit:execution>
         <munit:validation >
             <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::equalTo('Hello there.')]"/>
         </munit:validation>
     </munit:test>
 
-    <flow name="scripting-docFlow0" >
+    <flow name="CursorOpenerFlow" >
         <scripting:execute engine="groovy">
             <scripting:code >
                 vars.provider.openCursor()
@@ -68,7 +79,7 @@
         </scripting:execute>
     </flow>
 
-    <flow name="scripting-docFlow1" >
+    <flow name="CursorCloserFlow" >
         <scripting:execute engine="groovy">
             <scripting:code >
                 vars.cursor.close()
@@ -76,7 +87,7 @@
         </scripting:execute>
     </flow>
 
-    <flow name="scripting-docFlow2" >
+    <flow name="CursorReaderFlow" >
         <scripting:execute engine="groovy">
             <scripting:code >
                 byte[] b = new byte[12]

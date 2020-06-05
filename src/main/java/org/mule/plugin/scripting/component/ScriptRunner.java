@@ -65,7 +65,6 @@ public class ScriptRunner {
 
   private ScriptEngine scriptEngine;
   private ScriptEngineManager scriptEngineManager;
-  private boolean compatibilityMode;
 
   public ScriptRunner(String code, String engine, ComponentLocation location) {
     this.engineName = engine;
@@ -96,8 +95,6 @@ public class ScriptRunner {
     } finally {
       IOUtils.closeQuietly(script);
     }
-
-    compatibilityMode = registry.lookupByName(COMPATIBILITY_PLUGIN_INSTALLED).isPresent();
   }
 
   public void populateDefaultBindings(Bindings bindings) {
@@ -131,7 +128,8 @@ public class ScriptRunner {
     } else if (o instanceof Cursor) {
       try {
         ((Cursor) o).close();
-      } catch (IOException ignored) {
+      } catch (IOException e) {
+        LOGGER.debug(e.getMessage());
       }
     }
   }
