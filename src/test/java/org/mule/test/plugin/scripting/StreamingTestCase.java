@@ -31,7 +31,7 @@ public class StreamingTestCase extends AbstractScriptingFunctionalTestCase {
   }
 
   @Test
-  @Description("When there is a cursor provider in vars, only one cursor must be open before execution" +
+  @Description("When there is a cursor provider in vars, only one cursor must be opened before execution" +
       "and closed after")
   public void assertCursorProviderMustOpenCursorAndMustCloseThisCursor() throws Exception {
     CursorStream providedCursorStream = createMockCursor();
