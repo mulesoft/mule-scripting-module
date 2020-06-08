@@ -105,7 +105,6 @@ public class ScriptRunner {
 
   public void populateBindings(Bindings bindings, CoreEvent event, Map<String, Object> parameters,
                                StreamingHelper streamingHelper) {
-    // TODO MULE-10121 Provide a MessageBuilder API in scripting components to improve usability
 
     bindings.put(PAYLOAD, resolveCursors(event.getMessage().getPayload(), streamingHelper));
     bindings.put(VARS, unmodifiableMap((Map) resolveCursors(event.getVariables(), streamingHelper)));
