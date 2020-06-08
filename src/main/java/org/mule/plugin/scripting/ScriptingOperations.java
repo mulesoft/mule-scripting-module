@@ -16,6 +16,7 @@ import org.mule.runtime.extension.api.annotation.execution.Execution;
 import org.mule.runtime.extension.api.annotation.param.Content;
 import org.mule.runtime.extension.api.annotation.param.NullSafe;
 import org.mule.runtime.extension.api.annotation.param.Optional;
+import org.mule.runtime.extension.api.annotation.param.display.Placement;
 import org.mule.runtime.extension.api.annotation.param.display.Text;
 import org.mule.runtime.extension.api.annotation.values.OfValues;
 import org.mule.runtime.extension.api.runtime.operation.Result;
@@ -39,9 +40,11 @@ public class ScriptingOperations {
    */
   @Throws(ScriptingErrorTypeProvider.class)
   @Execution(CPU_INTENSIVE)
-  public Result<Object, Void> execute(@OfValues(EnginesValueProvider.class) String engine,
-                                      @Text String code,
-                                      @Optional @NullSafe @Content @Expression(REQUIRED) Map<String, Object> parameters) {
+  public Result<Object, Void> execute(
+                                      @Placement(order = 1) @Text String code,
+                                      @Placement(order = 0) @OfValues(EnginesValueProvider.class) String engine,
+                                      @Placement(
+                                          order = 2) @Optional @NullSafe @Content @Expression(REQUIRED) Map<String, Object> parameters) {
 
     // the real operation is implemented through a custom executor: org.mule.plugin.scripting.operation.ScriptingOperationExecutor
     return null;
