@@ -65,7 +65,7 @@ public class ScriptRunner {
   private ScriptEngine scriptEngine;
   private ScriptEngineManager scriptEngineManager;
 
-  public ScriptRunner(String code, String engine, ComponentLocation location) {
+  public ScriptRunner(String engine, String code, ComponentLocation location) {
     this.engineName = engine;
     this.scriptBody = code;
     this.location = location;

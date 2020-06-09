@@ -58,7 +58,7 @@ public class ScriptingOperationExecutor implements ComponentExecutor<OperationMo
     String engine = context.getParameter("engine");
     String code = context.getParameter("code");
 
-    scriptRunner = new ScriptRunner(code, engine, context.getComponent().getLocation());
+    scriptRunner = new ScriptRunner(engine, code, context.getComponent().getLocation());
     context.getMuleContext().getInjector().inject(scriptRunner);
     scriptRunner.initialise();
   }
