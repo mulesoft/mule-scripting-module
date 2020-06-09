@@ -127,7 +127,7 @@ public class ScriptRunner {
       try {
         ((Cursor) o).close();
       } catch (IOException e) {
-        LOGGER.debug(e.getMessage());
+        LOGGER.warn("Cannot close cursor", e);
       }
     }
   }
