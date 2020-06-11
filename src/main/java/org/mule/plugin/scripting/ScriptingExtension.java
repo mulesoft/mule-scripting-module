@@ -8,12 +8,10 @@ package org.mule.plugin.scripting;
 
 import org.mule.plugin.scripting.errors.ScriptingErrors;
 import org.mule.plugin.scripting.operation.ScriptingOperationEnricher;
-import org.mule.runtime.extension.api.annotation.Alias;
 import org.mule.runtime.extension.api.annotation.Extension;
 import org.mule.runtime.extension.api.annotation.ExternalLib;
 import org.mule.runtime.extension.api.annotation.Operations;
 import org.mule.runtime.extension.api.annotation.error.ErrorTypes;
-import org.mule.runtime.extension.api.annotation.param.display.DisplayName;
 import org.mule.runtime.extension.api.annotation.privileged.DeclarationEnrichers;
 
 import static org.mule.runtime.api.meta.ExternalLibraryType.JAR;
@@ -21,8 +19,6 @@ import static org.mule.runtime.api.meta.ExternalLibraryType.JAR;
 @Extension(name = "Scripting")
 @Operations({ScriptingOperations.class})
 @DeclarationEnrichers(ScriptingOperationEnricher.class)
-@DisplayName("Data Source Reference Connection")
-@Alias("data-source")
 @ExternalLib(name = "JSR-223 Engine",
     description = "A JSR-223 supported engine",
     nameRegexpMatcher = "(.*)\\.jar",
