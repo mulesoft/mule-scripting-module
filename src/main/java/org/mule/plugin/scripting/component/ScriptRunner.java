@@ -7,6 +7,7 @@
 package org.mule.plugin.scripting.component;
 
 import static java.util.Collections.unmodifiableMap;
+import static java.util.stream.Collectors.joining;
 import static org.mule.plugin.scripting.errors.ScriptingErrors.COMPILATION;
 import static org.mule.plugin.scripting.errors.ScriptingErrors.EXECUTION;
 import static org.mule.plugin.scripting.errors.ScriptingErrors.UNKNOWN_ENGINE;
@@ -159,7 +160,7 @@ public class ScriptRunner {
   protected String listAvailableEngines() {
     return scriptEngineManager.getEngineFactories().stream()
         .map(ScriptEngineFactory::getEngineName)
-        .collect(Collectors.joining(", "));
+        .collect(joining(", "));
   }
 
   public ScriptEngine getScriptEngine() {
