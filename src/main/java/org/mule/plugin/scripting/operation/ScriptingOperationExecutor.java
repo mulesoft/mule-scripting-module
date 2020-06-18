@@ -40,6 +40,7 @@ public class ScriptingOperationExecutor implements ComponentExecutor<OperationMo
 
   private ScriptRunner scriptRunner;
   private final ConsumeOnce<ExecutionContextAdapter<OperationModel>> initScriptRunner = Once.of(this::initScriptRunner);
+  private volatile StreamingHelper streamingHelper;
 
   @Override
   public Publisher<Object> execute(ExecutionContext<OperationModel> executionContext) {
@@ -67,7 +68,13 @@ public class ScriptingOperationExecutor implements ComponentExecutor<OperationMo
                                          ExecutionContextAdapter<OperationModel> context) {
     initScriptRunner.consumeOnce(context);
     Bindings bindings = scriptRunner.getScriptEngine().createBindings();
-    StreamingHelper streamingHelper = new StreamingHelperFactory().resolve(context);
+    if (streamingHelper == null) {
+      synchronized (this) {
+        if (streamingHelper == null) {
+          streamingHelper = new StreamingHelperFactory().resolve(context);
+        }
+      }
+    }
     scriptRunner.populateBindings(bindings, event, parameters, streamingHelper);
 
     try {
