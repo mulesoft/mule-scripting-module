@@ -17,14 +17,33 @@
         <file:connection workingDir="target/test-classes"/>
     </file:config>
 
-    <munit:test name="TryToOpenCursorFail">
+    <munit:test name="TryToOpenCursorVarsFail">
         <munit:behavior>
             <file:read  config-ref="test-resources" path="sample-file.txt" outputMimeType="text/plain"/>
         </munit:behavior>
         <munit:execution >
             <try>
                 <set-variable value="#[payload]" variableName="provider"/>
-                <flow-ref name="CursorOpenerFlow"/>
+                <flow-ref name="VarsCursorOpenerFlow"/>
+                <error-handler>
+                    <on-error-continue type="SCRIPTING:EXECUTION">
+                        <set-payload value="#[error.description]" />
+                    </on-error-continue>
+                </error-handler>
+            </try>
+        </munit:execution>
+        <munit:validation >
+            <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::startsWith('groovy.lang.MissingMethodException')]"/>
+        </munit:validation>
+    </munit:test>
+
+    <munit:test name="TryToOpenCursorPayloadFail">
+        <munit:behavior>
+            <file:read  config-ref="test-resources" path="sample-file.txt" outputMimeType="text/plain"/>
+        </munit:behavior>
+        <munit:execution >
+            <try>
+                <flow-ref name="PayloadCursorOpenerFlow"/>
                 <error-handler>
                     <on-error-continue type="SCRIPTING:EXECUTION">
                         <set-payload value="#[error.description]" />
@@ -71,10 +90,18 @@
         </munit:validation>
     </munit:test>
 
-    <flow name="CursorOpenerFlow" >
+    <flow name="VarsCursorOpenerFlow" >
         <scripting:execute engine="groovy">
             <scripting:code >
                 vars.provider.openCursor()
+            </scripting:code>
+        </scripting:execute>
+    </flow>
+
+    <flow name="PayloadCursorOpenerFlow" >
+        <scripting:execute engine="groovy">
+            <scripting:code >
+                payload.openCursor()
             </scripting:code>
         </scripting:execute>
     </flow>
