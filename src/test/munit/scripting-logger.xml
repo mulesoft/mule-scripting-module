@@ -11,7 +11,7 @@ http://www.mulesoft.org/schema/mule/scripting http://www.mulesoft.org/schema/mul
 
     <munit:config name="logger-suite.xml"/>
 
-    <munit:test name="logger" description="Some description">
+    <munit:test name="logger">
         <munit:execution >
             <scripting:execute engine="groovy">
                 <scripting:code>
