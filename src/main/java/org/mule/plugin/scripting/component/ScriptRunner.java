@@ -11,15 +11,17 @@ import static java.util.stream.Collectors.joining;
 import static org.mule.plugin.scripting.errors.ScriptingErrors.COMPILATION;
 import static org.mule.plugin.scripting.errors.ScriptingErrors.EXECUTION;
 import static org.mule.plugin.scripting.errors.ScriptingErrors.UNKNOWN_ENGINE;
+import static org.mule.runtime.api.el.BindingContextUtils.addEventBindings;
+import static org.mule.runtime.api.el.BindingContextUtils.NULL_BINDING_CONTEXT;
 import static org.mule.runtime.api.el.BindingContextUtils.FLOW;
 import static org.mule.runtime.api.el.BindingContextUtils.VARS;
-import static org.mule.runtime.api.el.BindingContextUtils.PAYLOAD;
 import static org.mule.runtime.api.i18n.I18nMessageFactory.createStaticMessage;
 import static org.slf4j.LoggerFactory.getLogger;
 import static java.lang.Thread.currentThread;
 
 import org.mule.runtime.api.artifact.Registry;
 import org.mule.runtime.api.component.location.ComponentLocation;
+import org.mule.runtime.api.el.Binding;
 import org.mule.runtime.api.metadata.TypedValue;
 import org.mule.runtime.api.streaming.Cursor;
 import org.mule.runtime.core.api.event.CoreEvent;
@@ -30,7 +32,6 @@ import org.mule.runtime.extension.api.runtime.streaming.StreamingHelper;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
-import java.util.stream.Collectors;
 import java.util.Map;
 import java.util.HashMap;
 
@@ -107,7 +108,13 @@ public class ScriptRunner {
   public void populateBindings(Bindings bindings, CoreEvent event, Map<String, Object> parameters,
                                StreamingHelper streamingHelper) {
 
-    bindings.put(PAYLOAD, resolveCursors(event.getMessage().getPayload(), streamingHelper));
+    for (Binding binding : addEventBindings(event, NULL_BINDING_CONTEXT).bindings()) {
+      if (!binding.identifier().equals(VARS)) {
+        Object resolvedValue = resolveCursors(binding.value().getValue(), streamingHelper);
+        bindings.put(binding.identifier(), resolvedValue);
+      }
+    }
+
     bindings.put(VARS, unmodifiableMap((Map) resolveCursors(event.getVariables(), streamingHelper)));
     bindings.put(FLOW, location.getRootContainerName());
     bindings.put(REGISTRY, registry);
