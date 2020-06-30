@@ -30,7 +30,7 @@ import java.util.Map;
 public class ScriptingOperations {
 
   /**
-   * Run a script with provided code, according to the engine and passing parameters.
+   * Runs a script with provided code, according to the engine and passing parameters.
    *
    * @param code the script source code to be executed
    * @param engine name of the scripting engine for running this script
@@ -39,8 +39,8 @@ public class ScriptingOperations {
    */
   @Throws(ScriptingErrorTypeProvider.class)
   @Execution(CPU_INTENSIVE)
-  public Result<Object, Void> execute(@Text String code,
-                                      @OfValues(EnginesValueProvider.class) String engine,
+  public Result<Object, Void> execute(@OfValues(EnginesValueProvider.class) String engine,
+                                      @Text String code,
                                       @Optional @NullSafe @Content @Expression(REQUIRED) Map<String, Object> parameters) {
 
     // the real operation is implemented through a custom executor: org.mule.plugin.scripting.operation.ScriptingOperationExecutor

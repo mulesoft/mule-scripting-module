@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:scripting="http://www.mulesoft.org/schema/mule/scripting"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:munit="http://www.mulesoft.org/schema/mule/munit"
+      xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools" xmlns="http://www.mulesoft.org/schema/mule/core"
+      xmlns:file="http://www.mulesoft.org/schema/mule/file"
+      xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd
+		http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd
+        http://www.mulesoft.org/schema/mule/scripting http://www.mulesoft.org/schema/mule/scripting/current/mule-scripting.xsd">
+
+    <munit:config name="streaming-test-suite.xml" />
+
+    <file:config name="test-resources">
+        <file:connection workingDir="target/test-classes"/>
+    </file:config>
+
+    <munit:test name="TryToOpenCursorVarsFail">
+        <munit:behavior>
+            <file:read  config-ref="test-resources" path="sample-file.txt" outputMimeType="text/plain"/>
+        </munit:behavior>
+        <munit:execution >
+            <try>
+                <set-variable value="#[payload]" variableName="provider"/>
+                <flow-ref name="VarsCursorOpenerFlow"/>
+                <error-handler>
+                    <on-error-continue type="SCRIPTING:EXECUTION">
+                        <set-payload value="#[error.description]" />
+                    </on-error-continue>
+                </error-handler>
+            </try>
+        </munit:execution>
+        <munit:validation >
+            <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::startsWith('groovy.lang.MissingMethodException')]"/>
+        </munit:validation>
+    </munit:test>
+
+    <munit:test name="TryToOpenCursorPayloadFail">
+        <munit:behavior>
+            <file:read  config-ref="test-resources" path="sample-file.txt" outputMimeType="text/plain"/>
+        </munit:behavior>
+        <munit:execution >
+            <try>
+                <flow-ref name="PayloadCursorOpenerFlow"/>
+                <error-handler>
+                    <on-error-continue type="SCRIPTING:EXECUTION">
+                        <set-payload value="#[error.description]" />
+                    </on-error-continue>
+                </error-handler>
+            </try>
+        </munit:execution>
+        <munit:validation >
+            <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::startsWith('groovy.lang.MissingMethodException')]"/>
+        </munit:validation>
+    </munit:test>
+
+    <munit:test name="CloseCursor">
+        <munit:behavior>
+            <file:read  config-ref="test-resources" path="sample-file.txt" outputMimeType="text/plain"/>
+        </munit:behavior>
+        <munit:execution >
+            <try>
+                <set-variable value="#[payload]" variableName="cursor"/>
+                <flow-ref name="CursorCloserFlow"/>
+                <set-payload value="#['Ok']" />
+                <error-handler>
+                    <on-error-continue>
+                        <set-payload value="#['Error']" />
+                    </on-error-continue>
+                </error-handler>
+            </try>
+        </munit:execution >
+        <munit:validation >
+            <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::equalTo('Ok')]"/>
+        </munit:validation>
+    </munit:test>
+
+    <munit:test name="ReadCursor">
+        <munit:behavior>
+            <file:read  config-ref="test-resources" path="sample-file.txt" outputMimeType="text/plain"/>
+        </munit:behavior>
+        <munit:execution >
+            <set-variable value="#[payload]" variableName="cursor"/>
+            <flow-ref name="CursorReaderFlow"/>
+        </munit:execution>
+        <munit:validation >
+            <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::equalTo('Hello there.')]"/>
+        </munit:validation>
+    </munit:test>
+
+    <flow name="VarsCursorOpenerFlow" >
+        <scripting:execute engine="groovy">
+            <scripting:code >
+                vars.provider.openCursor()
+            </scripting:code>
+        </scripting:execute>
+    </flow>
+
+    <flow name="PayloadCursorOpenerFlow" >
+        <scripting:execute engine="groovy">
+            <scripting:code >
+                payload.openCursor()
+            </scripting:code>
+        </scripting:execute>
+    </flow>
+
+    <flow name="CursorCloserFlow" >
+        <scripting:execute engine="groovy">
+            <scripting:code >
+                vars.cursor.close()
+            </scripting:code>
+        </scripting:execute>
+    </flow>
+
+    <flow name="CursorReaderFlow" >
+        <scripting:execute engine="groovy">
+            <scripting:code >
+                byte[] b = new byte[12]
+                payload.read(b, 0, 12)
+                return new String(b);
+            </scripting:code>
+        </scripting:execute>
+    </flow>
+
+</mule>

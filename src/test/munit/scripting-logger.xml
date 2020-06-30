@@ -7,24 +7,20 @@
 		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
 		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
 		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd
-        http://www.mulesoft.org/schema/mule/scripting http://www.mulesoft.org/schema/mule/scripting/current/mule-scripting.xsd">
+http://www.mulesoft.org/schema/mule/scripting http://www.mulesoft.org/schema/mule/scripting/current/mule-scripting.xsd">
 
-    <munit:config name="new-test-suite.xml" />
+    <munit:config name="logger-suite.xml"/>
 
-    <munit:test name="mimeType" description="Verifies that the mime type of the payload y the one returned by the script">
-        <munit:behavior>
-            <set-payload value="#[output application/json --- {}]"/>
-        </munit:behavior>
+    <munit:test name="logger">
         <munit:execution >
             <scripting:execute engine="groovy">
-                <scripting:code >return new ArrayList()</scripting:code>
-                <scripting:parameters ><![CDATA[#[{
-  payload : payload
-}]]]></scripting:parameters>
+                <scripting:code>
+                    return log.getClass()
+                </scripting:code>
             </scripting:execute>
         </munit:execution>
-        <munit:validation >
-            <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::withMediaType('application/java')]"/>
+        <munit:validation>
+            <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::equalTo('org.apache.logging.slf4j.Log4jLogger')]"/>
         </munit:validation>
     </munit:test>
 

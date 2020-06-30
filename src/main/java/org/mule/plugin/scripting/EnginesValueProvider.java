@@ -7,13 +7,16 @@
 package org.mule.plugin.scripting;
 
 import static org.mule.runtime.extension.api.values.ValueBuilder.getValuesFor;
+import static java.lang.Thread.currentThread;
 
 import org.mule.runtime.api.value.Value;
 import org.mule.runtime.extension.api.values.ValueProvider;
 import org.mule.runtime.extension.api.values.ValueResolvingException;
 
-import java.util.Collections;
+import javax.script.ScriptEngineFactory;
+import javax.script.ScriptEngineManager;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -24,21 +27,19 @@ import java.util.Set;
  */
 public final class EnginesValueProvider implements ValueProvider {
 
-  private static final Map<String, String> engines =
-      Collections.unmodifiableMap(new HashMap<String, String>() {
-
-        {
-          put("groovy", "Groovy");
-          put("jython", "Jython (Python)");
-          put("ruby", "JRuby (Ruby)");
-          put("nashorn", "Nashorn (JavaScript)");
-        }
-      });
-
-  private static final Set<Value> values = getValuesFor(engines);
-
   @Override
   public Set<Value> resolve() throws ValueResolvingException {
-    return values;
+    ScriptEngineManager scriptEngineManager = new ScriptEngineManager(currentThread().getContextClassLoader());
+    List<ScriptEngineFactory> scriptEngineFactories = scriptEngineManager.getEngineFactories();
+    Map<String, String> map = new HashMap<>();
+
+    try {
+      scriptEngineFactories.forEach(entry -> map.put(entry.getLanguageName(),
+                                                     entry.getEngineName()));
+    } catch (Exception e) {
+      throw new ValueResolvingException(e.getMessage(), ValueResolvingException.UNKNOWN);
+    }
+
+    return getValuesFor(map);
   }
 }

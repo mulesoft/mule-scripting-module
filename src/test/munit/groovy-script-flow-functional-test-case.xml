@@ -1,0 +1,280 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:scripting="http://www.mulesoft.org/schema/mule/scripting"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:munit="http://www.mulesoft.org/schema/mule/munit"
+      xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+      xmlns="http://www.mulesoft.org/schema/mule/core"
+      xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd
+        http://www.mulesoft.org/schema/mule/scripting http://www.mulesoft.org/schema/mule/scripting/current/mule-scripting.xsd">
+
+    <munit:config name="groovy-test-cases.xml"/>
+
+    <munit:test name="inlineScriptMutateVariable" description="Trying to mutate a var must throw scripting execution error">
+        <munit:behavior>
+            <set-variable value="bar-original" variableName="foo"/>
+        </munit:behavior>
+        <munit:execution>
+            <try>
+                <scripting:execute engine="groovy">
+                    <scripting:code>
+                        vars['foo'] = 'bar-mutated'
+                    </scripting:code>
+                </scripting:execute>
+                <error-handler>
+                    <on-error-continue type="SCRIPTING:EXECUTION">
+                        <set-payload value="#[{ message : 'Unknown operation'}]" />
+                    </on-error-continue>
+                </error-handler>
+            </try>
+        </munit:execution >
+        <munit:validation >
+            <munit-tools:assert-that expression="#[payload.message]" is="#[MunitTools::equalTo('Unknown operation')]"/>
+        </munit:validation >
+    </munit:test>
+
+    <munit:test name="inlineScriptMutateVariablesMap" description="vars does not mutate">
+        <munit:behavior>
+            <set-payload value="#['']" />
+            <set-variable value="bar" variableName="foo"/>
+        </munit:behavior>
+        <munit:execution>
+            <scripting:execute engine="groovy">
+                <scripting:code>
+                    vars = new HashMap()
+                </scripting:code>
+            </scripting:execute>
+            <scripting:execute engine="groovy">
+                <scripting:code>
+                    return (payload instanceof HashMap)
+                </scripting:code>
+            </scripting:execute>
+        </munit:execution >
+        <munit:validation >
+            <munit-tools:assert-that expression="#[vars.foo]" is="#[MunitTools::equalTo('bar')]"/>
+            <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::equalTo(true)]"/>
+        </munit:validation >
+    </munit:test>
+
+    <munit:test name="inlineScriptAddVariable">
+        <munit:execution>
+            <try>
+                <scripting:execute engine="groovy">
+                    <scripting:code>
+                        vars['foo'] = 'bar'
+                    </scripting:code>
+                </scripting:execute>
+                <error-handler>
+                    <on-error-continue type="SCRIPTING:EXECUTION">
+                        <set-payload value="#[{ message : 'Unknown operation'}]" />
+                    </on-error-continue>
+                </error-handler>
+            </try>
+        </munit:execution >
+        <munit:validation >
+            <munit-tools:assert-that expression="#[payload.message]" is="#[MunitTools::equalTo('Unknown operation')]"/>
+        </munit:validation >
+    </munit:test>
+
+    <munit:test name="scriptReferencesAppClass">
+        <munit:behavior>
+            <scripting:execute engine="groovy">
+                <scripting:code>
+                    import org.mule.tck.testmodels.fruit.Apple
+                    return new Apple()
+                </scripting:code>
+            </scripting:execute>
+        </munit:behavior>
+        <munit:execution>
+            <scripting:execute engine="groovy">
+                <scripting:code>
+                    import org.mule.tck.testmodels.fruit.Apple
+                    return (payload instanceof Apple)
+                </scripting:code>
+            </scripting:execute>
+        </munit:execution >
+        <munit:validation >
+            <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::equalTo(true)]"/>
+        </munit:validation >
+    </munit:test>
+
+
+    <munit:test name="inlineScriptMutatePayload">
+        <munit:execution>
+            <scripting:execute engine="groovy">
+                <scripting:code>
+                    payload = 'bar-mutated'
+                    return 'bar-returned'
+                </scripting:code>
+            </scripting:execute>
+        </munit:execution >
+        <munit:validation >
+            <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::equalTo('bar-returned')]"/>
+        </munit:validation >
+    </munit:test>
+
+    <munit:test name="scriptExpressionVariables">
+        <munit:behavior>
+            <set-variable value="Received" variableName="prop1"/>
+            <set-variable value="A-OK" variableName="prop2"/>
+        </munit:behavior>
+        <munit:execution>
+            <scripting:execute engine="groovy">
+                <scripting:code>
+                    return expr1 + expr2
+                </scripting:code>
+                <scripting:parameters>
+                    #[{expr1: vars.prop1, expr2: vars.prop2}]
+                </scripting:parameters>
+            </scripting:execute>
+        </munit:execution >
+        <munit:validation >
+            <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::equalTo('ReceivedA-OK')]"/>
+        </munit:validation >
+    </munit:test>
+
+    <munit:test name="scriptReadVariable">
+        <munit:behavior>
+            <set-payload value="Something" />
+            <set-variable value="#[null]" variableName="myVar"/>
+        </munit:behavior>
+        <munit:execution>
+            <scripting:execute engine="groovy">
+                <scripting:code>
+                    return vars.myVar
+                </scripting:code>
+            </scripting:execute>
+        </munit:execution >
+        <munit:validation >
+            <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::nullValue()]"/>
+        </munit:validation >
+    </munit:test>
+
+    <munit:test name="inlineScript">
+        <munit:behavior>
+            <set-payload value="hello" />
+        </munit:behavior>
+        <munit:execution>
+            <scripting:execute engine="groovy">
+                <scripting:code>
+                    return payload.toString().replaceAll("l", "x")
+                </scripting:code>
+            </scripting:execute>
+        </munit:execution >
+        <munit:validation >
+            <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::equalTo('hexxo')]"/>
+        </munit:validation >
+    </munit:test>
+
+    <munit:test name="inlineScriptWithParametersFlow">
+        <munit:behavior>
+            <set-payload value="hello" />
+        </munit:behavior>
+        <munit:execution>
+            <scripting:execute engine="groovy">
+                <scripting:code>
+                    return payload.toString().replaceAll("$oldStr", "$newStr")
+                </scripting:code>
+                <scripting:parameters>
+                    #[{oldStr: "l", newStr: "x"}]
+                </scripting:parameters>
+            </scripting:execute>
+        </munit:execution >
+        <munit:validation >
+            <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::equalTo('hexxo')]"/>
+        </munit:validation >
+    </munit:test>
+
+
+    <munit:test name="inlineScriptWithParameter">
+        <munit:behavior>
+            <set-payload value="#[output application/json --- {'element': 1}]" />
+        </munit:behavior>
+        <munit:execution>
+            <flow-ref name="inlineScriptWithResolvedParametersFlow"/>
+            <set-variable value="#[payload]" variableName="bar1"/>
+            <set-payload value="#[output application/json --- {'element': 2}]" />
+            <flow-ref name="inlineScriptWithResolvedParametersFlow"/>
+            <set-variable value="#[payload]" variableName="bar2"/>
+        </munit:execution >
+        <munit:validation >
+            <munit-tools:assert-that expression="#[vars.bar1]" is="#[MunitTools::equalTo(1)]"/>
+            <munit-tools:assert-that expression="#[vars.bar2]" is="#[MunitTools::equalTo(2)]"/>
+        </munit:validation >
+    </munit:test>
+
+    <munit:test name="inlineScriptTargetValue">
+        <munit:behavior>
+            <set-payload value="original"/>
+        </munit:behavior>
+        <munit:execution>
+            <flow-ref name="inlineScriptTargetValueFlow"/>
+            <set-variable value="#[payload]" variableName="bar1"/>
+        </munit:execution >
+        <munit:validation >
+            <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::equalTo('original')]"/>
+            <munit-tools:assert-that expression="#[vars.myVar]" is="#[MunitTools::equalTo('hello')]"/>
+        </munit:validation >
+    </munit:test>
+
+    <munit:test name="scriptThreadName">
+        <munit:execution>
+            <flow-ref name="scriptThreadNameFlow"/>
+        </munit:execution >
+        <munit:validation >
+            <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::startsWith('[MuleRuntime]')]"/>
+            <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::containsString('scriptThreadNameFlow.CPU_INTENSIVE')]"/>
+        </munit:validation >
+    </munit:test>
+
+    <munit:test name="inlineScriptQueued">
+        <munit:behavior>
+            <set-payload value="Important Message"/>
+        </munit:behavior>
+        <munit:execution>
+            <flow-ref name="inlineScriptFlow"/>
+        </munit:execution >
+        <munit:validation >
+            <munit-tools:dequeue target="dequeued"/>
+            <munit-tools:assert-that expression="#[vars.dequeued]" is="#[MunitTools::equalTo('Important Message Received')]"/>
+        </munit:validation >
+    </munit:test>
+
+    <flow name="inlineScriptWithResolvedParametersFlow">
+        <scripting:execute engine="groovy">
+            <scripting:code>
+                return testVar.element
+            </scripting:code>
+            <scripting:parameters>
+                #[{testVar: payload}]
+            </scripting:parameters>
+        </scripting:execute>
+    </flow>
+
+    <flow name="inlineScriptTargetValueFlow">
+        <scripting:execute engine="groovy" target="myVar">
+            <scripting:code>
+                return "hello"
+            </scripting:code>
+        </scripting:execute>
+    </flow>
+
+    <flow name="scriptThreadNameFlow">
+        <scripting:execute engine="groovy">
+            <scripting:code>
+                return java.lang.Thread.currentThread().getName()
+            </scripting:code>
+        </scripting:execute>
+    </flow>
+
+    <flow name="inlineScriptFlow">
+        <scripting:execute engine="groovy">
+            <scripting:code>
+                return "$payload Received"
+            </scripting:code>
+        </scripting:execute>
+        <munit-tools:queue/>
+    </flow>
+
+</mule>

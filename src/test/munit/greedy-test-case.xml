@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:scripting="http://www.mulesoft.org/schema/mule/scripting"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:munit="http://www.mulesoft.org/schema/mule/munit"
+      xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools" xmlns="http://www.mulesoft.org/schema/mule/core"
+      xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd
+http://www.mulesoft.org/schema/mule/scripting http://www.mulesoft.org/schema/mule/scripting/current/mule-scripting.xsd">
+
+    <munit:config name="new-test-suite-greedy.xml" />
+
+    <munit:test name="GreedyDollarTestCase">
+        <munit:behavior>
+            <set-variable value="USD" variableName="currency"/>
+            <set-payload value="#[233]"/>
+        </munit:behavior>
+        <munit:execution >
+            <flow-ref name="greedy"/>
+        </munit:execution>
+        <munit:validation >
+            <munit-tools:assert-equals actual="#[payload]" expected="[9 quarters, 0 dimes, 1 nickels, 3 pennies]"/>
+        </munit:validation>
+    </munit:test>
+
+    <munit:test name="GreedyPoundsTestCase">
+        <munit:behavior>
+            <set-variable value="GBP" variableName="currency"/>
+            <set-payload value="#[128]"/>
+        </munit:behavior>
+        <munit:execution >
+            <flow-ref name="greedy"/>
+        </munit:execution>
+        <munit:validation >
+            <munit-tools:assert-equals actual="#[payload]" expected="[1 pounds, 1 twenty_pence, 1 five_pence, 1 two_pence, 1 pennies]"/>
+        </munit:validation>
+    </munit:test>
+
+    <flow name="greedy">
+        <choice>
+            <when expression="#[vars.currency == 'USD']">
+                <scripting:execute engine="groovy">
+                    <scripting:code>${file::greedy.groovy}</scripting:code>
+                    <scripting:parameters>
+                        #[{currency: "USD"}]
+                    </scripting:parameters>
+                </scripting:execute>
+            </when>
+            <when expression="#[vars.currency == 'GBP']">
+                <scripting:execute engine="python">
+                    <scripting:code>${file::greedy.py}</scripting:code>
+                    <scripting:parameters>
+                        #[{currency: "GBP"}]
+                    </scripting:parameters>
+                </scripting:execute>
+            </when>
+        </choice>
+    </flow>
+</mule>

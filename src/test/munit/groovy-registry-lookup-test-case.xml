@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:scripting="http://www.mulesoft.org/schema/mule/scripting"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:munit="http://www.mulesoft.org/schema/mule/munit"
+      xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+      xmlns="http://www.mulesoft.org/schema/mule/core"
+      xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd
+        http://www.mulesoft.org/schema/mule/scripting http://www.mulesoft.org/schema/mule/scripting/current/mule-scripting.xsd">
+
+    <munit:config name="registry-lookup-config.xml"/>
+
+    <flow name="testflow" initialState="started">
+        <set-variable value="Hello" variableName="bar"/>
+    </flow>
+
+    <munit:test name="AccessingRegistryTestCase" description="Accessing the registry to stop a flow">
+        <munit:execution>
+            <flow-ref name="testflow"/>
+            <scripting:execute engine="groovy" target="bar1">
+                <scripting:code>
+                    registry.lookupByName("testflow").get().isStarted()
+                </scripting:code>
+            </scripting:execute>
+        <scripting:execute engine="groovy">
+            <scripting:code>
+                flow = registry.lookupByName("testflow").get();
+                if (flow.isStarted())
+                    flow.stop()
+            </scripting:code>
+        </scripting:execute>
+        <scripting:execute engine="groovy" target="bar2">
+            <scripting:code>
+                registry.lookupByName("testflow").get().isStarted()
+            </scripting:code>
+        </scripting:execute>
+        </munit:execution>
+        <munit:validation>
+            <munit-tools:assert-that expression="#[vars.bar1]" is="#[MunitTools::equalTo(true)]"/>
+            <munit-tools:assert-that expression="#[vars.bar2]" is="#[MunitTools::equalTo(false)]"/>
+        </munit:validation>
+    </munit:test>
+</mule>
