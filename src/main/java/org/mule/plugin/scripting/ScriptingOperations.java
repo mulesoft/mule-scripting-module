@@ -30,7 +30,7 @@ import java.util.Map;
 public class ScriptingOperations {
 
   /**
-   * Run a script with provided code, according to the engine and passing parameters.
+   * Runs a script with provided code, according to the engine and passing parameters.
    *
    * @param code the script source code to be executed
    * @param engine name of the scripting engine for running this script
