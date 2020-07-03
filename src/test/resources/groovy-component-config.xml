@@ -2,11 +2,23 @@
 <mule xmlns="http://www.mulesoft.org/schema/mule/core"
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xmlns:script="http://www.mulesoft.org/schema/mule/scripting"
-      xmlns:test="http://www.mulesoft.org/schema/mule/test"
+      xmlns:test-components="http://www.mulesoft.org/schema/mule/test-components"
       xsi:schemaLocation="
            http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
            http://www.mulesoft.org/schema/mule/scripting http://www.mulesoft.org/schema/mule/scripting/current/mule-scripting.xsd
-           http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd">
+           http://www.mulesoft.org/schema/mule/test-components http://www.mulesoft.org/schema/mule/test-components/current/mule-test-components.xsd">
+
+    <test-components:queue-config name="inlineScriptTestOut">
+        <test-components:connection />
+    </test-components:queue-config>
+
+    <test-components:queue-config name="fileBasedScriptTestOut">
+        <test-components:connection />
+    </test-components:queue-config>
+
+    <test-components:queue-config name="scriptVariablesTestOut">
+        <test-components:connection />
+    </test-components:queue-config>
 
     <flow name="inlineScript">
         <description>
@@ -17,14 +29,14 @@
                 return "$payload Received"
             </script:code>
         </script:execute>
-        <test:queue name="inlineScriptTestOut"/>
+        <test-components:queue-push config-ref="inlineScriptTestOut"/>
     </flow>
 
     <flow name="fileBasedScript">
         <script:execute engine="groovy">
             <script:code>${file::simple-script.groovy}</script:code>
         </script:execute>
-        <test:queue name="fileBasedScriptTestOut"/>
+        <test-components:queue-push config-ref="fileBasedScriptTestOut"/>
     </flow>
 
     <flow name="scriptVariables">
@@ -36,6 +48,6 @@
                 #[{prop1: "Received", prop2: "A-OK"}]
             </script:parameters>
         </script:execute>
-        <test:queue name="scriptVariablesTestOut"/>
+        <test-components:queue-push config-ref="scriptVariablesTestOut"/>
     </flow>
 </mule>
