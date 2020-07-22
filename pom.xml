@@ -49,12 +49,14 @@
             <artifactId>groovy-all</artifactId>
             <version>${groovy.version}</version>
             <classifier>indy</classifier>
+            <scope>test</scope>
         </dependency>
         <!--Jython-->
         <dependency>
             <groupId>org.python</groupId>
             <artifactId>jython-standalone</artifactId>
             <version>${jython.version}</version>
+            <scope>test</scope>
         </dependency>
         <!--Ruby-->
         <dependency>
@@ -87,6 +89,23 @@
                         <jruby.version>${jruby.version}</jruby.version>
                         <jython.version>${jython.version}</jython.version>
                     </systemPropertyVariables>
+                </configuration>
+            </plugin>
+            <!-- This plugin will be deleted when the refactor of the Munit tests is done -->
+            <plugin>
+                <groupId>com.mulesoft.munit</groupId>
+                <artifactId>munit-extensions-maven-plugin</artifactId>
+                <configuration>
+                    <sharedLibraries>
+                        <sharedLibrary>
+                            <groupId>org.codehaus.groovy</groupId>
+                            <artifactId>groovy-all</artifactId>
+                        </sharedLibrary>
+                        <sharedLibrary>
+                            <groupId>org.python</groupId>
+                            <artifactId>jython-standalone</artifactId>
+                        </sharedLibrary>
+                    </sharedLibraries>
                 </configuration>
             </plugin>
         </plugins>

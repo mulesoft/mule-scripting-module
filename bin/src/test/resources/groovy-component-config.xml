@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns="http://www.mulesoft.org/schema/mule/core"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:script="http://www.mulesoft.org/schema/mule/scripting"
+      xmlns:test="http://www.mulesoft.org/schema/mule/test"
+      xsi:schemaLocation="
+           http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+           http://www.mulesoft.org/schema/mule/scripting http://www.mulesoft.org/schema/mule/scripting/current/mule-scripting.xsd
+           http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd">
+
+    <flow name="inlineScript">
+        <description>
+            This example demonstrates how to configure a Groovy Script component with an in-line script.
+        </description>
+        <script:execute engine="groovy">
+            <script:code>
+                return "$payload Received"
+            </script:code>
+        </script:execute>
+        <test:queue name="inlineScriptTestOut"/>
+    </flow>
+
+    <flow name="fileBasedScript">
+        <script:execute engine="groovy">
+            <script:code>${file::simple-script.groovy}</script:code>
+        </script:execute>
+        <test:queue name="fileBasedScriptTestOut"/>
+    </flow>
+
+    <flow name="scriptVariables">
+        <script:execute engine="groovy">
+            <script:code>
+                return "$payload $prop1 $prop2"
+            </script:code>
+            <script:parameters>
+                #[{prop1: "Received", prop2: "A-OK"}]
+            </script:parameters>
+        </script:execute>
+        <test:queue name="scriptVariablesTestOut"/>
+    </flow>
+</mule>
