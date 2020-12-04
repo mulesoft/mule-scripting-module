@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.mule.extensions</groupId>
         <artifactId>mule-core-modules-parent</artifactId>
-        <version>1.2.1</version>
+        <version>1.4.0-20201202</version>
     </parent>
     <groupId>org.mule.modules</groupId>
     <artifactId>mule-scripting-module</artifactId>
