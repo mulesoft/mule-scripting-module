@@ -32,8 +32,7 @@ import org.mule.runtime.extension.api.runtime.streaming.StreamingHelper;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
-import java.util.Map;
-import java.util.HashMap;
+import java.util.*;
 
 import javax.inject.Inject;
 import javax.script.Bindings;
@@ -124,13 +123,17 @@ public class ScriptRunner {
   }
 
   public void closeCursors(Bindings bindings) {
-    bindings.forEach((k, v) -> closeCursor(TypedValue.unwrap(v)));
+    Set<Object> visited = Collections.newSetFromMap(new IdentityHashMap<Object, Boolean>());
+    bindings.forEach((k, v) -> closeCursor(TypedValue.unwrap(v), visited));
   }
 
-  private void closeCursor(Object o) {
+  private void closeCursor(Object o, Set<Object> visited) {
+    if (o == null || !visited.add(o)) {
+      return;
+    }
     if (o instanceof Map) {
       Map map = (Map) o;
-      map.forEach((k, v) -> closeCursor(TypedValue.unwrap(v)));
+      map.forEach((k, v) -> closeCursor(TypedValue.unwrap(v), visited));
     } else if (o instanceof Cursor) {
       try {
         ((Cursor) o).close();
@@ -187,6 +190,6 @@ public class ScriptRunner {
   private Map<String, Object> createResolvedMap(Map<String, Object> map, StreamingHelper streamingHelper) {
     HashMap<String, Object> resolvedMap = new HashMap<>();
     map.forEach((key, value) -> resolvedMap.put(key, TypedValue.unwrap(value)));
-    return streamingHelper.resolveCursors(resolvedMap, true);
+    return streamingHelper.resolveCursors(resolvedMap, false);
   }
 }
