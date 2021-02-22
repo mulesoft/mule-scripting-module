@@ -104,8 +104,8 @@ public class StreamingTestCase extends AbstractScriptingFunctionalTestCase {
         .withVariable("map", map)
         .run();
 
-    verify(cursor, times(2)).close();
-    verify(wrappedCursor.getValue(), times(2)).close();
+    verify(cursor, times(1)).close();
+    verify(wrappedCursor.getValue(), times(1)).close();
   }
 
   @Test
@@ -130,8 +130,8 @@ public class StreamingTestCase extends AbstractScriptingFunctionalTestCase {
         .withVariable("map", wrappedMap)
         .run();
 
-    verify(cursor, times(2)).close();
-    verify(wrappedCursor.getValue(), times(2)).close();
+    verify(cursor, times(1)).close();
+    verify(wrappedCursor.getValue(), times(1)).close();
   }
 
   @Test
@@ -156,8 +156,25 @@ public class StreamingTestCase extends AbstractScriptingFunctionalTestCase {
         .withPayload(wrappedMap)
         .run();
 
-    verify(cursor, times(2)).close();
-    verify(wrappedCursor.getValue(), times(2)).close();
+    verify(cursor, times(1)).close();
+    verify(wrappedCursor.getValue(), times(1)).close();
+  }
+
+  @Test
+  @Description("When a structure refers to itself, you should only try to close the cursors once "
+      + "otherwise it will try to close recursively and cause a stack overflow.")
+  public void assertAutoReferencedStructuresAreVisitedOnceWhenCloses() throws Exception {
+    CursorStream cursor = createMockCursor();
+
+    Map<String, Object> map = new HashMap<>();
+    map.put("cursor", cursor);
+    map.put("map", map);
+
+    CoreEvent response = flowRunner("scripting-test-flow")
+        .withPayload(map)
+        .run();
+
+    verify(cursor, times(1)).close();
   }
 
   private CursorStream createMockCursor() {
