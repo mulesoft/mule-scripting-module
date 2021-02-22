@@ -32,7 +32,11 @@ import org.mule.runtime.extension.api.runtime.streaming.StreamingHelper;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
-import java.util.*;
+import java.util.IdentityHashMap;
+import java.util.Collections;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.Set;
 
 import javax.inject.Inject;
 import javax.script.Bindings;
