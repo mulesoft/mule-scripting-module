@@ -22,6 +22,7 @@
         <jruby.version>9.3.6.0</jruby.version>
         <project.reactor.version>3.4.21</project.reactor.version>
         <file.connector.version>1.4.1</file.connector.version>
+        <slf4j.version>1.7.36</slf4j.version>
     </properties>
     <dependencies>
         <!-- Reactor -->
@@ -48,7 +49,7 @@
             <groupId>org.codehaus.groovy</groupId>
             <artifactId>groovy-all</artifactId>
             <version>${groovy.version}</version>
-            <classifier>indy</classifier>
+            <type>pom</type>
         </dependency>
         <!--Jython-->
         <dependency>
@@ -75,6 +76,11 @@
             <version>${file.connector.version}</version>
             <classifier>mule-plugin</classifier>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>${slf4j.version}</version>
         </dependency>
     </dependencies>
     <build>
