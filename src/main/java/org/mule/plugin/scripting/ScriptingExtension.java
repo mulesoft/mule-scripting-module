@@ -22,7 +22,7 @@ import static org.mule.runtime.api.meta.ExternalLibraryType.JAR;
 @ExternalLib(name = "JSR-223 Engine",
     description = "A JSR-223 supported engine",
     nameRegexpMatcher = "(.*)\\.jar",
-    type = JAR, coordinates = "org.codehaus.groovy:groovy-all:2.4.18",
+    type = JAR, coordinates = "org.codehaus.groovy:groovy-all:2.4.21",
     optional = true)
 @ErrorTypes(ScriptingErrors.class)
 public class ScriptingExtension {
