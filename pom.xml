@@ -18,7 +18,7 @@
         <munit.version>2.2.4</munit.version>
         <formatterConfigPath>formatter.xml</formatterConfigPath>
         <jython.version>2.7.2</jython.version>
-        <groovy.version>2.4.16</groovy.version>
+        <groovy.version>2.4.21</groovy.version>
         <jruby.version>9.3.6.0</jruby.version>
         <project.reactor.version>3.4.21</project.reactor.version>
         <file.connector.version>1.4.1</file.connector.version>
