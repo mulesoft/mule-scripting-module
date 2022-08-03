@@ -32,8 +32,10 @@ import org.mule.runtime.extension.api.runtime.streaming.StreamingHelper;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
+import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.script.Bindings;
@@ -165,9 +167,9 @@ public class ScriptRunner {
   }
 
   protected String listAvailableEngines() {
-    return scriptEngineManager.getEngineFactories().stream()
-        .map(ScriptEngineFactory::getEngineName)
-        .collect(joining(", "));
+    List<List<String>> listsOfEngineNames =
+        scriptEngineManager.getEngineFactories().stream().map(ScriptEngineFactory::getNames).collect(Collectors.toList());
+    return listsOfEngineNames.stream().flatMap(List::stream).collect(joining(", "));
   }
 
   public ScriptEngine getScriptEngine() {
