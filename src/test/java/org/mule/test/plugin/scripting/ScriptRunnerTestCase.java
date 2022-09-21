@@ -25,6 +25,12 @@ public class ScriptRunnerTestCase {
     }
   }
 
+  @Test
+  public void ECMAScriptShouldWorkForDifferentJavaVersionsTest() {
+      ScriptRunner runner = new ScriptRunner("ECMAScript", "tempPayload = \"hello\"; tempPayload", null);
+      runner.initialise();
+      runner.runScript(null);
+  }
 
 }
 
