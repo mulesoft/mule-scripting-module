@@ -81,14 +81,15 @@ public class ScriptRunner {
     scriptEngineManager = new ScriptEngineManager(currentThread().getContextClassLoader());
 
     scriptEngine = createScriptEngineByName(engineName);
+
+    if (scriptEngine == null && ECMA_SCRIPT_ENGINE.equalsIgnoreCase(engineName)) {
+      scriptEngine = createScriptEngineByName(NASHORN_ENGINE);
+    }
+
     if (scriptEngine == null) {
-      if (ECMA_SCRIPT_ENGINE.equalsIgnoreCase(engineName)) {
-        scriptEngine = createScriptEngineByName(NASHORN_ENGINE);
-      } else {
-        String message =
-            "Scripting engine '" + engineName + "' not found.  Available engines are: " + listAvailableEngines();
-        throw new ModuleException(createStaticMessage(message), UNKNOWN_ENGINE);
-      }
+      String message =
+          "Scripting engine '" + engineName + "' not found.  Available engines are: " + listAvailableEngines();
+      throw new ModuleException(createStaticMessage(message), UNKNOWN_ENGINE);
     }
 
     Reader script = new StringReader(scriptBody);
