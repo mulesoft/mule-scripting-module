@@ -25,6 +25,13 @@ public class ScriptRunnerTestCase {
     }
   }
 
+  @Test
+  public void ECMAScriptShouldWorkForDifferentJavaVersionsTest() {
+    ScriptRunner runner = new ScriptRunner("ECMAScript", "tempPayload = \"hello\"; tempPayload", null);
+    runner.initialise();
+    String result = (String) runner.runScript(null);
+    assertThat(result, containsString("hello"));
+  }
 
 }
 

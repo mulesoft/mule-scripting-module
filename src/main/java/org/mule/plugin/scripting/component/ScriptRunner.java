@@ -55,6 +55,8 @@ public class ScriptRunner {
   private static final String BINDING_LOG = "log";
   private static final String BINDING_RESULT = "result";
   private static final String REGISTRY = "registry";
+  private static final String ECMA_SCRIPT_ENGINE = "ECMAScript";
+  private static final String NASHORN_ENGINE = "Nashorn";
 
   private String engineName;
   private String scriptBody;
@@ -79,6 +81,11 @@ public class ScriptRunner {
     scriptEngineManager = new ScriptEngineManager(currentThread().getContextClassLoader());
 
     scriptEngine = createScriptEngineByName(engineName);
+
+    if (scriptEngine == null && ECMA_SCRIPT_ENGINE.equalsIgnoreCase(engineName)) {
+      scriptEngine = createScriptEngineByName(NASHORN_ENGINE);
+    }
+
     if (scriptEngine == null) {
       String message =
           "Scripting engine '" + engineName + "' not found.  Available engines are: " + listAvailableEngines();
