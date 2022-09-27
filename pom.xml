@@ -20,7 +20,7 @@
         <jython.version>2.7.3</jython.version>
         <groovy.version>2.4.21</groovy.version>
         <jruby.version>9.3.8.0</jruby.version>
-        <project.reactor.version>3.4.21</project.reactor.version>
+        <project.reactor.version>3.4.23</project.reactor.version>
         <file.connector.version>1.4.1</file.connector.version>
         <mtf.tools.version>1.1.2</mtf.tools.version>
     </properties>
