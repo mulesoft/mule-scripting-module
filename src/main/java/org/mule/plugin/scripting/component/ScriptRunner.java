@@ -84,6 +84,7 @@ public class ScriptRunner {
 
     if (scriptEngine == null && ECMA_SCRIPT_ENGINE.equalsIgnoreCase(engineName)) {
       scriptEngine = createScriptEngineByName(NASHORN_ENGINE);
+      LOGGER.warn("The Scripting Engine defaulted to " + NASHORN_ENGINE);
     }
 
     if (scriptEngine == null) {
