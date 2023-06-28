@@ -23,6 +23,7 @@
         <project.reactor.version>3.4.23</project.reactor.version>
         <file.connector.version>1.4.1</file.connector.version>
         <mtf.tools.version>1.1.2</mtf.tools.version>
+        <jacoco.version>0.8.10</jacoco.version>
     </properties>
     <dependencies>
         <!-- Reactor -->
@@ -142,6 +143,22 @@
                         <classifier>mule-plugin</classifier>
                     </dependency>
                 </dependencies>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jdeps-plugin</artifactId>
+                <version>3.1.2</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>jdkinternals</goal> <!-- verify main classes -->
+                            <goal>test-jdkinternals</goal> <!-- verify test classes -->
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <failOnWarning>true</failOnWarning>
+                </configuration>
             </plugin>
         </plugins>
     </build>
