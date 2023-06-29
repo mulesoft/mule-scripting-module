@@ -26,6 +26,7 @@
         <commons.lang.version>3.13.0</commons.lang.version>
         <mule.sdk.api.version>0.6.0</mule.sdk.api.version>
         <jacoco.version>0.8.10</jacoco.version>
+        <mtf.javaopts></mtf.javaopts>
     </properties>
     <dependencies>
         <!-- Reactor -->
@@ -141,6 +142,11 @@
                             -javaagent:${settings.localRepository}/org/jacoco/org.jacoco.agent/${jacoco.version}/org.jacoco.agent-${jacoco.version}-runtime.jar=destfile=${session.executionRootDirectory}/target/jacoco-munit.exec
                         </argLine>
                     </argLines>
+                    <environmentVariables>
+                        <!-- Toggles the JDK17 style flag -->
+                        <!-- ugly hack -->
+                        <_JAVA_OPTIONS>-XX:+PrintCommandLineFlags ${mtf.javaopts}</_JAVA_OPTIONS>
+                    </environmentVariables>
                 </configuration>
                 <dependencies>
                     <dependency>
