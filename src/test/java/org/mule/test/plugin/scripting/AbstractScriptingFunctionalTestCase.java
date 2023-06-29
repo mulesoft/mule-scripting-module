@@ -11,7 +11,7 @@ import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
 import org.mule.test.runner.ArtifactClassLoaderRunnerConfig;
 
 @ArtifactClassLoaderRunnerConfig(applicationSharedRuntimeLibs = {"org.mule.tests:mule-tests-model",
-    "org.codehaus.groovy:groovy-all"},
+    "org.codehaus.groovy:groovy-jsr223", "org.codehaus.groovy:groovy"},
     testRunnerExportedRuntimeLibs = {"org.mule.tests:mule-tests-functional"})
 public abstract class AbstractScriptingFunctionalTestCase extends MuleArtifactFunctionalTestCase {
 
