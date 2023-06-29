@@ -13,6 +13,6 @@ mvn verify \
 
 cat target/test.log | grep "WARNING: Illegal reflective access by" > target/illegal-access.log
 
-cat taget/illegal-access.log | \
+cat target/illegal-access.log | \
     sort | uniq | \
-    grep -Ev "org.mule.module.artifact|org.mule.metadata|org.mule.runtime|org.mule.service"
+    grep -Ev "org.mule.module.artifact|org.mule.metadata|org.mule.runtime|org.mule.service|net.sf.cglib"
