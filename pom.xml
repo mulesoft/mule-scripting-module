@@ -24,6 +24,7 @@
         <file.connector.version>1.4.1</file.connector.version>
         <mtf.tools.version>1.1.2</mtf.tools.version>
         <jacoco.version>0.8.10</jacoco.version>
+        <mtf.javaopts></mtf.javaopts>
     </properties>
     <dependencies>
         <!-- Reactor -->
@@ -122,6 +123,11 @@
                             -javaagent:${settings.localRepository}/org/jacoco/org.jacoco.agent/${jacoco.version}/org.jacoco.agent-${jacoco.version}-runtime.jar=destfile=${session.executionRootDirectory}/target/jacoco-munit.exec
                         </argLine>
                     </argLines>
+                    <environmentVariables>
+                        <!-- Toggles the JDK17 style flag -->
+                        <!-- ugly hack -->
+                        <_JAVA_OPTIONS>-XX:+PrintCommandLineFlags ${mtf.javaopts}</_JAVA_OPTIONS>
+                    </environmentVariables>
                 </configuration>
                 <dependencies>
                     <dependency>
