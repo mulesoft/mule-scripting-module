@@ -19,7 +19,6 @@ import static org.mule.runtime.api.i18n.I18nMessageFactory.createStaticMessage;
 import static org.slf4j.LoggerFactory.getLogger;
 import static java.lang.Thread.currentThread;
 
-import org.mule.plugin.scripting.ExecutionMode;
 import org.mule.runtime.api.artifact.Registry;
 import org.mule.runtime.api.component.location.ComponentLocation;
 import org.mule.runtime.api.el.Binding;
@@ -152,10 +151,10 @@ public class ScriptRunner {
     }
   }
 
-  public Object runScript(Bindings bindings, ExecutionMode executionMode) {
+  public Object runScript(Bindings bindings) {
     Object result;
     try {
-      if (executionMode == ExecutionMode.AUTO && compiledScript != null) {
+      if (compiledScript != null) {
         result = compiledScript.eval(bindings);
       } else {
         result = scriptEngine.eval(scriptBody, bindings);
