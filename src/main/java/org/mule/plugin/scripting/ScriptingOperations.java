@@ -36,6 +36,7 @@ public class ScriptingOperations {
    * @param code the script source code to be executed
    * @param engine name of the scripting engine for running this script
    * @param parameters variables provided to the script as bindings
+   * @param executionMode Determines whether the script should be automatically compiled or forced to be interpreted. When set to "AUTO" or not specified, the module analyzes the context to determine the appropriate mode. When set to "INTERPRETED", the module enforces interpretation mode.
    * @return the result of script evaluation
    */
   @Throws(ScriptingErrorTypeProvider.class)
