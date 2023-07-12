@@ -7,8 +7,6 @@
 package org.mule.test.plugin.scripting;
 
 import org.junit.Test;
-
-import org.mule.plugin.scripting.ExecutionMode;
 import org.mule.plugin.scripting.component.ScriptRunner;
 import org.mule.runtime.extension.api.exception.ModuleException;
 
@@ -31,7 +29,7 @@ public class ScriptRunnerTestCase {
   public void ECMAScriptShouldWorkForDifferentJavaVersionsTest() {
     ScriptRunner runner = new ScriptRunner("ECMAScript", "tempPayload = \"hello\"; tempPayload", null);
     runner.initialise();
-    String result = (String) runner.runScript(null, ExecutionMode.AUTO);
+    String result = (String) runner.runScript(null);
     assertThat(result, containsString("hello"));
   }
 
