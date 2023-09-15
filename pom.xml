@@ -10,21 +10,21 @@
     <groupId>org.mule.modules</groupId>
     <artifactId>mule-scripting-module</artifactId>
     <packaging>mule-extension</packaging>
-    <version>2.0.5-SNAPSHOT</version>
+    <version>2.1.3-SNAPSHOT</version>
     <name>Scripting Module</name>
     <description>Support for embedding scripts inside Mule artifacts</description>
     <properties>
         <munit.extensions.maven.plugin.version>1.1.3</munit.extensions.maven.plugin.version>
-        <munit.version>2.2.4</munit.version>
+        <munit.version>2.3.15</munit.version>
         <formatterConfigPath>formatter.xml</formatterConfigPath>
         <jython.version>2.7.3</jython.version>
-        <groovy.version>2.4.21</groovy.version>
+        <groovy.version>3.0.19</groovy.version>
         <jruby.version>9.3.8.0</jruby.version>
         <project.reactor.version>3.4.23</project.reactor.version>
         <file.connector.version>1.4.1</file.connector.version>
         <mtf.tools.version>1.1.2</mtf.tools.version>
-        <commons.lang.version>3.13.0</commons.lang.version>
-        <mule.sdk.api.version>0.6.0</mule.sdk.api.version>
+        <jacoco.version>0.8.10</jacoco.version>
+        <mtf.javaopts></mtf.javaopts>
     </properties>
     <dependencies>
         <!-- Reactor -->
@@ -40,12 +40,6 @@
             <version>${mule.version}</version>
             <classifier>mule-plugin</classifier>
             <scope>test</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.apache.commons</groupId>
-                    <artifactId>commons-lang3</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.mule.tests</groupId>
@@ -55,9 +49,14 @@
         <!--Groovy-->
         <dependency>
             <groupId>org.codehaus.groovy</groupId>
-            <artifactId>groovy-all</artifactId>
+            <artifactId>groovy</artifactId>
             <version>${groovy.version}</version>
-            <classifier>indy</classifier>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.codehaus.groovy</groupId>
+            <artifactId>groovy-jsr223</artifactId>
+            <version>${groovy.version}</version>
             <scope>test</scope>
         </dependency>
         <!--Jython-->
@@ -90,13 +89,7 @@
         <dependency>
             <groupId>org.mule.sdk</groupId>
             <artifactId>mule-sdk-api</artifactId>
-            <version>${mule.sdk.api.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-lang3</artifactId>
-            <version>${commons.lang.version}</version>
-            <scope>test</scope>
+            <version>0.6.0</version>
         </dependency>
     </dependencies>
     <build>
@@ -128,7 +121,11 @@
                     <sharedLibraries>
                         <sharedLibrary>
                             <groupId>org.codehaus.groovy</groupId>
-                            <artifactId>groovy-all</artifactId>
+                            <artifactId>groovy-jsr223</artifactId>
+                        </sharedLibrary>
+                        <sharedLibrary>
+                            <groupId>org.codehaus.groovy</groupId>
+                            <artifactId>groovy</artifactId>
                         </sharedLibrary>
                         <sharedLibrary>
                             <groupId>org.python</groupId>
@@ -140,6 +137,11 @@
                             -javaagent:${settings.localRepository}/org/jacoco/org.jacoco.agent/${jacoco.version}/org.jacoco.agent-${jacoco.version}-runtime.jar=destfile=${session.executionRootDirectory}/target/jacoco-munit.exec
                         </argLine>
                     </argLines>
+                    <environmentVariables>
+                        <!-- Toggles the JDK17 style flag -->
+                        <!-- ugly hack -->
+                        <_JAVA_OPTIONS>-XX:+PrintCommandLineFlags ${mtf.javaopts}</_JAVA_OPTIONS>
+                    </environmentVariables>
                 </configuration>
                 <dependencies>
                     <dependency>
@@ -161,6 +163,22 @@
                         <classifier>mule-plugin</classifier>
                     </dependency>
                 </dependencies>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jdeps-plugin</artifactId>
+                <version>3.1.2</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>jdkinternals</goal> <!-- verify main classes -->
+                            <goal>test-jdkinternals</goal> <!-- verify test classes -->
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <failOnWarning>true</failOnWarning>
+                </configuration>
             </plugin>
         </plugins>
     </build>
