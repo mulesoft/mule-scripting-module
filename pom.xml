@@ -10,7 +10,7 @@
     <groupId>org.mule.modules</groupId>
     <artifactId>mule-scripting-module</artifactId>
     <packaging>mule-extension</packaging>
-    <version>2.1.3-SNAPSHOT</version>
+    <version>2.1.1-SNAPSHOT</version>
     <name>Scripting Module</name>
     <description>Support for embedding scripts inside Mule artifacts</description>
     <properties>
@@ -25,6 +25,10 @@
         <mtf.tools.version>1.1.2</mtf.tools.version>
         <jacoco.version>0.8.10</jacoco.version>
         <mtf.javaopts></mtf.javaopts>
+        <mulesoftLicenseVersion>1.4.0</mulesoftLicenseVersion>
+        <license.maven.plugin.version>4.2</license.maven.plugin.version>
+        <licensePath>LICENSE_HEADER_CPAL.txt</licensePath>
+        <licenseYear>2023</licenseYear>
     </properties>
     <dependencies>
         <!-- Reactor -->
@@ -95,6 +99,38 @@
     <build>
         <plugins>
             <plugin>
+                <groupId>com.mycila</groupId>
+                <artifactId>license-maven-plugin</artifactId>
+                <version>${license.maven.plugin.version}</version>
+                <dependencies>
+                    <dependency>
+                        <groupId>com.mulesoft.license</groupId>
+                        <artifactId>license</artifactId>
+                        <version>${mulesoftLicenseVersion}</version>
+                    </dependency>
+                </dependencies>
+                <configuration>
+                    <header>${licensePath}</header>
+                    <properties>
+                        <year>${licenseYear}</year>
+                    </properties>
+                    <includes>
+                        <include>**/*.java</include>
+                    </includes>
+                    <mapping>
+                        <java>SLASHSTAR_STYLE</java>
+                    </mapping>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
@@ -130,6 +166,10 @@
                         <sharedLibrary>
                             <groupId>org.python</groupId>
                             <artifactId>jython-standalone</artifactId>
+                        </sharedLibrary>
+                        <sharedLibrary>
+                            <groupId>org.jruby</groupId>
+                            <artifactId>jruby-core</artifactId>
                         </sharedLibrary>
                     </sharedLibraries>
                     <argLines>
