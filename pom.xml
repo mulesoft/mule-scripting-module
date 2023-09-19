@@ -18,13 +18,13 @@
         <munit.version>2.3.15</munit.version>
         <formatterConfigPath>formatter.xml</formatterConfigPath>
         <jython.version>2.7.3</jython.version>
-        <groovy.version>2.4.21</groovy.version>
+        <groovy.version>3.0.19</groovy.version>
         <jruby.version>9.3.8.0</jruby.version>
         <project.reactor.version>3.4.23</project.reactor.version>
         <file.connector.version>1.5.1</file.connector.version>
         <mtf.tools.version>1.1.2</mtf.tools.version>
         <jacoco.version>0.8.10</jacoco.version>
-
+        <mtf.javaopts></mtf.javaopts>
         <mulesoftLicenseVersion>1.4.0</mulesoftLicenseVersion>
         <license.maven.plugin.version>4.2</license.maven.plugin.version>
         <licensePath>LICENSE_HEADER_CPAL.txt</licensePath>
@@ -53,9 +53,14 @@
         <!--Groovy-->
         <dependency>
             <groupId>org.codehaus.groovy</groupId>
-            <artifactId>groovy-all</artifactId>
+            <artifactId>groovy</artifactId>
             <version>${groovy.version}</version>
-            <classifier>indy</classifier>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.codehaus.groovy</groupId>
+            <artifactId>groovy-jsr223</artifactId>
+            <version>${groovy.version}</version>
             <scope>test</scope>
         </dependency>
         <!--Jython-->
@@ -84,6 +89,11 @@
             <version>${file.connector.version}</version>
             <classifier>mule-plugin</classifier>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mule.sdk</groupId>
+            <artifactId>mule-sdk-api</artifactId>
+            <version>0.6.0</version>
         </dependency>
     </dependencies>
     <build>
@@ -147,7 +157,11 @@
                     <sharedLibraries>
                         <sharedLibrary>
                             <groupId>org.codehaus.groovy</groupId>
-                            <artifactId>groovy-all</artifactId>
+                            <artifactId>groovy-jsr223</artifactId>
+                        </sharedLibrary>
+                        <sharedLibrary>
+                            <groupId>org.codehaus.groovy</groupId>
+                            <artifactId>groovy</artifactId>
                         </sharedLibrary>
                         <sharedLibrary>
                             <groupId>org.python</groupId>
@@ -163,6 +177,11 @@
                             -javaagent:${settings.localRepository}/org/jacoco/org.jacoco.agent/${jacoco.version}/org.jacoco.agent-${jacoco.version}-runtime.jar=destfile=${session.executionRootDirectory}/target/jacoco-munit.exec
                         </argLine>
                     </argLines>
+                    <environmentVariables>
+                        <!-- Toggles the JDK17 style flag -->
+                        <!-- ugly hack -->
+                        <_JAVA_OPTIONS>-XX:+PrintCommandLineFlags ${mtf.javaopts}</_JAVA_OPTIONS>
+                    </environmentVariables>
                 </configuration>
                 <dependencies>
                     <dependency>

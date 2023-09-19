@@ -13,6 +13,9 @@ import org.mule.runtime.extension.api.annotation.ExternalLib;
 import org.mule.runtime.extension.api.annotation.Operations;
 import org.mule.runtime.extension.api.annotation.error.ErrorTypes;
 import org.mule.runtime.extension.api.annotation.privileged.DeclarationEnrichers;
+import org.mule.sdk.api.annotation.JavaVersionSupport;
+import static org.mule.sdk.api.meta.JavaVersion.JAVA_8;
+import static org.mule.sdk.api.meta.JavaVersion.JAVA_11;
 
 import static org.mule.runtime.api.meta.ExternalLibraryType.JAR;
 
@@ -22,9 +25,10 @@ import static org.mule.runtime.api.meta.ExternalLibraryType.JAR;
 @ExternalLib(name = "JSR-223 Engine",
     description = "A JSR-223 supported engine",
     nameRegexpMatcher = "(.*)\\.jar",
-    type = JAR, coordinates = "org.codehaus.groovy:groovy-all:2.4.21:indy",
+    type = JAR, coordinates = "org.codehaus.groovy:groovy-jsr223:3.0.19",
     optional = true)
 @ErrorTypes(ScriptingErrors.class)
+@JavaVersionSupport({JAVA_8, JAVA_11})
 public class ScriptingExtension {
 
 }
