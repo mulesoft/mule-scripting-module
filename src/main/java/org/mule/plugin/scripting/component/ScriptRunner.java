@@ -78,6 +78,9 @@ public class ScriptRunner {
     this.location = location;
   }
 
+  public ScriptRunner() {
+  }
+
   public void initialise() {
     scriptEngineManager = new ScriptEngineManager(currentThread().getContextClassLoader());
 
@@ -200,5 +203,57 @@ public class ScriptRunner {
     HashMap<String, Object> resolvedMap = new HashMap<>();
     map.forEach((key, value) -> resolvedMap.put(key, TypedValue.unwrap(value)));
     return streamingHelper.resolveCursors(resolvedMap, true);
+  }
+
+  public String getEngineName() {
+    return engineName;
+  }
+
+  public void setEngineName(String engineName) {
+    this.engineName = engineName;
+  }
+
+  public String getScriptBody() {
+    return scriptBody;
+  }
+
+  public void setScriptBody(String scriptBody) {
+    this.scriptBody = scriptBody;
+  }
+
+  public ComponentLocation getLocation() {
+    return location;
+  }
+
+  public void setLocation(ComponentLocation location) {
+    this.location = location;
+  }
+
+  public CompiledScript getCompiledScript() {
+    return compiledScript;
+  }
+
+  public void setCompiledScript(CompiledScript compiledScript) {
+    this.compiledScript = compiledScript;
+  }
+
+  public void setScriptEngine(ScriptEngine scriptEngine) {
+    this.scriptEngine = scriptEngine;
+  }
+
+  public ScriptEngineManager getScriptEngineManager() {
+    return scriptEngineManager;
+  }
+
+  public void setScriptEngineManager(ScriptEngineManager scriptEngineManager) {
+    this.scriptEngineManager = scriptEngineManager;
+  }
+
+  public Registry getRegistry() {
+    return registry;
+  }
+
+  public void setRegistry(Registry registry) {
+    this.registry = registry;
   }
 }
