@@ -31,7 +31,7 @@ import static org.mule.runtime.api.meta.ExternalLibraryType.JAR;
     type = JAR, coordinates = "org.codehaus.groovy:groovy-all:2.4.21:indy",
     optional = true)
 @ErrorTypes(ScriptingErrors.class)
-@JavaVersionSupport({JAVA_8, JAVA_11})
+@JavaVersionSupport({JAVA_8, JAVA_11, JAVA_17})
 @OnArtifactLifecycle(ScriptingArtifactLifecycleListener.class)
 public class ScriptingExtension {
 
