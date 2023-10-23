@@ -198,6 +198,7 @@ public class ScriptRunner {
     }
   }
 
+
   private Map<String, Object> createResolvedMap(Map<String, Object> map, StreamingHelper streamingHelper) {
     HashMap<String, Object> resolvedMap = new HashMap<>();
     map.forEach((key, value) -> resolvedMap.put(key, TypedValue.unwrap(value)));
