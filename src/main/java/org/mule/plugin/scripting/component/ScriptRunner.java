@@ -78,8 +78,7 @@ public class ScriptRunner {
     this.location = location;
   }
 
-  public ScriptRunner() {
-  }
+  public ScriptRunner() {}
 
   public void initialise() {
     scriptEngineManager = new ScriptEngineManager(currentThread().getContextClassLoader());
