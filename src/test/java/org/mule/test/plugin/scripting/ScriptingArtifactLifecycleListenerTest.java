@@ -23,7 +23,6 @@ import org.mule.runtime.module.artifact.api.descriptor.ArtifactDescriptor;
 import org.mule.tck.probe.JUnitLambdaProbe;
 import org.mule.tck.probe.PollingProber;
 
-
 import java.io.File;
 import java.lang.ref.PhantomReference;
 import java.lang.ref.ReferenceQueue;
@@ -48,111 +47,113 @@ import static org.mule.maven.client.api.model.MavenConfiguration.newMavenConfigu
 
 @RunWith(Parameterized.class)
 public class ScriptingArtifactLifecycleListenerTest {
-    private static final int PROBER_POLLING_INTERVAL = 150;
-    private static final int PROBER_POLLING_TIMEOUT = 6000;
-    private static final String GROOVY_ARTIFACT_ID = "groovy";
-    private static final String GROOVY_GROUP_ID = "org.codehaus.groovy";
-    private static final String GROOVY_SCRIPT_ENGINE = "groovy.util.GroovyScriptEngine";
-    private static final String GROOVY_LANG_BINDING = "groovy.lang.Binding";
 
-    private final String groovyVersion;
-    private final ClassLoaderLookupPolicy testLookupPolicy;
-    private MuleArtifactClassLoader artifactClassLoader = null;
+  private static final int PROBER_POLLING_INTERVAL = 150;
+  private static final int PROBER_POLLING_TIMEOUT = 6000;
+  private static final String GROOVY_ARTIFACT_ID = "groovy";
+  private static final String GROOVY_GROUP_ID = "org.codehaus.groovy";
+  private static final String GROOVY_SCRIPT_ENGINE = "groovy.util.GroovyScriptEngine";
+  private static final String GROOVY_LANG_BINDING = "groovy.lang.Binding";
 
-    public ScriptingArtifactLifecycleListenerTest(String groovyVersion) {
-        this.groovyVersion = groovyVersion;
-        this.testLookupPolicy = new ClassLoaderLookupPolicy() {
-            @Override
-            public LookupStrategy getClassLookupStrategy(String className) {
-                return  ChildFirstLookupStrategy.CHILD_FIRST;
-            }
+  private final String groovyVersion;
+  private final ClassLoaderLookupPolicy testLookupPolicy;
+  private MuleArtifactClassLoader artifactClassLoader = null;
 
-            @Override
-            public LookupStrategy getPackageLookupStrategy(String packageName) {
-                return ChildFirstLookupStrategy.CHILD_FIRST;
-            }
+  public ScriptingArtifactLifecycleListenerTest(String groovyVersion) {
+    this.groovyVersion = groovyVersion;
+    this.testLookupPolicy = new ClassLoaderLookupPolicy() {
 
-            @Override
-            public ClassLoaderLookupPolicy extend(Map<String, LookupStrategy> lookupStrategies) {
-                return null;
-            }
-        };
+      @Override
+      public LookupStrategy getClassLookupStrategy(String className) {
+        return ChildFirstLookupStrategy.CHILD_FIRST;
+      }
+
+      @Override
+      public LookupStrategy getPackageLookupStrategy(String packageName) {
+        return ChildFirstLookupStrategy.CHILD_FIRST;
+      }
+
+      @Override
+      public ClassLoaderLookupPolicy extend(Map<String, LookupStrategy> lookupStrategies) {
+        return null;
+      }
+    };
+  }
+
+  @Parameterized.Parameters(name = "Testing artifact {0}")
+  public static String[] data() throws NoSuchFieldException, IllegalAccessException {
+    return new String[] {
+        "2.4.21",
+        "2.5.22",
+        "3.0.19"
+    };
+  }
+
+  @Before
+  public void setup() {
+    assumeThat("When running on Java 17, the resource releaser logic from the Mule Runtime will not be used. " +
+        "The resource releasing responsibility will be delegated to each connector instead.",
+               isJavaVersionAtLeast(JAVA_17), is(false));
+
+    artifactClassLoader =
+        new MuleArtifactClassLoader("ScriptingArtifactLifecycleListenerTest",
+                                    mock(ArtifactDescriptor.class),
+                                    new URL[] {getDependencyFromMaven(GROOVY_GROUP_ID, GROOVY_ARTIFACT_ID, groovyVersion)},
+                                    currentThread().getContextClassLoader(),
+                                    testLookupPolicy);
+  }
+
+  private URL getDependencyFromMaven(String groupId, String artifactId, String version) {
+    URL settingsUrl = getClass().getClassLoader().getResource("custom-settings.xml");
+    final MavenClientProvider mavenClientProvider = discoverProvider(this.getClass().getClassLoader());
+
+    final Supplier<File> localMavenRepository =
+        mavenClientProvider.getLocalRepositorySuppliers().environmentMavenRepositorySupplier();
+
+    final MavenConfiguration.MavenConfigurationBuilder mavenConfigurationBuilder =
+        newMavenConfigurationBuilder().globalSettingsLocation(toFile(settingsUrl));
+
+    MavenClient mavenClient = mavenClientProvider
+        .createMavenClient(mavenConfigurationBuilder.localMavenRepositoryLocation(localMavenRepository.get()).build());
+
+    try {
+      BundleDescriptor bundleDescriptor = new BundleDescriptor.Builder().setGroupId(groupId)
+          .setArtifactId(artifactId).setVersion(version).build();
+
+      BundleDependency dependency = mavenClient.resolveBundleDescriptor(bundleDescriptor);
+
+      return dependency.getBundleUri().toURL();
+    } catch (Exception e) {
+      throw new RuntimeException(e);
     }
 
-    @Parameterized.Parameters(name = "Testing artifact {0}")
-    public static String[] data() throws NoSuchFieldException, IllegalAccessException {
-        return new String[] {
-                "2.4.21",
-                "2.5.22",
-                "3.0.19"
-        };
-    }
+  }
 
-    @Before
-    public void setup() {
-        assumeThat("When running on Java 17, the resource releaser logic from the Mule Runtime will not be used. " +
-                        "The resource releasing responsibility will be delegated to each connector instead.",
-                isJavaVersionAtLeast(JAVA_17), is(false));
+  @Test
+  public void runGroovyScriptAndDispose() throws ReflectiveOperationException {
+    assertEquals("TEST", runScript());
+    artifactClassLoader.dispose();
+    assertClassLoaderIsEnqueued();
+  }
 
-        artifactClassLoader =
-                new MuleArtifactClassLoader("ScriptingArtifactLifecycleListenerTest",
-                        mock(ArtifactDescriptor.class),
-                        new URL[] {getDependencyFromMaven(GROOVY_GROUP_ID, GROOVY_ARTIFACT_ID, groovyVersion)},
-                        currentThread().getContextClassLoader(),
-                        testLookupPolicy);
-    }
+  private String runScript() throws ReflectiveOperationException {
+    URL[] roots = new URL[] {artifactClassLoader.getResource("groovy/example.groovy")};
+    Class<?> groovyScriptEngineClass = forName(GROOVY_SCRIPT_ENGINE, true, artifactClassLoader);
+    Object scriptEngine =
+        groovyScriptEngineClass.getConstructor(URL[].class, ClassLoader.class).newInstance(roots, artifactClassLoader);
+    Class<?> groovyBinding = forName(GROOVY_LANG_BINDING, true, artifactClassLoader);
+    Method runMethod = groovyScriptEngineClass.getMethod("run", String.class, groovyBinding);
+    String scriptBody = "example.groovy";
+    return (String) runMethod.invoke(scriptEngine, scriptBody, groovyBinding.getConstructor().newInstance());
+  }
 
-    private URL getDependencyFromMaven(String groupId, String artifactId, String version) {
-        URL settingsUrl = getClass().getClassLoader().getResource("custom-settings.xml");
-        final MavenClientProvider mavenClientProvider = discoverProvider(this.getClass().getClassLoader());
-
-        final Supplier<File> localMavenRepository =
-                mavenClientProvider.getLocalRepositorySuppliers().environmentMavenRepositorySupplier();
-
-        final MavenConfiguration.MavenConfigurationBuilder mavenConfigurationBuilder =
-                newMavenConfigurationBuilder().globalSettingsLocation(toFile(settingsUrl));
-
-        MavenClient mavenClient = mavenClientProvider
-                .createMavenClient(mavenConfigurationBuilder.localMavenRepositoryLocation(localMavenRepository.get()).build());
-
-        try {
-            BundleDescriptor bundleDescriptor = new BundleDescriptor.Builder().setGroupId(groupId)
-                    .setArtifactId(artifactId).setVersion(version).build();
-
-            BundleDependency dependency = mavenClient.resolveBundleDescriptor(bundleDescriptor);
-
-            return dependency.getBundleUri().toURL();
-        }catch(Exception e){
-            throw new RuntimeException(e);
-        }
-
-    }
-
-    @Test
-    public void runGroovyScriptAndDispose() throws ReflectiveOperationException {
-        assertEquals("TEST", runScript());
-        artifactClassLoader.dispose();
-        assertClassLoaderIsEnqueued();
-    }
-
-    private String runScript() throws ReflectiveOperationException {
-        URL[] roots = new URL[] {artifactClassLoader.getResource("groovy/example.groovy")};
-        Class<?> groovyScriptEngineClass = forName(GROOVY_SCRIPT_ENGINE, true, artifactClassLoader);
-        Object scriptEngine =
-                groovyScriptEngineClass.getConstructor(URL[].class, ClassLoader.class).newInstance(roots, artifactClassLoader);
-        Class<?> groovyBinding = forName(GROOVY_LANG_BINDING, true, artifactClassLoader);
-        Method runMethod = groovyScriptEngineClass.getMethod("run", String.class, groovyBinding);
-        String scriptBody = "example.groovy";
-        return (String) runMethod.invoke(scriptEngine, scriptBody, groovyBinding.getConstructor().newInstance());
-    }
-
-    private void assertClassLoaderIsEnqueued() {
-        PhantomReference<ClassLoader> artifactClassLoaderRef = new PhantomReference<>(artifactClassLoader, new ReferenceQueue<>());
-        artifactClassLoader = null;
-        new PollingProber(PROBER_POLLING_TIMEOUT, PROBER_POLLING_INTERVAL).check(new JUnitLambdaProbe(() -> {
-            gc();
-            assertThat(artifactClassLoaderRef.isEnqueued(), is(true));
-            return true;
-        }));
-    }
+  private void assertClassLoaderIsEnqueued() {
+    PhantomReference<ClassLoader> artifactClassLoaderRef = new PhantomReference<>(artifactClassLoader, new ReferenceQueue<>());
+    artifactClassLoader = null;
+    new PollingProber(PROBER_POLLING_TIMEOUT, PROBER_POLLING_INTERVAL).check(new JUnitLambdaProbe(() -> {
+      gc();
+      assertThat(artifactClassLoaderRef.isEnqueued(), is(true));
+      return true;
+    }));
+  }
 }
