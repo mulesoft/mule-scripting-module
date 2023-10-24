@@ -6,6 +6,7 @@
  */
 package org.mule.plugin.scripting.listeners;
 
+import com.google.gson.internal.JavaVersion;
 import org.mule.sdk.api.artifact.lifecycle.ArtifactDisposalContext;
 import org.mule.sdk.api.artifact.lifecycle.ArtifactLifecycleListener;
 import org.slf4j.Logger;
@@ -16,11 +17,12 @@ import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Set;
 
 import static java.lang.reflect.Modifier.isStatic;
-import static org.mule.sdk.api.meta.JavaVersion.JAVA_11;
-import static org.mule.sdk.api.meta.JavaVersion.JAVA_8;
+import static org.apache.commons.lang3.JavaVersion.JAVA_11;
+import static org.apache.commons.lang3.JavaVersion.JAVA_17;
+import static org.apache.commons.lang3.SystemUtils.isJavaVersionAtMost;
+
 import static org.slf4j.LoggerFactory.getLogger;
 import static org.mule.runtime.core.api.util.ClassUtils.loadClass;
 
@@ -39,16 +41,15 @@ public class ScriptingArtifactLifecycleListener implements ArtifactLifecycleList
   public void onArtifactDisposal(ArtifactDisposalContext artifactDisposalContext) {
     LOGGER.info("Running onArtifactDisposal method on " + getClass().getName());
     ClassLoader classLoader = artifactDisposalContext.getArtifactClassLoader();
-    unregisterInvokerHelper(classLoader);
-    final String jvmVersion = System.getProperty("java.version");
-    LOGGER.info(jvmVersion);
-    if (jvmVersion.startsWith(JAVA_8.version())
-        || jvmVersion.startsWith(JAVA_11.version())) {
+    unregisterAllClassesFromInvokerHelper(classLoader);
+
+    LOGGER.info(new Integer(JavaVersion.getMajorJavaVersion()).toString());
+    if (isJavaVersionAtMost(JAVA_11)) {
       cleanSpisEngines(classLoader);
     }
   }
 
-  private void unregisterInvokerHelper(ClassLoader classLoader) {
+  private void unregisterAllClassesFromInvokerHelper(ClassLoader classLoader) {
     LOGGER.info("unregisterInvokerHelper method");
     try {
       Class classInfoClass = classLoader.loadClass(GROOVY_CLASS_INFO);
@@ -56,9 +57,9 @@ public class ScriptingArtifactLifecycleListener implements ArtifactLifecycleList
       Method getTheClassMethod = classInfoClass.getMethod("getTheClass");
       Class invokerHelperClass = classLoader.loadClass(GROOVY_INVOKER_HELPER);
       Method removeClassMethod = invokerHelperClass.getMethod("removeClass", Class.class);
-      Object classes = getAllClassInfoMethod.invoke(null);
-      if (classes != null && classes instanceof Collection) {
-        for (Object classInfo : ((Collection) classes)) {
+      Object classInfos = getAllClassInfoMethod.invoke(null);
+      if (classInfos instanceof Collection) {
+        for (Object classInfo : ((Collection) classInfos)) {
           Object clazz = null;
           try {
             clazz = getTheClassMethod.invoke(classInfo);
@@ -78,14 +79,12 @@ public class ScriptingArtifactLifecycleListener implements ArtifactLifecycleList
     LOGGER.info("cleanSpisEngines method");
     try {
       Class<?> abstractManager = loadClass(LOGGER_ABSTRACT_MANAGER, classLoader);
-      HashMap hashMap = getStaticFieldValue(abstractManager, "MAP", true);
-      Iterator it = hashMap.values().iterator();
+      HashMap abstractManagerHashMap = getStaticFieldValue(abstractManager, "MAP", true);
       Class<?> streamManagerClass = loadClass(LOGGER_STREAM_MANAGER, classLoader);
       Object rfmInstance = null;
-      while (it.hasNext()) {
-        Object o = it.next();
-        if (streamManagerClass.isInstance(o)) {
-          rfmInstance = o;
+      for (Object manager : abstractManagerHashMap.values()) {
+        if (streamManagerClass.isInstance(manager)) {
+          rfmInstance = manager;
           Object layout = getFieldValue(rfmInstance, "layout", true);
           Object configuration = getFieldValue(layout, "configuration", true);
 
@@ -93,23 +92,28 @@ public class ScriptingArtifactLifecycleListener implements ArtifactLifecycleList
           Method getScriptManagerMethod = configurationClass.getMethod("getScriptManager");
           Object scriptManager = getScriptManagerMethod.invoke(configuration);
           if (scriptManager != null) {
-            Object manager = getFieldValue(scriptManager, "manager", true);
-            Iterable engineSpis = getFieldValue(manager, "engineSpis", true);
-            Class groovy = loadClass(GROOVY_SCRIPT_ENGINE_FACTORY, classLoader);
-            Iterator engineSpisIterator = engineSpis.iterator();
-            while (engineSpisIterator.hasNext()) {
-              Object i = engineSpisIterator.next();
-              if (groovy.isInstance(i) && i.getClass().getClassLoader().equals(groovy.getClassLoader())) {
-                LOGGER.info("Removing Groovy factory from ScriptEngineManager SPIs set");
-                engineSpisIterator.remove();
-              }
-            }
+            cleanGroovyEngines(classLoader, scriptManager);
           }
         }
       }
     } catch (ClassNotFoundException | NoSuchFieldException | NoSuchMethodException | InvocationTargetException
         | IllegalAccessException e) {
       LOGGER.warn("Error trying to unregister the Groovy's Scripting Engine", e);
+    }
+  }
+
+  private void cleanGroovyEngines(ClassLoader classLoader, Object scriptManager)
+      throws IllegalAccessException, NoSuchFieldException, ClassNotFoundException {
+    Object innerScriptManager = getFieldValue(scriptManager, "manager", true);
+    Iterable engineSpis = getFieldValue(innerScriptManager, "engineSpis", true);
+    Class groovy = loadClass(GROOVY_SCRIPT_ENGINE_FACTORY, classLoader);
+    Iterator engineSpisIterator = engineSpis.iterator();
+    while (engineSpisIterator.hasNext()) {
+      Object i = engineSpisIterator.next();
+      if (groovy.isInstance(i) && i.getClass().getClassLoader().equals(groovy.getClassLoader())) {
+        LOGGER.info("Removing Groovy factory from ScriptEngineManager SPIs set");
+        engineSpisIterator.remove();
+      }
     }
   }
 
@@ -150,9 +154,7 @@ public class ScriptingArtifactLifecycleListener implements ArtifactLifecycleList
   }
 
   public static <T> T getFieldValue(Object target, String fieldName, boolean recursive)
-
       throws IllegalAccessException, NoSuchFieldException {
-
     Field f = getField(target.getClass(), fieldName, recursive);
     boolean isAccessible = f.isAccessible();
     try {
