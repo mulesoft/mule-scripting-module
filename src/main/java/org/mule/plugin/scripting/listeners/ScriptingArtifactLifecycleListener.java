@@ -6,7 +6,6 @@
  */
 package org.mule.plugin.scripting.listeners;
 
-import com.google.gson.internal.JavaVersion;
 import org.mule.sdk.api.artifact.lifecycle.ArtifactDisposalContext;
 import org.mule.sdk.api.artifact.lifecycle.ArtifactLifecycleListener;
 import org.slf4j.Logger;
@@ -19,9 +18,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 
 import static java.lang.reflect.Modifier.isStatic;
-import static org.apache.commons.lang3.JavaVersion.JAVA_11;
-import static org.apache.commons.lang3.JavaVersion.JAVA_17;
-import static org.apache.commons.lang3.SystemUtils.isJavaVersionAtMost;
 
 import static org.slf4j.LoggerFactory.getLogger;
 import static org.mule.runtime.core.api.util.ClassUtils.loadClass;
@@ -39,18 +35,16 @@ public class ScriptingArtifactLifecycleListener implements ArtifactLifecycleList
 
   @Override
   public void onArtifactDisposal(ArtifactDisposalContext artifactDisposalContext) {
-    LOGGER.info("Running onArtifactDisposal method on " + getClass().getName());
+    LOGGER.debug("Running onArtifactDisposal method on " + getClass().getName());
     ClassLoader classLoader = artifactDisposalContext.getArtifactClassLoader();
     unregisterAllClassesFromInvokerHelper(classLoader);
-
-    LOGGER.info(new Integer(JavaVersion.getMajorJavaVersion()).toString());
-    if (isJavaVersionAtMost(JAVA_11)) {
+    if (getJavaVersion() <= 11.0F) {
       cleanSpisEngines(classLoader);
     }
   }
 
   private void unregisterAllClassesFromInvokerHelper(ClassLoader classLoader) {
-    LOGGER.info("unregisterInvokerHelper method");
+    LOGGER.debug("Unregistering all classes from invoker helper");
     try {
       Class classInfoClass = classLoader.loadClass(GROOVY_CLASS_INFO);
       Method getAllClassInfoMethod = classInfoClass.getMethod("getAllClassInfo");
@@ -75,8 +69,11 @@ public class ScriptingArtifactLifecycleListener implements ArtifactLifecycleList
     }
   }
 
+  //TODO: remove this method when W-14350781 is fixed. This logic was kept since there is no current solution
+  // in place for the memory leak it tries to fix, but it is not compatible with Java 17.
+  @Deprecated
   private void cleanSpisEngines(ClassLoader classLoader) {
-    LOGGER.info("cleanSpisEngines method");
+    LOGGER.debug("Cleaning Groovy engine from SPIS set");
     try {
       Class<?> abstractManager = loadClass(LOGGER_ABSTRACT_MANAGER, classLoader);
       HashMap abstractManagerHashMap = getStaticFieldValue(abstractManager, "MAP", true);
@@ -102,6 +99,7 @@ public class ScriptingArtifactLifecycleListener implements ArtifactLifecycleList
     }
   }
 
+  @Deprecated
   private void cleanGroovyEngines(ClassLoader classLoader, Object scriptManager)
       throws IllegalAccessException, NoSuchFieldException, ClassNotFoundException {
     Object innerScriptManager = getFieldValue(scriptManager, "manager", true);
@@ -117,6 +115,7 @@ public class ScriptingArtifactLifecycleListener implements ArtifactLifecycleList
     }
   }
 
+  @Deprecated
   public static <T> T getStaticFieldValue(Class<?> targetClass, String fieldName, boolean recursive)
       throws NoSuchFieldException, IllegalAccessException {
     Field field = getField(targetClass, fieldName, recursive);
@@ -132,6 +131,7 @@ public class ScriptingArtifactLifecycleListener implements ArtifactLifecycleList
     }
   }
 
+  @Deprecated
   public static Field getField(Class<?> targetClass, String fieldName, boolean recursive)
       throws NoSuchFieldException {
     Class<?> clazz = targetClass;
@@ -153,6 +153,7 @@ public class ScriptingArtifactLifecycleListener implements ArtifactLifecycleList
                                                  targetClass.getName()));
   }
 
+  @Deprecated
   public static <T> T getFieldValue(Object target, String fieldName, boolean recursive)
       throws IllegalAccessException, NoSuchFieldException {
     Field f = getField(target.getClass(), fieldName, recursive);
@@ -165,5 +166,19 @@ public class ScriptingArtifactLifecycleListener implements ArtifactLifecycleList
     }
   }
 
+  @Deprecated
+  private static Float getJavaVersion() {
+    String version = System.getProperty("java.version");
+    if (version.startsWith("1.")) {
+      version = version.substring(2, 3);
+    } else {
+      int dot = version.indexOf(".");
+      if (dot != -1) {
+        version = version.substring(0, dot);
+      }
+    }
+    LOGGER.info("Java version " + version);
+    return Float.parseFloat(version);
+  }
 
 }
