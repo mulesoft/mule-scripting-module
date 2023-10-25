@@ -10,29 +10,36 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
+import org.mockito.Mock;
 import org.mule.maven.client.api.MavenClient;
 import org.mule.maven.client.api.MavenClientProvider;
 import org.mule.maven.client.api.model.BundleDependency;
 import org.mule.maven.client.api.model.BundleDescriptor;
 import org.mule.maven.client.api.model.MavenConfiguration;
+import org.mule.plugin.scripting.listeners.ScriptingArtifactLifecycleListener;
 import org.mule.runtime.module.artifact.api.classloader.ChildFirstLookupStrategy;
 import org.mule.runtime.module.artifact.api.classloader.ClassLoaderLookupPolicy;
 import org.mule.runtime.module.artifact.api.classloader.LookupStrategy;
 import org.mule.runtime.module.artifact.api.classloader.MuleArtifactClassLoader;
 import org.mule.runtime.module.artifact.api.descriptor.ArtifactDescriptor;
+import org.mule.sdk.api.artifact.lifecycle.ArtifactDisposalContext;
 import org.mule.tck.probe.JUnitLambdaProbe;
 import org.mule.tck.probe.PollingProber;
 
+import javax.swing.text.html.Option;
 import java.io.File;
 import java.lang.ref.PhantomReference;
 import java.lang.ref.ReferenceQueue;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Supplier;
+import java.util.stream.Stream;
 
 import static java.lang.Class.forName;
 import static java.lang.System.gc;
+import static java.lang.System.out;
 import static java.lang.Thread.currentThread;
 import static org.apache.commons.io.FileUtils.toFile;
 import static org.apache.commons.lang3.JavaVersion.JAVA_17;
@@ -58,6 +65,8 @@ public class ScriptingArtifactLifecycleListenerTest {
   private final String groovyVersion;
   private final ClassLoaderLookupPolicy testLookupPolicy;
   private MuleArtifactClassLoader artifactClassLoader = null;
+  private final ScriptingArtifactLifecycleListener listener;
+  private ArtifactDisposalContext artifactDisposalContext;
 
   public ScriptingArtifactLifecycleListenerTest(String groovyVersion) {
     this.groovyVersion = groovyVersion;
@@ -78,6 +87,7 @@ public class ScriptingArtifactLifecycleListenerTest {
         return null;
       }
     };
+    listener = new ScriptingArtifactLifecycleListener();
   }
 
   @Parameterized.Parameters(name = "Testing artifact {0}")
@@ -101,6 +111,48 @@ public class ScriptingArtifactLifecycleListenerTest {
                                     new URL[] {getDependencyFromMaven(GROOVY_GROUP_ID, GROOVY_ARTIFACT_ID, groovyVersion)},
                                     currentThread().getContextClassLoader(),
                                     testLookupPolicy);
+    artifactDisposalContext = new ArtifactDisposalContext() {
+
+      @Override
+      public ClassLoader getExtensionClassLoader() {
+        return currentThread().getContextClassLoader();
+      }
+
+      @Override
+      public ClassLoader getArtifactClassLoader() {
+        return artifactClassLoader;
+      }
+
+      @Override
+      public boolean isExtensionOwnedClassLoader(ClassLoader classLoader) {
+        return false;
+      }
+
+      @Override
+      public boolean isArtifactOwnedClassLoader(ClassLoader classLoader) {
+        return false;
+      }
+
+      @Override
+      public Stream<Thread> getExtensionOwnedThreads() {
+        return null;
+      }
+
+      @Override
+      public Stream<Thread> getArtifactOwnedThreads() {
+        return null;
+      }
+
+      @Override
+      public boolean isArtifactOwnedThread(Thread thread) {
+        return false;
+      }
+
+      @Override
+      public boolean isExtensionOwnedThread(Thread thread) {
+        return false;
+      }
+    };
   }
 
   private URL getDependencyFromMaven(String groupId, String artifactId, String version) {
@@ -132,6 +184,7 @@ public class ScriptingArtifactLifecycleListenerTest {
   @Test
   public void runGroovyScriptAndDispose() throws ReflectiveOperationException {
     assertEquals("TEST", runScript());
+    listener.onArtifactDisposal(artifactDisposalContext);
     artifactClassLoader.dispose();
     assertClassLoaderIsEnqueued();
   }
