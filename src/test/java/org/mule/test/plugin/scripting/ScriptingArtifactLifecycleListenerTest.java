@@ -181,6 +181,10 @@ public class ScriptingArtifactLifecycleListenerTest {
   public void runGroovyScriptAndDispose() throws ReflectiveOperationException {
     assertEquals("TEST", runScript());
     listener.onArtifactDisposal(artifactDisposalContext);
+    // Call it twice to make sure all proper validations are in place, since the runtime may call repeated logic because
+    // the original resource releaser is still in place and will be called at the same time if Java version is lower
+    // than 17
+    listener.onArtifactDisposal(artifactDisposalContext);
     artifactClassLoader.dispose();
     assertClassLoaderIsEnqueued();
   }
