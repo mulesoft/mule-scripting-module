@@ -10,7 +10,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
-import org.mockito.Mock;
 import org.mule.maven.client.api.MavenClient;
 import org.mule.maven.client.api.MavenClientProvider;
 import org.mule.maven.client.api.model.BundleDependency;
@@ -26,20 +25,17 @@ import org.mule.sdk.api.artifact.lifecycle.ArtifactDisposalContext;
 import org.mule.tck.probe.JUnitLambdaProbe;
 import org.mule.tck.probe.PollingProber;
 
-import javax.swing.text.html.Option;
 import java.io.File;
 import java.lang.ref.PhantomReference;
 import java.lang.ref.ReferenceQueue;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.Map;
-import java.util.Optional;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 import static java.lang.Class.forName;
 import static java.lang.System.gc;
-import static java.lang.System.out;
 import static java.lang.Thread.currentThread;
 import static org.apache.commons.io.FileUtils.toFile;
 import static org.apache.commons.lang3.JavaVersion.JAVA_17;
