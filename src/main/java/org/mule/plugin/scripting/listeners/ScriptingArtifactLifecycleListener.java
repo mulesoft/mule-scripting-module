@@ -49,7 +49,7 @@ public class ScriptingArtifactLifecycleListener implements ArtifactLifecycleList
       Class<?> classInfoClass = classLoader.loadClass(GROOVY_CLASS_INFO);
       Method getAllClassInfoMethod = classInfoClass.getMethod("getAllClassInfo");
       Method getTheClassMethod = classInfoClass.getMethod("getTheClass");
-      Class invokerHelperClass = classLoader.loadClass(GROOVY_INVOKER_HELPER);
+      Class<?> invokerHelperClass = classLoader.loadClass(GROOVY_INVOKER_HELPER);
       Method removeClassMethod = invokerHelperClass.getMethod("removeClass", Class.class);
       Object classInfos = getAllClassInfoMethod.invoke(null);
       if (classInfos instanceof Collection) {
