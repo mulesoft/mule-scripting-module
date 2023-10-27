@@ -35,7 +35,7 @@ public class ScriptingArtifactLifecycleListener implements ArtifactLifecycleList
 
   @Override
   public void onArtifactDisposal(ArtifactDisposalContext artifactDisposalContext) {
-    LOGGER.debug("Running onArtifactDisposal method on " + getClass().getName());
+    LOGGER.debug("Running onArtifactDisposal method on {}", getClass().getName());
     ClassLoader classLoader = artifactDisposalContext.getArtifactClassLoader();
     unregisterAllClassesFromInvokerHelper(classLoader);
     if (getJavaVersion() <= 11.0F) {
