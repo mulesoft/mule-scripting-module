@@ -154,7 +154,7 @@ public class ScriptingArtifactLifecycleListener implements ArtifactLifecycleList
   }
 
   @Deprecated
-  public static <T> T getFieldValue(Object target, String fieldName, boolean recursive)
+  private static <T> T getFieldValue(Object target, String fieldName, boolean recursive)
       throws IllegalAccessException, NoSuchFieldException {
     Field f = getField(target.getClass(), fieldName, recursive);
     boolean isAccessible = f.isAccessible();
