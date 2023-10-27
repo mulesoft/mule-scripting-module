@@ -76,7 +76,7 @@ public class ScriptingArtifactLifecycleListener implements ArtifactLifecycleList
     LOGGER.debug("Cleaning Groovy engine from SPIS set");
     try {
       Class<?> abstractManager = loadClass(LOGGER_ABSTRACT_MANAGER, classLoader);
-      HashMap abstractManagerHashMap = getStaticFieldValue(abstractManager, "MAP", true);
+      HashMap<?, ?> abstractManagerHashMap = getStaticFieldValue(abstractManager, "MAP", true);
       Class<?> streamManagerClass = loadClass(LOGGER_STREAM_MANAGER, classLoader);
       Object rfmInstance = null;
       for (Object manager : abstractManagerHashMap.values()) {
