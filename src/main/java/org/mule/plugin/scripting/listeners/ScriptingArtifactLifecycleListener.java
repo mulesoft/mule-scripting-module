@@ -103,7 +103,7 @@ public class ScriptingArtifactLifecycleListener implements ArtifactLifecycleList
   private void cleanGroovyEngines(ClassLoader classLoader, Object scriptManager)
       throws IllegalAccessException, NoSuchFieldException, ClassNotFoundException {
     Object innerScriptManager = getFieldValue(scriptManager, "manager", true);
-    Iterable engineSpis = getFieldValue(innerScriptManager, "engineSpis", true);
+    Iterable<?>  engineSpis = getFieldValue(innerScriptManager, "engineSpis", true);
     Class groovy = loadClass(GROOVY_SCRIPT_ENGINE_FACTORY, classLoader);
     Iterator engineSpisIterator = engineSpis.iterator();
     while (engineSpisIterator.hasNext()) {
