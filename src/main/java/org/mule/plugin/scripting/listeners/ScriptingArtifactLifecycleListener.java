@@ -105,7 +105,7 @@ public class ScriptingArtifactLifecycleListener implements ArtifactLifecycleList
     Object innerScriptManager = getFieldValue(scriptManager, "manager", true);
     Iterable<?>  engineSpis = getFieldValue(innerScriptManager, "engineSpis", true);
     Class<?> groovy = loadClass(GROOVY_SCRIPT_ENGINE_FACTORY, classLoader);
-    Iterator engineSpisIterator = engineSpis.iterator();
+    Iterator<?>  engineSpisIterator = engineSpis.iterator();
     while (engineSpisIterator.hasNext()) {
       Object i = engineSpisIterator.next();
       if (groovy.isInstance(i) && i.getClass().getClassLoader().equals(groovy.getClassLoader())) {
