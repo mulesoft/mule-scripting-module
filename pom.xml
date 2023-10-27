@@ -29,6 +29,8 @@
         <license.maven.plugin.version>4.2</license.maven.plugin.version>
         <licensePath>LICENSE_HEADER_CPAL.txt</licensePath>
         <licenseYear>2023</licenseYear>
+        <commons.lang.version>3.13.0</commons.lang.version>
+        <mule.sdk.api.version>0.6.0</mule.sdk.api.version>
     </properties>
     <dependencies>
         <!-- Reactor -->
@@ -44,6 +46,12 @@
             <version>${mule.version}</version>
             <classifier>mule-plugin</classifier>
             <scope>test</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.apache.commons</groupId>
+                    <artifactId>commons-lang3</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.mule.tests</groupId>
@@ -93,7 +101,13 @@
         <dependency>
             <groupId>org.mule.sdk</groupId>
             <artifactId>mule-sdk-api</artifactId>
-            <version>0.6.0</version>
+            <version>${mule.sdk.api.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>${commons.lang.version}</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
     <build>
