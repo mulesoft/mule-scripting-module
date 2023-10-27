@@ -22,6 +22,13 @@ import static java.lang.reflect.Modifier.isStatic;
 import static org.slf4j.LoggerFactory.getLogger;
 import static org.mule.runtime.core.api.util.ClassUtils.loadClass;
 
+/**
+ * During mule runtime undeploy stage, there are some Groovy objects that are not correctly cleaned up, these may cause
+ * a memory leak after several re-deployments without shutting down the Mule Wrapper. In order to avoid this kind of
+ * inconvenient the ArtifactLifecycleListener executes onArtifactDisposal method when all runtime class loaders are
+ * disposed.
+ * See more information here {@link "https://docs.google.com/document/d/12M6I8fDYiktrCHig_PGGtGPb6eqrTL6XTTgq1mNbFIs/edit#heading=h.pvww9i63jif"}
+ */
 public class ScriptingArtifactLifecycleListener implements ArtifactLifecycleListener {
 
 
