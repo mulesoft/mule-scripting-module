@@ -132,7 +132,7 @@ public class ScriptingArtifactLifecycleListener implements ArtifactLifecycleList
   }
 
   @Deprecated
-  public static Field getField(Class<?> targetClass, String fieldName, boolean recursive)
+  private static Field getField(Class<?> targetClass, String fieldName, boolean recursive)
       throws NoSuchFieldException {
     Class<?> clazz = targetClass;
     Field field;
