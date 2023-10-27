@@ -46,7 +46,7 @@ public class ScriptingArtifactLifecycleListener implements ArtifactLifecycleList
   private void unregisterAllClassesFromInvokerHelper(ClassLoader classLoader) {
     LOGGER.debug("Unregistering all classes from invoker helper");
     try {
-      Class classInfoClass = classLoader.loadClass(GROOVY_CLASS_INFO);
+      Class<?> classInfoClass = classLoader.loadClass(GROOVY_CLASS_INFO);
       Method getAllClassInfoMethod = classInfoClass.getMethod("getAllClassInfo");
       Method getTheClassMethod = classInfoClass.getMethod("getTheClass");
       Class invokerHelperClass = classLoader.loadClass(GROOVY_INVOKER_HELPER);
