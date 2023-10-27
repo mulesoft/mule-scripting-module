@@ -177,7 +177,7 @@ public class ScriptingArtifactLifecycleListener implements ArtifactLifecycleList
         version = version.substring(0, dot);
       }
     }
-    LOGGER.info("Java version " + version);
+    LOGGER.info("Java version {}", version);
     return Float.parseFloat(version);
   }
 
