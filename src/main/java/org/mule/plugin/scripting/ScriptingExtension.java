@@ -17,7 +17,6 @@ import org.mule.runtime.extension.api.annotation.privileged.DeclarationEnrichers
 import org.mule.sdk.api.annotation.JavaVersionSupport;
 import org.mule.sdk.api.annotation.OnArtifactLifecycle;
 
-import static org.mule.sdk.api.meta.JavaVersion.JAVA_17;
 import static org.mule.sdk.api.meta.JavaVersion.JAVA_8;
 import static org.mule.sdk.api.meta.JavaVersion.JAVA_11;
 
@@ -32,7 +31,7 @@ import static org.mule.runtime.api.meta.ExternalLibraryType.JAR;
     type = JAR, coordinates = "org.codehaus.groovy:groovy-all:2.4.21:indy",
     optional = true)
 @ErrorTypes(ScriptingErrors.class)
-@JavaVersionSupport({JAVA_8, JAVA_11, JAVA_17})
+@JavaVersionSupport({JAVA_8, JAVA_11})
 @OnArtifactLifecycle(ScriptingArtifactLifecycleListener.class)
 public class ScriptingExtension {
 
