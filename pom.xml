@@ -23,12 +23,6 @@
         <project.reactor.version>3.4.23</project.reactor.version>
         <file.connector.version>1.4.1</file.connector.version>
         <mtf.tools.version>1.1.2</mtf.tools.version>
-        <jacoco.version>0.8.10</jacoco.version>
-        <mtf.javaopts></mtf.javaopts>
-        <mulesoftLicenseVersion>1.4.0</mulesoftLicenseVersion>
-        <license.maven.plugin.version>4.2</license.maven.plugin.version>
-        <licensePath>LICENSE_HEADER_CPAL.txt</licensePath>
-        <licenseYear>2023</licenseYear>
         <commons.lang.version>3.13.0</commons.lang.version>
         <mule.sdk.api.version>0.6.0</mule.sdk.api.version>
     </properties>
