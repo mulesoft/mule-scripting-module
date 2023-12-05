@@ -97,10 +97,6 @@ public class ScriptingArtifactLifecycleListenerTest {
 
   @Before
   public void setup() {
-    assumeThat("When running on Java 17, the resource releaser logic from the Mule Runtime will not be used. " +
-        "The resource releasing responsibility will be delegated to each connector instead.",
-               isJavaVersionAtLeast(JAVA_17), is(false));
-
     artifactClassLoader =
         new MuleArtifactClassLoader("ScriptingArtifactLifecycleListenerTest",
                                     mock(ArtifactDescriptor.class),
