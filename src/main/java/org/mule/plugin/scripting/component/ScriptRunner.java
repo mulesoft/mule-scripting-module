@@ -58,6 +58,7 @@ public class ScriptRunner {
   private static final String REGISTRY = "registry";
   private static final String ECMA_SCRIPT_ENGINE = "ECMAScript";
   private static final String NASHORN_ENGINE = "Nashorn";
+  private static final String GRAAL_ENGINE = "graal.js";
 
   private String engineName;
   private String scriptBody;
@@ -85,10 +86,10 @@ public class ScriptRunner {
 
     scriptEngine = createScriptEngineByName(engineName);
 
-    if (scriptEngine == null && ECMA_SCRIPT_ENGINE.equalsIgnoreCase(engineName)) {
-      scriptEngine = createScriptEngineByName(NASHORN_ENGINE);
-      LOGGER.warn("The " + ECMA_SCRIPT_ENGINE + " Scripting Engine name was not found. The Scripting Engine defaulted to "
-          + NASHORN_ENGINE);
+    if (scriptEngine == null && NASHORN_ENGINE.equalsIgnoreCase(engineName)) {
+      scriptEngine = createScriptEngineByName(GRAAL_ENGINE);
+      LOGGER.warn("The " + NASHORN_ENGINE
+          + " Scripting Engine name was not found. The Scripting Engine defaulted to " + GRAAL_ENGINE);
     }
 
     if (scriptEngine == null) {
