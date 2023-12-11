@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:scripting="http://www.mulesoft.org/schema/mule/scripting"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:munit="http://www.mulesoft.org/schema/mule/munit"
+      xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools" xmlns="http://www.mulesoft.org/schema/mule/core"
+      xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd
+http://www.mulesoft.org/schema/mule/scripting http://www.mulesoft.org/schema/mule/scripting/current/mule-scripting.xsd">
+
+    <munit:config name="scripting-engines-test-case.xml">
+        <munit:parameterizations>
+            <munit:parameterization name="NashornScriptTest">
+                <munit:parameters>
+                    <munit:parameter propertyName="engine" value="Nashorn"/>
+                </munit:parameters>
+            </munit:parameterization>
+            <munit:parameterization name="EcmaScriptTest">
+                <munit:parameters>
+                    <munit:parameter propertyName="engine" value="ECMAScript"/>
+                </munit:parameters>
+            </munit:parameterization>
+            <munit:parameterization name="GraalScriptTest">
+                <munit:parameters>
+                    <munit:parameter propertyName="engine" value="graal.js"/>
+                </munit:parameters>
+            </munit:parameterization>
+        </munit:parameterizations>
+    </munit:config>
+
+    <munit:test name="testJavascriptScripting">
+        <munit:execution >
+            <scripting:execute engine="${engine}">
+                <scripting:code><![CDATA[tempPayload = "hello"; var world = " world"; tempPayload = tempPayload + world]]></scripting:code>
+            </scripting:execute>
+        </munit:execution>
+        <munit:validation >
+            <munit-tools:assert-equals actual="#[payload]" expected="hello world"/>
+        </munit:validation>
+    </munit:test>
+
+</mule>
