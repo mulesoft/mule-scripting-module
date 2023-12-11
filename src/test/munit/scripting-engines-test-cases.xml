@@ -9,7 +9,42 @@
 		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd
 http://www.mulesoft.org/schema/mule/scripting http://www.mulesoft.org/schema/mule/scripting/current/mule-scripting.xsd">
 
-    <munit:config name="nashorn-script-test-case.xml" />
+    <munit:config name="scripting-engines-test-case.xml">
+        <munit:parameterizations>
+            <munit:parameterization name="NashornScriptTest">
+                <munit:parameters>
+                    <munit:parameter propertyName="engine" value="Nashorn"/>
+                </munit:parameters>
+            </munit:parameterization>
+            <munit:parameterization name="EcmaScriptTest">
+                <munit:parameters>
+                    <munit:parameter propertyName="engine" value="ECMAScript"/>
+                </munit:parameters>
+            </munit:parameterization>
+            <munit:parameterization name="GraalScriptTest">
+                <munit:parameters>
+                    <munit:parameter propertyName="engine" value="graal.js"/>
+                </munit:parameters>
+            </munit:parameterization>
+        </munit:parameterizations>
+    </munit:config>
+
+
+
+    <munit:test name="testJavascriptScripting">
+        <munit:execution >
+            <scripting:execute engine="${engine}">
+                <scripting:code><![CDATA[tempPayload = "hello"; var world = " world"; tempPayload = tempPayload + world]]></scripting:code>
+            </scripting:execute>
+        </munit:execution>
+        <munit:validation >
+            <munit-tools:assert-equals actual="#[payload]" expected="hello world"/>
+        </munit:validation>
+    </munit:test>
+
+
+
+<!--
 
     <munit:test name="NashornScriptTest">
         <munit:execution >
@@ -55,7 +90,7 @@ http://www.mulesoft.org/schema/mule/scripting http://www.mulesoft.org/schema/mul
         <scripting:execute engine="graal.js">
             <scripting:code><![CDATA[tempPayload = "hello"; var world = " world"; tempPayload = tempPayload + world]]></scripting:code>
         </scripting:execute>
-    </flow>
+    </flow>-->
 
 
 </mule>
