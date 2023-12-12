@@ -22,7 +22,7 @@
         <jruby.version>9.3.8.0</jruby.version>
         <graal.version>22.0.0</graal.version>
         <project.reactor.version>3.4.23</project.reactor.version>
-        <file.connector.version>2.0.0-SNAPSHOT</file.connector.version>
+        <file.connector.version>2.0.0-DO-NOT-USE-SNAPSHOT</file.connector.version>
         <mtf.tools.version>1.2.0-SNAPSHOT</mtf.tools.version>
         <jacoco.version>0.8.10</jacoco.version>
         <mtf.javaopts></mtf.javaopts>
