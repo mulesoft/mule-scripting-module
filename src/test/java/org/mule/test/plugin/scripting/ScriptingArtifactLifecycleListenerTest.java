@@ -1,5 +1,5 @@
 /*
- * Copyright (c) MuleSoft, Inc.  All rights reserved.  http://www.mulesoft.com
+ * Copyright 2023 Salesforce, Inc. All rights reserved.
  * The software in this package is published under the terms of the CPAL v1.0
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
@@ -38,12 +38,9 @@ import static java.lang.Class.forName;
 import static java.lang.System.gc;
 import static java.lang.Thread.currentThread;
 import static org.apache.commons.io.FileUtils.toFile;
-import static org.apache.commons.lang3.JavaVersion.JAVA_17;
-import static org.apache.commons.lang3.SystemUtils.isJavaVersionAtLeast;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assume.assumeThat;
 import static org.mockito.Mockito.mock;
 import static org.mule.maven.client.api.MavenClientProvider.discoverProvider;
 import static org.mule.maven.client.api.model.MavenConfiguration.newMavenConfigurationBuilder;
@@ -97,10 +94,6 @@ public class ScriptingArtifactLifecycleListenerTest {
 
   @Before
   public void setup() {
-    assumeThat("When running on Java 17, the resource releaser logic from the Mule Runtime will not be used. " +
-        "The resource releasing responsibility will be delegated to each connector instead.",
-               isJavaVersionAtLeast(JAVA_17), is(false));
-
     artifactClassLoader =
         new MuleArtifactClassLoader("ScriptingArtifactLifecycleListenerTest",
                                     mock(ArtifactDescriptor.class),
