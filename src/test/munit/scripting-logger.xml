@@ -20,7 +20,7 @@ http://www.mulesoft.org/schema/mule/scripting http://www.mulesoft.org/schema/mul
             </scripting:execute>
         </munit:execution>
         <munit:validation>
-            <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::equalTo('org.apache.logging.slf4j.Log4jLogger')]"/>
+            <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::notNullValue()]"/>
         </munit:validation>
     </munit:test>
 

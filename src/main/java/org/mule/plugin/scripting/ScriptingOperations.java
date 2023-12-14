@@ -1,5 +1,5 @@
 /*
- * Copyright (c) MuleSoft, Inc.  All rights reserved.  http://www.mulesoft.com
+ * Copyright 2023 Salesforce, Inc. All rights reserved.
  * The software in this package is published under the terms of the CPAL v1.0
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
@@ -7,6 +7,7 @@
 package org.mule.plugin.scripting;
 
 import static org.mule.runtime.api.meta.ExpressionSupport.REQUIRED;
+import static org.mule.runtime.api.meta.ExpressionSupport.SUPPORTED;
 import static org.mule.runtime.api.meta.model.operation.ExecutionType.CPU_INTENSIVE;
 
 import org.mule.plugin.scripting.errors.ScriptingErrorTypeProvider;
@@ -35,13 +36,15 @@ public class ScriptingOperations {
    * @param code the script source code to be executed
    * @param engine name of the scripting engine for running this script
    * @param parameters variables provided to the script as bindings
+   * @param executionMode Determines whether the script should be automatically compiled or forced to be interpreted. When set to "AUTO" or not specified, the module analyzes the context to determine the appropriate mode. When set to "INTERPRETED", the module enforces interpretation mode.
    * @return the result of script evaluation
    */
   @Throws(ScriptingErrorTypeProvider.class)
   @Execution(CPU_INTENSIVE)
   public Result<Object, Void> execute(@OfValues(EnginesValueProvider.class) String engine,
                                       @Text String code,
-                                      @Optional @NullSafe @Content @Expression(REQUIRED) Map<String, Object> parameters) {
+                                      @Optional @NullSafe @Content @Expression(REQUIRED) Map<String, Object> parameters,
+                                      @Optional(defaultValue = "AUTO") @Expression(SUPPORTED) ExecutionMode executionMode) {
 
     // the real operation is implemented through a custom executor: org.mule.plugin.scripting.operation.ScriptingOperationExecutor
     return null;

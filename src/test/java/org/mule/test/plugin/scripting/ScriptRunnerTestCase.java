@@ -1,5 +1,5 @@
 /*
- * Copyright (c) MuleSoft, Inc.  All rights reserved.  http://www.mulesoft.com
+ * Copyright 2023 Salesforce, Inc. All rights reserved.
  * The software in this package is published under the terms of the CPAL v1.0
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
@@ -7,6 +7,8 @@
 package org.mule.test.plugin.scripting;
 
 import org.junit.Test;
+
+import org.mule.plugin.scripting.ExecutionMode;
 import org.mule.plugin.scripting.component.ScriptRunner;
 import org.mule.runtime.extension.api.exception.ModuleException;
 
@@ -29,7 +31,7 @@ public class ScriptRunnerTestCase {
   public void ECMAScriptShouldWorkForDifferentJavaVersionsTest() {
     ScriptRunner runner = new ScriptRunner("ECMAScript", "tempPayload = \"hello\"; tempPayload", null);
     runner.initialise();
-    String result = (String) runner.runScript(null);
+    String result = (String) runner.runScript(null, ExecutionMode.AUTO);
     assertThat(result, containsString("hello"));
   }
 
