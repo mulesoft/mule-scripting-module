@@ -31,7 +31,7 @@
         <licensePath>LICENSE_HEADER_CPAL.txt</licensePath>
         <licenseYear>2023</licenseYear>
         <commons.lang.version>3.13.0</commons.lang.version>
-        <mule.sdk.api.version>0.6.0</mule.sdk.api.version>
+        <mule.sdk.api.version>0.7.0</mule.sdk.api.version>
     </properties>
     <dependencies>
         <!-- Reactor -->
