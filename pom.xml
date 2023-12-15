@@ -27,7 +27,7 @@
         <jacoco.version>0.8.10</jacoco.version>
         <mtf.javaopts></mtf.javaopts>
         <mulesoftLicenseVersion>1.4.0</mulesoftLicenseVersion>
-        <license.maven.plugin.version>4.2</license.maven.plugin.version>
+        <license.maven.plugin.version>4.3</license.maven.plugin.version>
         <licensePath>LICENSE_HEADER_CPAL.txt</licensePath>
         <licenseYear>2023</licenseYear>
         <commons.lang.version>3.13.0</commons.lang.version>
