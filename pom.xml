@@ -77,7 +77,7 @@
             <groupId>org.python</groupId>
             <artifactId>jython-standalone</artifactId>
             <version>${jython.version}</version>
-            <scope>test</scope>
+            <scope>compile</scope>
         </dependency>
         <!--Ruby-->
         <dependency>
