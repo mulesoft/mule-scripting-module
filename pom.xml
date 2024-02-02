@@ -217,6 +217,25 @@
                 </configuration>
                 <dependencies>
                     <dependency>
+                        <groupId>org.python</groupId>
+                        <artifactId>jython-standalone</artifactId>
+                        <version>${jython.version}</version>
+                        <scope>test</scope>
+                    </dependency>
+                    <!--Ruby-->
+                    <dependency>
+                        <groupId>org.jruby</groupId>
+                        <artifactId>jruby-core</artifactId>
+                        <version>${jruby.version}</version>
+                        <scope>test</scope>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.jruby</groupId>
+                        <artifactId>jruby-stdlib</artifactId>
+                        <version>${jruby.version}</version>
+                        <scope>test</scope>
+                    </dependency>
+                    <dependency>
                         <groupId>com.mulesoft.munit</groupId>
                         <artifactId>munit-runner</artifactId>
                         <version>${munit.version}</version>
