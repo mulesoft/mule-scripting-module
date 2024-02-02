@@ -64,13 +64,13 @@
             <groupId>org.codehaus.groovy</groupId>
             <artifactId>groovy</artifactId>
             <version>${groovy.version}</version>
-            <scope>provided</scope>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.codehaus.groovy</groupId>
             <artifactId>groovy-jsr223</artifactId>
             <version>${groovy.version}</version>
-            <scope>provided</scope>
+            <scope>test</scope>
         </dependency>
         <!--Jython-->
         <dependency>
@@ -227,6 +227,18 @@
                         <groupId>org.jruby</groupId>
                         <artifactId>jruby-core</artifactId>
                         <version>${jruby.version}</version>
+                        <scope>test</scope>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.codehaus.groovy</groupId>
+                        <artifactId>groovy</artifactId>
+                        <version>${groovy.version}</version>
+                        <scope>test</scope>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.codehaus.groovy</groupId>
+                        <artifactId>groovy-jsr223</artifactId>
+                        <version>${groovy.version}</version>
                         <scope>test</scope>
                     </dependency>
                     <dependency>
