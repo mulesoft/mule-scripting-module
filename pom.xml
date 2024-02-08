@@ -23,7 +23,7 @@
         <graal.version>22.0.0</graal.version>
         <project.reactor.version>3.4.23</project.reactor.version>
         <file.connector.version>1.5.2</file.connector.version>
-        <mtf.tools.version>1.2.0-rc1</mtf.tools.version>
+        <mtf.tools.version>1.2.0</mtf.tools.version>
         <jacoco.version>0.8.10</jacoco.version>
         <mtf.javaopts></mtf.javaopts>
         <mulesoftLicenseVersion>1.4.0</mulesoftLicenseVersion>
