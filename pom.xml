@@ -121,6 +121,22 @@
             <version>${graal.version}</version>
         </dependency>
     </dependencies>
+    <profiles>
+        <profile>
+            <!-- This is so that the environment variable reference gets replaced with an empty string if it is not set,
+            otherwise it will be resolved to the string ${env._JAVA_OPTIONS} -->
+            <id>with-java-opts</id>
+            <activation>
+                <property>
+                    <name>!env._JAVA_OPTIONS</name>
+                </property>
+            </activation>
+            <properties>
+                <env._JAVA_OPTIONS></env._JAVA_OPTIONS>
+            </properties>
+        </profile>
+    </profiles>
+
     <build>
         <plugins>
             <plugin>
@@ -212,7 +228,7 @@
                     <environmentVariables>
                         <!-- Toggles the JDK17 style flag -->
                         <!-- ugly hack -->
-                        <_JAVA_OPTIONS>-XX:+PrintCommandLineFlags ${mtf.javaopts}</_JAVA_OPTIONS>
+                        <_JAVA_OPTIONS>${env._JAVA_OPTIONS} -XX:+PrintCommandLineFlags ${mtf.javaopts}</_JAVA_OPTIONS>
                     </environmentVariables>
                 </configuration>
                 <dependencies>
