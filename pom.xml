@@ -14,7 +14,7 @@
     <name>Scripting Module</name>
     <description>Support for embedding scripts inside Mule artifacts</description>
     <properties>
-        <munit.extensions.maven.plugin.version>1.2.0-rc2</munit.extensions.maven.plugin.version>
+        <munit.extensions.maven.plugin.version>1.2.0</munit.extensions.maven.plugin.version>
         <munit.version>3.1.0-rc3</munit.version>
         <formatterConfigPath>formatter.xml</formatterConfigPath>
         <jython.version>2.7.3</jython.version>
@@ -58,6 +58,7 @@
             <groupId>org.mule.tests</groupId>
             <artifactId>mule-tests-model</artifactId>
             <version>${mule.version}</version>
+            <scope>test</scope>
         </dependency>
         <!--Groovy-->
         <dependency>
@@ -114,11 +115,13 @@
             <groupId>org.graalvm.js</groupId>
             <artifactId>js</artifactId>
             <version>${graal.version}</version>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.graalvm.js</groupId>
             <artifactId>js-scriptengine</artifactId>
             <version>${graal.version}</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
     <build>
@@ -202,6 +205,18 @@
                         <sharedLibrary>
                             <groupId>org.jruby</groupId>
                             <artifactId>jruby-core</artifactId>
+                        </sharedLibrary>
+                        <sharedLibrary>
+                                <groupId>org.graalvm.js</groupId>
+                                <artifactId>js</artifactId>
+                        </sharedLibrary>
+                        <sharedLibrary>
+                                <groupId>org.graalvm.js</groupId>
+                                <artifactId>js-scriptengine</artifactId>
+                        </sharedLibrary>
+                        <sharedLibrary>
+                            <groupId>org.mule.tests</groupId>
+                            <artifactId>mule-tests-model</artifactId>
                         </sharedLibrary>
                     </sharedLibraries>
                     <argLines>
