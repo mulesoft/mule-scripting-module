@@ -16,7 +16,7 @@
         <set-variable value="Hello" variableName="bar"/>
     </flow>
 
-    <munit:test name="AccessingRegistryTestCase" description="Accessing the registry to stop a flow">
+    <munit:test name="AccessingRegistryTestCase" description="Accessing the registry to stop a flow" ignore="#[ p('mule.security.model') != null and p('mule.security.model')=='fips140-2']">
         <munit:execution>
             <flow-ref name="testflow"/>
             <scripting:execute engine="groovy" target="bar1">

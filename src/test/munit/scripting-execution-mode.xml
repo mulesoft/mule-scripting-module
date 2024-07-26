@@ -50,7 +50,7 @@
         </munit:parameterizations>
     </munit:config>
 
-    <munit:test name="ExecutionModeTest" expectedErrorType="${expectedErrorType}">
+    <munit:test name="ExecutionModeTest" expectedErrorType="${expectedErrorType}" ignore="#[ p('mule.security.model') != null and p('mule.security.model')=='fips140-2']">
         <munit:execution >
             <scripting:execute engine="groovy" executionMode="${executionMode}">
                 <scripting:code >

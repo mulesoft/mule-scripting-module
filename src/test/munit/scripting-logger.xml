@@ -11,7 +11,7 @@ http://www.mulesoft.org/schema/mule/scripting http://www.mulesoft.org/schema/mul
 
     <munit:config name="logger-suite.xml"/>
 
-    <munit:test name="logger">
+    <munit:test name="logger" ignore="#[ p('mule.security.model') != null and p('mule.security.model')=='fips140-2']">
         <munit:execution >
             <scripting:execute engine="groovy">
                 <scripting:code>

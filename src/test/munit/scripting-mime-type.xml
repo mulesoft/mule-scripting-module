@@ -11,7 +11,7 @@
 
     <munit:config name="new-test-suite.xml" />
 
-    <munit:test name="mimeType" description="Verifies that the mime type of the payload y the one returned by the script">
+    <munit:test name="mimeType" description="Verifies that the mime type of the payload y the one returned by the script" ignore="#[ p('mule.security.model') != null and p('mule.security.model')=='fips140-2']">
         <munit:behavior>
             <set-payload value="#[output application/json --- {}]"/>
         </munit:behavior>
