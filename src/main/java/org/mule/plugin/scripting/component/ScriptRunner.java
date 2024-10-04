@@ -1,5 +1,5 @@
 /*
- * Copyright (c) MuleSoft, Inc.  All rights reserved.  http://www.mulesoft.com
+ * Copyright 2023 Salesforce, Inc. All rights reserved.
  * The software in this package is published under the terms of the CPAL v1.0
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
@@ -19,6 +19,7 @@ import static org.mule.runtime.api.i18n.I18nMessageFactory.createStaticMessage;
 import static org.slf4j.LoggerFactory.getLogger;
 import static java.lang.Thread.currentThread;
 
+import org.mule.plugin.scripting.ExecutionMode;
 import org.mule.runtime.api.artifact.Registry;
 import org.mule.runtime.api.component.location.ComponentLocation;
 import org.mule.runtime.api.el.Binding;
@@ -32,8 +33,10 @@ import org.mule.runtime.extension.api.runtime.streaming.StreamingHelper;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
+import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.script.Bindings;
@@ -53,6 +56,9 @@ public class ScriptRunner {
   private static final String BINDING_LOG = "log";
   private static final String BINDING_RESULT = "result";
   private static final String REGISTRY = "registry";
+  private static final String ECMA_SCRIPT_ENGINE = "ECMAScript";
+  private static final String NASHORN_ENGINE = "Nashorn";
+  private static final String GRAAL_ENGINE = "graal.js";
 
   private String engineName;
   private String scriptBody;
@@ -73,10 +79,19 @@ public class ScriptRunner {
     this.location = location;
   }
 
+  public ScriptRunner() {}
+
   public void initialise() {
     scriptEngineManager = new ScriptEngineManager(currentThread().getContextClassLoader());
 
     scriptEngine = createScriptEngineByName(engineName);
+
+    if (scriptEngine == null && NASHORN_ENGINE.equalsIgnoreCase(engineName)) {
+      scriptEngine = createScriptEngineByName(GRAAL_ENGINE);
+      LOGGER.warn("The " + NASHORN_ENGINE
+          + " Scripting Engine name was not found. The Scripting Engine defaulted to " + GRAAL_ENGINE);
+    }
+
     if (scriptEngine == null) {
       String message =
           "Scripting engine '" + engineName + "' not found.  Available engines are: " + listAvailableEngines();
@@ -140,10 +155,10 @@ public class ScriptRunner {
     }
   }
 
-  public Object runScript(Bindings bindings) {
+  public Object runScript(Bindings bindings, ExecutionMode executionMode) {
     Object result;
     try {
-      if (compiledScript != null) {
+      if (executionMode == ExecutionMode.AUTO && compiledScript != null) {
         result = compiledScript.eval(bindings);
       } else {
         result = scriptEngine.eval(scriptBody, bindings);
@@ -165,9 +180,9 @@ public class ScriptRunner {
   }
 
   protected String listAvailableEngines() {
-    return scriptEngineManager.getEngineFactories().stream()
-        .map(ScriptEngineFactory::getEngineName)
-        .collect(joining(", "));
+    List<List<String>> listsOfEngineNames =
+        scriptEngineManager.getEngineFactories().stream().map(ScriptEngineFactory::getNames).collect(Collectors.toList());
+    return listsOfEngineNames.stream().flatMap(List::stream).collect(joining(", "));
   }
 
   public ScriptEngine getScriptEngine() {
@@ -184,9 +199,62 @@ public class ScriptRunner {
     }
   }
 
+
   private Map<String, Object> createResolvedMap(Map<String, Object> map, StreamingHelper streamingHelper) {
     HashMap<String, Object> resolvedMap = new HashMap<>();
     map.forEach((key, value) -> resolvedMap.put(key, TypedValue.unwrap(value)));
     return streamingHelper.resolveCursors(resolvedMap, true);
+  }
+
+  public String getEngineName() {
+    return engineName;
+  }
+
+  public void setEngineName(String engineName) {
+    this.engineName = engineName;
+  }
+
+  public String getScriptBody() {
+    return scriptBody;
+  }
+
+  public void setScriptBody(String scriptBody) {
+    this.scriptBody = scriptBody;
+  }
+
+  public ComponentLocation getLocation() {
+    return location;
+  }
+
+  public void setLocation(ComponentLocation location) {
+    this.location = location;
+  }
+
+  public CompiledScript getCompiledScript() {
+    return compiledScript;
+  }
+
+  public void setCompiledScript(CompiledScript compiledScript) {
+    this.compiledScript = compiledScript;
+  }
+
+  public void setScriptEngine(ScriptEngine scriptEngine) {
+    this.scriptEngine = scriptEngine;
+  }
+
+  public ScriptEngineManager getScriptEngineManager() {
+    return scriptEngineManager;
+  }
+
+  public void setScriptEngineManager(ScriptEngineManager scriptEngineManager) {
+    this.scriptEngineManager = scriptEngineManager;
+  }
+
+  public Registry getRegistry() {
+    return registry;
+  }
+
+  public void setRegistry(Registry registry) {
+    this.registry = registry;
   }
 }

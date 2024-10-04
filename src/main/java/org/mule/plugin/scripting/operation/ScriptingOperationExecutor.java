@@ -1,5 +1,5 @@
 /*
- * Copyright (c) MuleSoft, Inc.  All rights reserved.  http://www.mulesoft.com
+ * Copyright 2023 Salesforce, Inc. All rights reserved.
  * The software in this package is published under the terms of the CPAL v1.0
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
@@ -8,6 +8,7 @@ package org.mule.plugin.scripting.operation;
 
 import static org.mule.runtime.api.metadata.MediaType.APPLICATION_JAVA;
 
+import org.mule.plugin.scripting.ExecutionMode;
 import org.mule.plugin.scripting.component.ScriptRunner;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.message.Message;
@@ -48,7 +49,11 @@ public class ScriptingOperationExecutor implements ComponentExecutor<OperationMo
 
     try {
       Map<String, Object> parameters = context.getParameter("parameters");
-      Result<Object, Object> result = process(context.getEvent(), parameters, context);
+      ExecutionMode executionMode = context.getParameter("executionMode");
+      if (executionMode == null) {
+        executionMode = ExecutionMode.AUTO;
+      }
+      Result<Object, Object> result = process(context.getEvent(), parameters, context, executionMode);
       return Mono.justOrEmpty(result);
     } catch (Exception e) {
       return Mono.error(e);
@@ -65,7 +70,7 @@ public class ScriptingOperationExecutor implements ComponentExecutor<OperationMo
   }
 
   private Result<Object, Object> process(CoreEvent event, Map<String, Object> parameters,
-                                         ExecutionContextAdapter<OperationModel> context) {
+                                         ExecutionContextAdapter<OperationModel> context, ExecutionMode executionMode) {
     initScriptRunner.consumeOnce(context);
     Bindings bindings = scriptRunner.getScriptEngine().createBindings();
     if (streamingHelper == null) {
@@ -78,7 +83,7 @@ public class ScriptingOperationExecutor implements ComponentExecutor<OperationMo
     scriptRunner.populateBindings(bindings, event, parameters, streamingHelper);
 
     try {
-      final Object result = scriptRunner.runScript(bindings);
+      final Object result = scriptRunner.runScript(bindings, executionMode);
       if (result instanceof Message) {
         CoreEvent resultEvent = CoreEvent.builder(event).message((Message) result).build();
         return EventedResult.from(resultEvent);
