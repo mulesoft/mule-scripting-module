@@ -57,6 +57,7 @@
             <groupId>org.mule.tests</groupId>
             <artifactId>mule-tests-model</artifactId>
             <version>${mule.version}</version>
+            <scope>test</scope>
         </dependency>
         <!--Groovy-->
         <dependency>
@@ -113,11 +114,13 @@
             <groupId>org.graalvm.js</groupId>
             <artifactId>js</artifactId>
             <version>${graal.version}</version>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.graalvm.js</groupId>
             <artifactId>js-scriptengine</artifactId>
             <version>${graal.version}</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
     <build>
@@ -201,6 +204,18 @@
                         <sharedLibrary>
                             <groupId>org.jruby</groupId>
                             <artifactId>jruby-core</artifactId>
+                        </sharedLibrary>
+                        <sharedLibrary>
+                                <groupId>org.graalvm.js</groupId>
+                                <artifactId>js</artifactId>
+                        </sharedLibrary>
+                        <sharedLibrary>
+                                <groupId>org.graalvm.js</groupId>
+                                <artifactId>js-scriptengine</artifactId>
+                        </sharedLibrary>
+                        <sharedLibrary>
+                            <groupId>org.mule.tests</groupId>
+                            <artifactId>mule-tests-model</artifactId>
                         </sharedLibrary>
                     </sharedLibraries>
                     <argLines>
