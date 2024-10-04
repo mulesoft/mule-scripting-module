@@ -9,7 +9,7 @@
 		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd
 http://www.mulesoft.org/schema/mule/scripting http://www.mulesoft.org/schema/mule/scripting/current/mule-scripting.xsd">
 
-    <munit:config name="scripting-engines-test-case.xml">
+    <munit:config name="scripting-engines-test-cases.xml">
         <munit:parameterizations>
             <munit:parameterization name="NashornScriptTest">
                 <munit:parameters>

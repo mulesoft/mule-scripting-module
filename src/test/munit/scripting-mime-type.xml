@@ -9,10 +9,30 @@
 		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd
         http://www.mulesoft.org/schema/mule/scripting http://www.mulesoft.org/schema/mule/scripting/current/mule-scripting.xsd">
 
-    <munit:config name="new-test-suite.xml" />
+    <munit:config name="scripting-mime-type.xml" />
 
-    <munit:test name="mimeType" description="Verifies that the mime type of the payload y the one returned by the script">
+    <munit:test name="JythonMimeType" description="Verifies that the mime type of the payload y the one returned by the script">
         <munit:behavior>
+            <set-payload value="#[output application/json --- {}]"/>
+        </munit:behavior>
+        <munit:execution >
+            <scripting:execute engine="jython">
+                <scripting:code >
+import java.util.ArrayList as ArrayList
+result = ArrayList()</scripting:code>
+                <scripting:parameters ><![CDATA[#[{
+  payload : payload
+}]]]></scripting:parameters>
+            </scripting:execute>
+        </munit:execution>
+        <munit:validation >
+            <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::withMediaType('application/java')]"/>
+        </munit:validation>
+    </munit:test>
+
+    <munit:test name="GroovyMimeType" description="Verifies that the mime type of the payload y the one returned by the script"
+                ignore="#[ p('mule.security.model') != null and p('mule.security.model')=='fips140-2']">
+    <munit:behavior>
             <set-payload value="#[output application/json --- {}]"/>
         </munit:behavior>
         <munit:execution >
@@ -27,5 +47,4 @@
             <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::withMediaType('application/java')]"/>
         </munit:validation>
     </munit:test>
-
 </mule>

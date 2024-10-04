@@ -9,9 +9,10 @@
 		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd
 http://www.mulesoft.org/schema/mule/scripting http://www.mulesoft.org/schema/mule/scripting/current/mule-scripting.xsd">
 
-    <munit:config name="logger-suite.xml"/>
+    <munit:config name="scripting-logger.xml"/>
 
-    <munit:test name="logger">
+    <munit:test name="GroovyLogger"
+                ignore="#[ p('mule.security.model') != null and p('mule.security.model')=='fips140-2']">
         <munit:execution >
             <scripting:execute engine="groovy">
                 <scripting:code>
@@ -24,4 +25,16 @@ http://www.mulesoft.org/schema/mule/scripting http://www.mulesoft.org/schema/mul
         </munit:validation>
     </munit:test>
 
+    <munit:test name="PythonLogger">
+        <munit:execution >
+            <scripting:execute engine="python">
+                <scripting:code>
+                    result = log.getClass()
+                </scripting:code>
+            </scripting:execute>
+        </munit:execution>
+        <munit:validation>
+            <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::notNullValue()]"/>
+        </munit:validation>
+    </munit:test>
 </mule>
