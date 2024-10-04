@@ -10,20 +10,28 @@
     <groupId>org.mule.modules</groupId>
     <artifactId>mule-scripting-module</artifactId>
     <packaging>mule-extension</packaging>
-    <version>2.1.0-SNAPSHOT</version>
+    <version>2.2.0-SNAPSHOT</version>
     <name>Scripting Module</name>
     <description>Support for embedding scripts inside Mule artifacts</description>
     <properties>
-        <munit.extensions.maven.plugin.version>1.1.3</munit.extensions.maven.plugin.version>
-        <munit.version>2.3.15</munit.version>
+        <munit.extensions.maven.plugin.version>1.2.0</munit.extensions.maven.plugin.version>
+        <munit.version>3.3.1</munit.version>
         <formatterConfigPath>formatter.xml</formatterConfigPath>
         <jython.version>2.7.3</jython.version>
-        <groovy.version>2.4.21</groovy.version>
+        <groovy.version>3.0.19</groovy.version>
         <jruby.version>9.3.8.0</jruby.version>
+        <graal.version>22.0.0</graal.version>
         <project.reactor.version>3.4.23</project.reactor.version>
-        <file.connector.version>1.4.1</file.connector.version>
-        <mtf.tools.version>1.1.2</mtf.tools.version>
+        <file.connector.version>1.5.2</file.connector.version>
+        <mtf.tools.version>1.2.0-rc1</mtf.tools.version>
         <jacoco.version>0.8.10</jacoco.version>
+        <mtf.javaopts></mtf.javaopts>
+        <mulesoftLicenseVersion>1.4.0</mulesoftLicenseVersion>
+        <license.maven.plugin.version>4.2</license.maven.plugin.version>
+        <licensePath>LICENSE_HEADER_CPAL.txt</licensePath>
+        <licenseYear>2023</licenseYear>
+        <commons.lang.version>3.13.0</commons.lang.version>
+        <mule.sdk.api.version>0.7.0</mule.sdk.api.version>
     </properties>
     <dependencies>
         <!-- Reactor -->
@@ -39,18 +47,30 @@
             <version>${mule.version}</version>
             <classifier>mule-plugin</classifier>
             <scope>test</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.apache.commons</groupId>
+                    <artifactId>commons-lang3</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.mule.tests</groupId>
             <artifactId>mule-tests-model</artifactId>
             <version>${mule.version}</version>
+            <scope>test</scope>
         </dependency>
         <!--Groovy-->
         <dependency>
             <groupId>org.codehaus.groovy</groupId>
-            <artifactId>groovy-all</artifactId>
+            <artifactId>groovy</artifactId>
             <version>${groovy.version}</version>
-            <classifier>indy</classifier>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.codehaus.groovy</groupId>
+            <artifactId>groovy-jsr223</artifactId>
+            <version>${groovy.version}</version>
             <scope>test</scope>
         </dependency>
         <!--Jython-->
@@ -80,9 +100,64 @@
             <classifier>mule-plugin</classifier>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.mule.sdk</groupId>
+            <artifactId>mule-sdk-api</artifactId>
+            <version>${mule.sdk.api.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>${commons.lang.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.graalvm.js</groupId>
+            <artifactId>js</artifactId>
+            <version>${graal.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.graalvm.js</groupId>
+            <artifactId>js-scriptengine</artifactId>
+            <version>${graal.version}</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
     <build>
         <plugins>
+            <plugin>
+                <groupId>com.mycila</groupId>
+                <artifactId>license-maven-plugin</artifactId>
+                <version>${license.maven.plugin.version}</version>
+                <dependencies>
+                    <dependency>
+                        <groupId>com.mulesoft.license</groupId>
+                        <artifactId>license</artifactId>
+                        <version>${mulesoftLicenseVersion}</version>
+                    </dependency>
+                </dependencies>
+                <configuration>
+                    <header>${licensePath}</header>
+                    <properties>
+                        <year>${licenseYear}</year>
+                    </properties>
+                    <includes>
+                        <include>**/*.java</include>
+                    </includes>
+                    <mapping>
+                        <java>SLASHSTAR_STYLE</java>
+                    </mapping>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
@@ -107,14 +182,41 @@
                     </execution>
                 </executions>
                 <configuration>
+                    <runtimeConfiguration>
+                        <discoverRuntimes>
+                            <minMuleVersion>${minVersion}</minMuleVersion>
+                            <includeSnapshots>false</includeSnapshots>
+                            <product>EE</product>
+                        </discoverRuntimes>
+                    </runtimeConfiguration>
                     <sharedLibraries>
                         <sharedLibrary>
                             <groupId>org.codehaus.groovy</groupId>
-                            <artifactId>groovy-all</artifactId>
+                            <artifactId>groovy-jsr223</artifactId>
+                        </sharedLibrary>
+                        <sharedLibrary>
+                            <groupId>org.codehaus.groovy</groupId>
+                            <artifactId>groovy</artifactId>
                         </sharedLibrary>
                         <sharedLibrary>
                             <groupId>org.python</groupId>
                             <artifactId>jython-standalone</artifactId>
+                        </sharedLibrary>
+                        <sharedLibrary>
+                            <groupId>org.jruby</groupId>
+                            <artifactId>jruby-core</artifactId>
+                        </sharedLibrary>
+                        <sharedLibrary>
+                                <groupId>org.graalvm.js</groupId>
+                                <artifactId>js</artifactId>
+                        </sharedLibrary>
+                        <sharedLibrary>
+                                <groupId>org.graalvm.js</groupId>
+                                <artifactId>js-scriptengine</artifactId>
+                        </sharedLibrary>
+                        <sharedLibrary>
+                            <groupId>org.mule.tests</groupId>
+                            <artifactId>mule-tests-model</artifactId>
                         </sharedLibrary>
                     </sharedLibraries>
                     <argLines>
@@ -122,6 +224,11 @@
                             -javaagent:${settings.localRepository}/org/jacoco/org.jacoco.agent/${jacoco.version}/org.jacoco.agent-${jacoco.version}-runtime.jar=destfile=${session.executionRootDirectory}/target/jacoco-munit.exec
                         </argLine>
                     </argLines>
+                    <environmentVariables>
+                        <!-- Toggles the JDK17 style flag -->
+                        <!-- ugly hack -->
+                        <_JAVA_OPTIONS>-XX:+PrintCommandLineFlags ${mtf.javaopts}</_JAVA_OPTIONS>
+                    </environmentVariables>
                 </configuration>
                 <dependencies>
                     <dependency>
