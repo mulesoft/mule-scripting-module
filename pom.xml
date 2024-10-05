@@ -25,7 +25,6 @@
         <file.connector.version>1.5.2</file.connector.version>
         <mtf.tools.version>1.2.0-rc1</mtf.tools.version>
         <jacoco.version>0.8.10</jacoco.version>
-        <mtf.javaopts></mtf.javaopts>
         <mulesoftLicenseVersion>1.4.0</mulesoftLicenseVersion>
         <license.maven.plugin.version>4.2</license.maven.plugin.version>
         <licensePath>LICENSE_HEADER_CPAL.txt</licensePath>
@@ -224,11 +223,6 @@
                             -javaagent:${settings.localRepository}/org/jacoco/org.jacoco.agent/${jacoco.version}/org.jacoco.agent-${jacoco.version}-runtime.jar=destfile=${session.executionRootDirectory}/target/jacoco-munit.exec
                         </argLine>
                     </argLines>
-                    <environmentVariables>
-                        <!-- Toggles the JDK17 style flag -->
-                        <!-- ugly hack -->
-                        <_JAVA_OPTIONS>-XX:+PrintCommandLineFlags ${mtf.javaopts}</_JAVA_OPTIONS>
-                    </environmentVariables>
                 </configuration>
                 <dependencies>
                     <dependency>
