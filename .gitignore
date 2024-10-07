@@ -30,3 +30,4 @@ hostkey.ser
 *.h2.db
 *.factorypath
 test.sh
+tls-fips140-2.conf

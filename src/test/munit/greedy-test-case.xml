@@ -9,39 +9,88 @@
 		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd
 http://www.mulesoft.org/schema/mule/scripting http://www.mulesoft.org/schema/mule/scripting/current/mule-scripting.xsd">
 
-    <munit:config name="new-test-suite-greedy.xml" />
+    <munit:config name="greedy-test-case.xml" />
 
-    <munit:test name="GreedyDollarTestCase">
-        <munit:behavior>
+    <munit:test name="GreedyDollarWithGroovyTestCase"
+                ignore="#[ p('mule.security.model') != null and p('mule.security.model')=='fips140-2']">
+    <munit:behavior>
             <set-variable value="USD" variableName="currency"/>
             <set-payload value="#[233]"/>
         </munit:behavior>
         <munit:execution >
-            <flow-ref name="greedy"/>
+            <flow-ref name="greedyWithGroovyFlow"/>
         </munit:execution>
         <munit:validation >
             <munit-tools:assert-equals actual="#[payload]" expected="[9 quarters, 0 dimes, 1 nickels, 3 pennies]"/>
         </munit:validation>
     </munit:test>
 
-    <munit:test name="GreedyPoundsTestCase">
-        <munit:behavior>
+    <munit:test name="GreedyPoundsWithGroovyTestCase"
+                ignore="#[ p('mule.security.model') != null and p('mule.security.model')=='fips140-2']">
+    <munit:behavior>
             <set-variable value="GBP" variableName="currency"/>
             <set-payload value="#[128]"/>
         </munit:behavior>
         <munit:execution >
-            <flow-ref name="greedy"/>
+            <flow-ref name="greedyWithGroovyFlow"/>
         </munit:execution>
         <munit:validation >
             <munit-tools:assert-equals actual="#[payload]" expected="[1 pounds, 1 twenty_pence, 1 five_pence, 1 two_pence, 1 pennies]"/>
         </munit:validation>
     </munit:test>
 
-    <flow name="greedy">
+    <munit:test name="GreedyDollarWithJavascriptTestCase">
+        <munit:behavior>
+            <set-variable value="USD" variableName="currency"/>
+            <set-payload value="#[233]"/>
+        </munit:behavior>
+        <munit:execution >
+            <flow-ref name="greedyWithJavascriptFlow"/>
+        </munit:execution>
+        <munit:validation >
+            <munit-tools:assert-equals actual="#[payload]" expected="[9 quarters, 0 dimes, 1 nickels, 3 pennies]"/>
+        </munit:validation>
+    </munit:test>
+
+    <munit:test name="GreedyPoundsWithJavascriptTestCase">
+        <munit:behavior>
+            <set-variable value="GBP" variableName="currency"/>
+            <set-payload value="#[128]"/>
+        </munit:behavior>
+        <munit:execution >
+            <flow-ref name="greedyWithJavascriptFlow"/>
+        </munit:execution>
+        <munit:validation >
+            <munit-tools:assert-equals actual="#[payload]" expected="[1 pounds, 1 twenty_pence, 1 five_pence, 1 two_pence, 1 pennies]"/>
+        </munit:validation>
+    </munit:test>
+
+    <flow name="greedyWithGroovyFlow">
         <choice>
             <when expression="#[vars.currency == 'USD']">
                 <scripting:execute engine="groovy">
                     <scripting:code>${file::greedy.groovy}</scripting:code>
+                    <scripting:parameters>
+                        #[{currency: "USD"}]
+                    </scripting:parameters>
+                </scripting:execute>
+            </when>
+            <when expression="#[vars.currency == 'GBP']">
+                <scripting:execute engine="python">
+                    <scripting:code>${file::greedy.py}</scripting:code>
+                    <scripting:parameters>
+                        #[{currency: "GBP"}]
+                    </scripting:parameters>
+                </scripting:execute>
+            </when>
+        </choice>
+    </flow>
+
+    <flow name="greedyWithJavascriptFlow">
+        <choice>
+            <when expression="#[vars.currency == 'USD']">
+                <scripting:execute engine="Nashorn">
+                    <scripting:code>${file::greedy.js}</scripting:code>
                     <scripting:parameters>
                         #[{currency: "USD"}]
                     </scripting:parameters>
