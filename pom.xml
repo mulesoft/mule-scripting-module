@@ -19,7 +19,7 @@
         <formatterConfigPath>formatter.xml</formatterConfigPath>
         <jython.version>2.7.3</jython.version>
         <groovy.version>3.0.19</groovy.version>
-        <jruby.version>9.3.8.0</jruby.version>
+        <jruby.version>9.4.10.0</jruby.version>
         <graal.version>22.0.0</graal.version>
         <project.reactor.version>3.4.23</project.reactor.version>
         <file.connector.version>1.5.2</file.connector.version>
