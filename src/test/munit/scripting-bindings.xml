@@ -9,12 +9,12 @@
 		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd
         http://www.mulesoft.org/schema/mule/scripting http://www.mulesoft.org/schema/mule/scripting/current/mule-scripting.xsd">
 
-    <munit:config name="streaming-bindings.xml" />
+    <munit:config name="scripting-bindings.xml" />
 
-    <munit:test name="BindingTest" description="This test will fail if any binding disappears">
+    <munit:test name="PythonBindingsTest" description="This test will fail if any binding disappears">
         <munit:execution >
             <try>
-                <flow-ref name="BindingsFlow"/>
+                <flow-ref name="PythonBindingsFlow"/>
                 <error-handler>
                     <on-error-continue>
                         <set-payload value="#[error.description]" />
@@ -27,7 +27,46 @@
         </munit:validation>
     </munit:test>
 
-    <flow name="BindingsFlow" >
+
+    <munit:test name="GroovyBindingTest" description="This test will fail if any binding disappears"
+                ignore="#[ p('mule.security.model') != null and p('mule.security.model')=='fips140-2']">
+        <munit:execution >
+            <try>
+                <flow-ref name="GroovyBindingsFlow"/>
+                <error-handler>
+                    <on-error-continue>
+                        <set-payload value="#[error.description]" />
+                    </on-error-continue>
+                </error-handler>
+            </try>
+        </munit:execution>
+        <munit:validation >
+            <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::equalTo('All bindend')]"/>
+        </munit:validation>
+    </munit:test>
+
+    <flow name="PythonBindingsFlow" >
+        <scripting:execute engine="python">
+            <scripting:code >
+payload
+itemSequenceInfo
+dataType
+correlationId
+attributes
+vars
+message
+error
+authentication
+flow
+log
+result
+registry
+result = "All bindend"
+            </scripting:code>
+        </scripting:execute>
+    </flow>
+
+    <flow name="GroovyBindingsFlow" >
         <scripting:execute engine="groovy">
             <scripting:code >
                 payload
